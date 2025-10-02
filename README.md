@@ -1,36 +1,268 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sanity Blog
 
-## Getting Started
+A modern, full-featured blog built with Next.js 15 and Sanity CMS. This project includes both a beautiful frontend and a powerful content management system.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Frontend
+- 🎨 Modern, responsive design with Tailwind CSS
+- 📱 Mobile-first approach
+- ⚡ Built with Next.js 15 App Router
+- 🖼️ Optimized images with Next.js Image component
+- 📝 Rich text content with Portable Text
+- 🏷️ Category-based organization
+- 👤 Author profiles and bios
+- 🔍 SEO optimized with meta tags and Open Graph
+- 📊 TypeScript for type safety
+
+### Content Management
+- 🎛️ Sanity Studio for content management
+- 📄 Blog posts with rich content
+- 📋 Custom pages (About, Contact, etc.)
+- 👥 Author management
+- 🏷️ Category system with color coding
+- ⚙️ Site settings configuration
+- 🖼️ Image management with alt text
+- 🔧 SEO fields for all content types
+
+## Quick Start
+
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
+- A Sanity account (free at [sanity.io](https://sanity.io))
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <your-repo-url>
+   cd sanity-blog
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   cp .env.local.example .env.local
+   ```
+   
+   Edit `.env.local` and add your Sanity project details:
+   ```env
+   NEXT_PUBLIC_SANITY_PROJECT_ID=your-project-id
+   NEXT_PUBLIC_SANITY_DATASET=production
+   ```
+
+4. **Deploy Sanity Studio**
+   ```bash
+   cd sanity
+   npm run deploy
+   ```
+
+5. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+6. **Open your browser**
+   - Frontend: [http://localhost:3000](http://localhost:3000)
+   - Sanity Studio: [http://localhost:3000/studio](http://localhost:3000/studio)
+
+## Project Structure
+
+```
+sanity-blog/
+├── src/
+│   ├── app/                    # Next.js App Router pages
+│   │   ├── blog/              # Blog listing and post pages
+│   │   ├── category/          # Category pages
+│   │   ├── [slug]/            # Dynamic pages
+│   │   ├── layout.tsx         # Root layout
+│   │   └── page.tsx           # Homepage
+│   ├── components/            # React components
+│   │   ├── Navigation.tsx     # Site navigation
+│   │   ├── Footer.tsx         # Site footer
+│   │   ├── PostCard.tsx       # Blog post card
+│   │   └── PortableText.tsx   # Rich text renderer
+│   └── lib/                   # Utilities and configurations
+│       ├── sanity.ts          # Sanity client setup
+│       ├── queries.ts         # GROQ queries
+│       └── types.ts           # TypeScript types
+├── sanity/                    # Sanity Studio
+│   ├── schemaTypes/          # Content schemas
+│   │   ├── post.ts           # Blog post schema
+│   │   ├── page.ts           # Page schema
+│   │   ├── author.ts         # Author schema
+│   │   ├── category.ts       # Category schema
+│   │   ├── siteSettings.ts   # Site settings schema
+│   │   └── index.ts          # Schema exports
+│   └── sanity.config.ts      # Studio configuration
+└── public/                   # Static assets
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Content Management
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Getting Started with Content
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Access Sanity Studio**
+   - Visit `/studio` on your deployed site or run `npm run studio` locally
+   - Sign in with your Sanity account
 
-## Learn More
+2. **Configure Site Settings**
+   - Go to "Site Settings" in the studio
+   - Add your site title, description, logo, and social links
+   - Configure footer content and SEO defaults
 
-To learn more about Next.js, take a look at the following resources:
+3. **Create Authors**
+   - Add author profiles with photos and bios
+   - Include social media links
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+4. **Add Categories**
+   - Create categories for organizing your posts
+   - Choose colors for visual distinction
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+5. **Write Your First Post**
+   - Create a new blog post
+   - Add a featured image, categories, and rich content
+   - Mark as "featured" to highlight on homepage
 
-## Deploy on Vercel
+6. **Create Pages**
+   - Add custom pages like About, Contact, etc.
+   - Enable "Show in Navigation" to add to menu
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Content Types
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+#### Blog Posts
+- Title and slug
+- Author and categories
+- Featured image with alt text
+- Rich text content with images and code blocks
+- SEO metadata
+- Featured post option
+
+#### Pages
+- Title and slug
+- Rich text content
+- Navigation settings
+- SEO metadata
+
+#### Authors
+- Name and bio
+- Profile image
+- Social media links
+- Contact information
+
+#### Categories
+- Title and description
+- Color coding
+- URL slug
+
+#### Site Settings
+- Site title and description
+- Logo and favicon
+- Social media links
+- Footer configuration
+- Default SEO settings
+
+## Deployment
+
+### Deploy to Vercel (Recommended)
+
+1. **Push to GitHub**
+   ```bash
+   git add .
+   git commit -m "Initial commit"
+   git push origin main
+   ```
+
+2. **Deploy to Vercel**
+   - Connect your GitHub repository to Vercel
+   - Add environment variables in Vercel dashboard
+   - Deploy automatically on push
+
+3. **Deploy Sanity Studio**
+   ```bash
+   cd sanity
+   npm run deploy
+   ```
+
+### Environment Variables
+
+For production deployment, set these environment variables:
+
+```env
+NEXT_PUBLIC_SANITY_PROJECT_ID=your-project-id
+NEXT_PUBLIC_SANITY_DATASET=production
+```
+
+## Development
+
+### Available Scripts
+
+```bash
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
+
+# Run Sanity Studio locally
+npm run studio
+
+# Deploy Sanity Studio
+npm run studio:deploy
+
+# Type checking
+npm run type-check
+
+# Linting
+npm run lint
+```
+
+### Customization
+
+#### Styling
+- Edit `src/app/globals.css` for global styles
+- Modify Tailwind classes in components
+- Update color schemes in `tailwind.config.js`
+
+#### Content Schemas
+- Add new fields to existing schemas in `sanity/schemaTypes/`
+- Create new content types by adding schema files
+- Update `sanity/schemaTypes/index.ts` to include new schemas
+
+#### Queries
+- Modify GROQ queries in `src/lib/queries.ts`
+- Add new queries for custom functionality
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## License
+
+MIT License - see LICENSE file for details
+
+## Support
+
+For questions and support:
+- Check the [Sanity documentation](https://www.sanity.io/docs)
+- Review [Next.js documentation](https://nextjs.org/docs)
+- Open an issue in this repository
+
+## Acknowledgments
+
+- Built with [Next.js](https://nextjs.org/)
+- Content management by [Sanity](https://sanity.io/)
+- Styled with [Tailwind CSS](https://tailwindcss.com/)
+- Icons from [Heroicons](https://heroicons.com/)
