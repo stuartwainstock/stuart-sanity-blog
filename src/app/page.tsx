@@ -84,70 +84,9 @@ export default async function Home() {
 
      
 
-      {/* Recent Posts */}
-      {recentPosts.length > 0 && (
-        <section className="py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center mb-12">
-              <div>
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                  {recentSection.title}
-                </h2>
-                {recentSection.subtitle && (
-                  <p className="text-xl text-gray-600">
-                    {recentSection.subtitle}
-                  </p>
-                )}
-              </div>
-              <Link
-                href="/blog"
-                className="hidden md:inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
-              >
-                View all posts
-                <svg className="ml-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
-            </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {recentPosts.slice(0, 6).map((post) => (
-                <PostCard key={post._id} post={post} />
-              ))}
-            </div>
-            <div className="text-center mt-12 md:hidden">
-              <Link
-                href="/blog"
-                className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
-              >
-                View all posts
-                <svg className="ml-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
-            </div>
-          </div>
-        </section>
-      )}
+      
 
-      {/* Call to Action */}
-      <section className="py-16 bg-blue-600">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            {ctaSection.title}
-          </h2>
-          {ctaSection.subtitle && (
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-              {ctaSection.subtitle}
-            </p>
-          )}
-          <Link
-            href={ctaSection.buttonUrl}
-            className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors inline-block"
-          >
-            {ctaSection.buttonText}
-          </Link>
-        </div>
-      </section>
+      
     </div>
   )
 }
