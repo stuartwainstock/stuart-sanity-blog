@@ -278,6 +278,23 @@ export const postsByAuthorQuery = groq`
   }
 `
 
+export const authorQuery = groq`
+  *[_type == "author" && slug.current == $slug][0] {
+    _id,
+    name,
+    slug,
+    image,
+    bio,
+    email,
+    website,
+    social {
+      twitter,
+      linkedin,
+      github
+    }
+  }
+`
+
 export const homepageQuery = groq`
   *[_type == "homepage"][0] {
     _id,
