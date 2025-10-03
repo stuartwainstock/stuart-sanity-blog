@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+background-color: #e8e8e8;
+
 /* Custom utilities for line clamping */
 .line-clamp-3 {
   display: -webkit-box;
