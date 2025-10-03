@@ -4,7 +4,7 @@ import { SanityImage } from './types'
 
 export const config = {
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'new',
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'ojv692hs', // Use your actual project ID as fallback
   apiVersion: '2023-05-03',
   useCdn: process.env.NODE_ENV === 'production',
 }
