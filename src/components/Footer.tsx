@@ -89,24 +89,7 @@ export default function Footer({ siteSettings }: FooterProps) {
             </ul>
           </div>
 
-          {/* Contact */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Contact</h3>
-            <p className="text-gray-300">
-              Have questions or want to get in touch? We&apos;d love to hear from you.
-            </p>
-            {siteSettings?.url && (
-              <p className="text-gray-300 mt-2">
-                Visit us at{' '}
-                <a
-                  href={siteSettings.url}
-                  className="text-blue-400 hover:text-blue-300 transition-colors"
-                >
-                  {siteSettings.url.replace(/^https?:\/\//, '')}
-                </a>
-              </p>
-            )}
-          </div>
+          
         </div>
 
         <div className="mt-8 pt-8 border-t border-gray-700">
