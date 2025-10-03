@@ -2,11 +2,38 @@
 
 :root {
   --font-work-sans: 'Work Sans', sans-serif;
+  --color-background: #e8e8e8;
 }
 
 body {
-  background-color: #e8e8e8;
+  background-color: var(--color-background);
   font-family: var(--font-work-sans);
+}
+
+/* Custom background classes using your hex color */
+.bg-custom {
+  @apply bg-[#e8e8e8];
+}
+
+.bg-custom-light {
+  @apply bg-[#f5f5f5];
+}
+
+.bg-custom-dark {
+  @apply bg-[#d1d1d1];
+}
+
+/* Or create semantic classes */
+.bg-page {
+  @apply bg-[#e8e8e8];
+}
+
+.bg-section {
+  @apply bg-[#f5f5f5];
+}
+
+.bg-card {
+  @apply bg-white;
 }
 h1, h2, h3, h4, h5, h6 {
   color: #4F4F4F;
