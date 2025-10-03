@@ -6,10 +6,9 @@ import {schemaTypes} from './schemaTypes'
 export default defineConfig({
   name: 'default',
   title: 'Blog CMS',
-
   projectId: 'ojv692hs',
   dataset: 'production',
-
+  basePath: '/studio', // This is important for the studio route
   plugins: [
     structureTool({
       structure: (S) =>
@@ -46,7 +45,6 @@ export default defineConfig({
     }),
     visionTool(),
   ],
-
   schema: {
     types: schemaTypes,
   },
