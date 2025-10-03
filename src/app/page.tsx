@@ -11,12 +11,6 @@ async function getHomeData() {
       sanityClient.fetch<Post[]>(featuredPostsQuery),
       sanityClient.fetch<Post[]>(`${postsQuery}[0...6]`),
     ])
-    
-    // Debug logging
-    console.log('Homepage data:', homepage)
-    console.log('Featured posts:', featuredPosts.length)
-    console.log('Recent posts:', recentPosts.length)
-    
     return { homepage, featuredPosts, recentPosts }
   } catch (error) {
     console.error('Error fetching home data:', error)
@@ -26,14 +20,6 @@ async function getHomeData() {
 
 export default async function Home() {
   const { homepage, featuredPosts, recentPosts } = await getHomeData()
-
-  // Debug: Show what we got from Sanity
-  console.log('Rendering homepage with:', {
-    hasHomepage: !!homepage,
-    homepageTitle: homepage?.hero?.title,
-    featuredCount: featuredPosts.length,
-    recentCount: recentPosts.length
-  })
 
   // Fallback content if no homepage content is found
   const hero = homepage?.hero || {
@@ -62,17 +48,6 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen">
-      {/* Debug info - remove this after testing */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="bg-yellow-100 p-4 m-4 rounded">
-          <p><strong>Debug Info:</strong></p>
-          <p>Homepage exists: {homepage ? 'Yes' : 'No'}</p>
-          <p>Hero title: {hero.title}</p>
-          <p>Featured posts: {featuredPosts.length}</p>
-          <p>Recent posts: {recentPosts.length}</p>
-        </div>
-      )}
-
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
