@@ -15,10 +15,6 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
     day: 'numeric',
   })
 
-  // Debug: Log the image data
-  console.log('Post image data:', post.mainImage)
-  console.log('Generated image URL:', post.mainImage ? getImageUrl(post.mainImage, featured ? 600 : 400, featured ? 400 : 250) : 'No image')
-
   return (
     <article className={`bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow ${featured ? 'md:flex' : ''}`}>
       {post.mainImage && (
@@ -29,10 +25,6 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
               alt={post.mainImage.alt || post.title}
               fill
               className="object-cover hover:scale-105 transition-transform duration-300"
-              onError={(e) => {
-                console.error('Image failed to load:', e)
-                console.error('Image src:', post.mainImage ? getImageUrl(post.mainImage, featured ? 600 : 400, featured ? 400 : 250) : 'No image')
-              }}
             />
           </Link>
         </div>
