@@ -49,7 +49,7 @@ export default async function Home() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="">
+      <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
@@ -82,28 +82,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Featured Posts */}
-      {featuredPosts.length > 0 && (
-        <section className="py-16 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                {featuredSection.title}
-              </h2>
-              {featuredSection.subtitle && (
-                <p className="text-xl text-gray-600">
-                  {featuredSection.subtitle}
-                </p>
-              )}
-            </div>
-            <div className="grid gap-8">
-              {featuredPosts.slice(0, 2).map((post) => (
-                <PostCard key={post._id} post={post} featured />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+     
 
       {/* Recent Posts */}
       {recentPosts.length > 0 && (
