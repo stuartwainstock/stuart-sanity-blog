@@ -8,6 +8,12 @@ body {
   background-color: #e8e8e8;
   font-family: var(--font-work-sans);
 }
+h1, h2, h3, h4, h5, h6 {
+  color: #4F4F4F;
+}
+p{
+  color: #000;
+}
 
 /* Custom utilities for line clamping */
 .line-clamp-3 {
