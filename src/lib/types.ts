@@ -93,3 +93,35 @@ export interface SiteSettings {
   }
   seo?: SEO
 }
+
+export interface Homepage {
+  _id: string
+  title: string
+  hero: {
+    title: string
+    subtitle?: string
+    primaryButton?: {
+      text: string
+      url: string
+    }
+    secondaryButton?: {
+      text: string
+      url: string
+    }
+  }
+  featuredSection: {
+    title: string
+    subtitle?: string
+  }
+  recentSection: {
+    title: string
+    subtitle?: string
+  }
+  ctaSection: {
+    title: string
+    subtitle?: string
+    buttonText: string
+    buttonUrl: string
+  }
+  seo?: SEO
+}

@@ -277,3 +277,43 @@ export const postsByAuthorQuery = groq`
     }
   }
 `
+
+export const homepageQuery = groq`
+  *[_type == "homepage"][0] {
+    _id,
+    title,
+    hero {
+      title,
+      subtitle,
+      primaryButton {
+        text,
+        url
+      },
+      secondaryButton {
+        text,
+        url
+      }
+    },
+    featuredSection {
+      title,
+      subtitle
+    },
+    recentSection {
+      title,
+      subtitle
+    },
+    ctaSection {
+      title,
+      subtitle,
+      buttonText,
+      buttonUrl
+    },
+    seo {
+      metaTitle,
+      metaDescription,
+      openGraphImage,
+      keywords,
+      noIndex
+    }
+  }
+`

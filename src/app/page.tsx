@@ -1,24 +1,50 @@
 import Link from 'next/link'
 import { sanityClient } from '@/lib/sanity'
-import { featuredPostsQuery, postsQuery } from '@/lib/queries'
-import { Post } from '@/lib/types'
+import { featuredPostsQuery, postsQuery, homepageQuery } from '@/lib/queries'
+import { Post, Homepage } from '@/lib/types'
 import PostCard from '@/components/PostCard'
 
 async function getHomeData() {
   try {
-    const [featuredPosts, recentPosts] = await Promise.all([
+    const [homepage, featuredPosts, recentPosts] = await Promise.all([
+      sanityClient.fetch<Homepage>(homepageQuery),
       sanityClient.fetch<Post[]>(featuredPostsQuery),
       sanityClient.fetch<Post[]>(`${postsQuery}[0...6]`),
     ])
-    return { featuredPosts, recentPosts }
+    return { homepage, featuredPosts, recentPosts }
   } catch (error) {
     console.error('Error fetching home data:', error)
-    return { featuredPosts: [], recentPosts: [] }
+    return { homepage: null, featuredPosts: [], recentPosts: [] }
   }
 }
 
 export default async function Home() {
-  const { featuredPosts, recentPosts } = await getHomeData()
+  const { homepage, featuredPosts, recentPosts } = await getHomeData()
+
+  // Fallback content if no homepage content is found
+  const hero = homepage?.hero || {
+    title: 'Welcome to Our Blog',
+    subtitle: 'Discover insights, tutorials, and stories from our community of writers and creators.',
+    primaryButton: { text: 'Explore All Posts', url: '/blog' },
+    secondaryButton: { text: 'Learn More', url: '/about' }
+  }
+
+  const featuredSection = homepage?.featuredSection || {
+    title: 'Featured Posts',
+    subtitle: 'Our most popular and recommended content'
+  }
+
+  const recentSection = homepage?.recentSection || {
+    title: 'Recent Posts',
+    subtitle: 'Stay up to date with our latest content'
+  }
+
+  const ctaSection = homepage?.ctaSection || {
+    title: 'Ready to Start Reading?',
+    subtitle: 'Join thousands of readers who stay informed with our regular updates and insights.',
+    buttonText: 'Browse All Posts',
+    buttonUrl: '/blog'
+  }
 
   return (
     <div className="min-h-screen">
@@ -27,24 +53,30 @@ export default async function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Welcome to Our Blog
+              {hero.title}
             </h1>
-            <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto">
-              Discover insights, tutorials, and stories from our community of writers and creators.
-            </p>
+            {hero.subtitle && (
+              <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto">
+                {hero.subtitle}
+              </p>
+            )}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/blog"
-                className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
-              >
-                Explore All Posts
-              </Link>
-              <Link
-                href="/about"
-                className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors"
-              >
-                Learn More
-              </Link>
+              {hero.primaryButton && (
+                <Link
+                  href={hero.primaryButton.url}
+                  className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+                >
+                  {hero.primaryButton.text}
+                </Link>
+              )}
+              {hero.secondaryButton && (
+                <Link
+                  href={hero.secondaryButton.url}
+                  className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors"
+                >
+                  {hero.secondaryButton.text}
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -56,11 +88,13 @@ export default async function Home() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                Featured Posts
+                {featuredSection.title}
               </h2>
-              <p className="text-xl text-gray-600">
-                Our most popular and recommended content
-              </p>
+              {featuredSection.subtitle && (
+                <p className="text-xl text-gray-600">
+                  {featuredSection.subtitle}
+                </p>
+              )}
             </div>
             <div className="grid gap-8">
               {featuredPosts.slice(0, 2).map((post) => (
@@ -78,11 +112,13 @@ export default async function Home() {
             <div className="flex justify-between items-center mb-12">
               <div>
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                  Recent Posts
+                  {recentSection.title}
                 </h2>
-                <p className="text-xl text-gray-600">
-                  Stay up to date with our latest content
-                </p>
+                {recentSection.subtitle && (
+                  <p className="text-xl text-gray-600">
+                    {recentSection.subtitle}
+                  </p>
+                )}
               </div>
               <Link
                 href="/blog"
@@ -118,16 +154,18 @@ export default async function Home() {
       <section className="py-16 bg-blue-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Ready to Start Reading?
+            {ctaSection.title}
           </h2>
-          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Join thousands of readers who stay informed with our regular updates and insights.
-          </p>
+          {ctaSection.subtitle && (
+            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+              {ctaSection.subtitle}
+            </p>
+          )}
           <Link
-            href="/blog"
+            href={ctaSection.buttonUrl}
             className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors inline-block"
           >
-            Browse All Posts
+            {ctaSection.buttonText}
           </Link>
         </div>
       </section>
