@@ -31,7 +31,7 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
               className="object-cover hover:scale-105 transition-transform duration-300"
               onError={(e) => {
                 console.error('Image failed to load:', e)
-                console.error('Image src:', getImageUrl(post.mainImage, featured ? 600 : 400, featured ? 400 : 250))
+                console.error('Image src:', post.mainImage ? getImageUrl(post.mainImage, featured ? 600 : 400, featured ? 400 : 250) : 'No image')
               }}
             />
           </Link>
