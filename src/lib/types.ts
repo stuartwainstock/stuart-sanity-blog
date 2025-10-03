@@ -21,7 +21,7 @@ export interface Author {
     current: string
   }
   image?: SanityImage
-  bio?: PortableTextValue[]
+  bio?: any[]
   email?: string
   website?: string
   social?: {
@@ -52,7 +52,7 @@ export interface Post {
   categories?: Category[]
   publishedAt: string
   excerpt?: string
-  body?: PortableTextValue[]
+  body?: any[]
   featured?: boolean
   seo?: SEO
 }
@@ -65,7 +65,7 @@ export interface Page {
   }
   mainImage?: SanityImage
   excerpt?: string
-  body?: PortableTextValue[]
+  body?: any[]
   showInNavigation?: boolean
   navigationOrder?: number
   seo?: SEO
