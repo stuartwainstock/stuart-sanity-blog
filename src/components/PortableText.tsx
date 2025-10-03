@@ -17,6 +17,7 @@ const components: PortableTextComponents = {
           width={800}
           height={600}
           className="rounded-lg"
+          unoptimized
         />
         {value.caption && (
           <p className="text-sm text-gray-600 text-center mt-2 italic">
