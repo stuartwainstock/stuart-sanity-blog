@@ -7,7 +7,7 @@ export default defineConfig({
   name: 'default',
   title: 'Blog CMS',
 
-  projectId: 'new',
+  projectId: 'ojv692hs',
   dataset: 'production',
 
   plugins: [
