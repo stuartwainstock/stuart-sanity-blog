@@ -1,8 +1,14 @@
 @import "tailwindcss";
 
-body {
-background-color: #e8e8e8;
+:root {
+  --font-work-sans: 'Work Sans', sans-serif;
 }
+
+body {
+  background-color: #e8e8e8;
+  font-family: var(--font-work-sans);
+}
+
 /* Custom utilities for line clamping */
 .line-clamp-3 {
   display: -webkit-box;
@@ -26,6 +32,7 @@ html {
 .prose {
   color: #374151;
   max-width: none;
+  font-family: var(--font-work-sans);
 }
 
 .prose h1,
@@ -34,6 +41,7 @@ html {
 .prose h4 {
   color: #111827;
   font-weight: 700;
+  font-family: var(--font-work-sans);
 }
 
 .prose a {

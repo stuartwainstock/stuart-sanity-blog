@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Work_Sans } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
@@ -7,8 +7,9 @@ import { sanityClient } from "@/lib/sanity";
 import { siteSettingsQuery, navigationQuery } from "@/lib/queries";
 import { SiteSettings, Page } from "@/lib/types";
 
-const inter = Inter({
+const workSans = Work_Sans({
   subsets: ["latin"],
+  variable: "--font-work-sans",
   display: "swap",
 });
 
@@ -59,8 +60,8 @@ export default async function RootLayout({
   const { siteSettings, navigationPages } = await getLayoutData();
 
   return (
-    <html lang="en">
-      <body className={`${inter.className} antialiased min-h-screen flex flex-col`}>
+    <html lang="en" className={workSans.variable}>
+      <body className={`${workSans.className} antialiased min-h-screen flex flex-col`}>
         <Navigation siteSettings={siteSettings || undefined} navigationPages={navigationPages} />
         <main className="flex-grow">
           {children}
