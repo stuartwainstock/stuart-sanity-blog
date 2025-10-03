@@ -1,7 +1,7 @@
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
-import {schemaTypes} from './schemaTypes'
+import {author, blockContent, category, homepage, page, post, seo, siteSettings} from './schemaTypes'
 
 export default defineConfig({
   name: 'default',
@@ -54,6 +54,6 @@ export default defineConfig({
     visionTool(),
   ],
   schema: {
-    types: schemaTypes,
+    types: [author, blockContent, category, homepage, page, post, seo, siteSettings],
   },
 })
