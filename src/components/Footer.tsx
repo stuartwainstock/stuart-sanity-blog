@@ -93,7 +93,7 @@ export default function Footer({ siteSettings }: FooterProps) {
           <div>
             <h3 className="text-lg font-semibold mb-4">Contact</h3>
             <p className="text-gray-300">
-              Have questions or want to get in touch? We'd love to hear from you.
+              Have questions or want to get in touch? We&apos;d love to hear from you.
             </p>
             {siteSettings?.url && (
               <p className="text-gray-300 mt-2">
