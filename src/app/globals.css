@@ -3,6 +3,7 @@
 :root {
   --font-work-sans: 'Work Sans', sans-serif;
   --color-background: #e8e8e8;
+  --color-link: #0000ff;
 }
 
 body {
@@ -35,10 +36,32 @@ body {
 .bg-card {
   @apply bg-white;
 }
+
+/* Custom link classes */
+.link-custom {
+  @apply text-[#0000ff] hover:text-[#0000cc] transition-colors duration-200;
+}
+
+.link-custom:hover {
+  color: #0000cc; /* Slightly darker blue on hover */
+}
+
+/* Apply custom link color globally */
+a {
+  color: var(--color-link);
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: #0000cc; /* Darker blue on hover */
+}
+
 h1, h2, h3, h4, h5, h6 {
   color: #4F4F4F;
 }
-p{
+
+p {
   color: #000;
 }
 
@@ -78,13 +101,14 @@ html {
 }
 
 .prose a {
-  color: #2563eb;
+  color: #0000ff;
   text-decoration: underline;
   font-weight: 500;
+  transition: color 0.2s ease;
 }
 
 .prose a:hover {
-  color: #1d4ed8;
+  color: #0000cc;
 }
 
 .prose code {
