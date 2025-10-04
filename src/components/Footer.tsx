@@ -10,28 +10,28 @@ export default function Footer({ siteSettings }: FooterProps) {
 
   return (
     <footer 
-      className="bg-custom" 
+      className="bg-white border-t border-gray-200" 
       role="contentinfo"
       aria-label="Site footer"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="max-w-6xl mx-auto px-6 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {/* Site Info */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">
+            <h3 className="text-lg font-medium mb-4 text-gray-900">
               {siteSettings?.title || 'Blog'}
             </h3>
-            <p className="text-gray-300 mb-4">
+            <p className="text-gray-600 mb-6 leading-relaxed">
               {siteSettings?.description || 'A modern blog built with Next.js and Sanity.'}
             </p>
             {siteSettings?.social && (
-              <div className="flex space-x-4" role="list" aria-label="Social media links">
+              <div className="flex space-x-6" role="list" aria-label="Social media links">
                 {siteSettings.social.twitter && (
                   <a
                     href={`https://twitter.com/${siteSettings.social.twitter}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-300 hover:text-white focus:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600 rounded-md p-1"
+                    className="text-gray-600 hover:text-gray-900 focus:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md p-1"
                     aria-label={`Follow us on Twitter: @${siteSettings.social.twitter}`}
                   >
                     <span className="sr-only">Twitter</span>
@@ -45,7 +45,7 @@ export default function Footer({ siteSettings }: FooterProps) {
                     href={`https://github.com/${siteSettings.social.github}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-300 hover:text-white focus:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600 rounded-md p-1"
+                    className="text-gray-600 hover:text-gray-900 focus:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md p-1"
                     aria-label={`View our GitHub profile: ${siteSettings.social.github}`}
                   >
                     <span className="sr-only">GitHub</span>
@@ -59,7 +59,7 @@ export default function Footer({ siteSettings }: FooterProps) {
                     href={`https://linkedin.com/in/${siteSettings.social.linkedin}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-300 hover:text-white focus:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600 rounded-md p-1"
+                    className="text-gray-600 hover:text-gray-900 focus:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md p-1"
                     aria-label={`Connect with us on LinkedIn: ${siteSettings.social.linkedin}`}
                   >
                     <span className="sr-only">LinkedIn</span>
@@ -74,13 +74,13 @@ export default function Footer({ siteSettings }: FooterProps) {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+            <h3 className="text-lg font-medium mb-4 text-gray-900">Quick Links</h3>
             <nav aria-label="Footer navigation">
-              <ul className="space-y-2" role="list">
+              <ul className="space-y-3" role="list">
                 <li>
                   <Link 
                     href="/" 
-                    className="text-gray-300 hover:text-white focus:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600 rounded-md px-1 py-0.5"
+                    className="text-gray-600 hover:text-gray-900 focus:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md px-1 py-0.5"
                   >
                     Home
                   </Link>
@@ -88,7 +88,7 @@ export default function Footer({ siteSettings }: FooterProps) {
                 <li>
                   <Link 
                     href="/blog" 
-                    className="text-gray-300 hover:text-white focus:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600 rounded-md px-1 py-0.5"
+                    className="text-gray-600 hover:text-gray-900 focus:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md px-1 py-0.5"
                   >
                     Blog
                   </Link>
@@ -97,7 +97,7 @@ export default function Footer({ siteSettings }: FooterProps) {
                   <li key={index}>
                     <Link 
                       href={link.url} 
-                      className="text-gray-300 hover:text-white focus:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600 rounded-md px-1 py-0.5"
+                      className="text-gray-600 hover:text-gray-900 focus:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md px-1 py-0.5"
                     >
                       {link.title}
                     </Link>
@@ -110,8 +110,8 @@ export default function Footer({ siteSettings }: FooterProps) {
           
         </div>
 
-        <div className="mt-8 pt-8 border-t border-gray-700">
-          <p className="text-center text-gray-300">
+        <div className="mt-12 pt-8 border-t border-gray-200">
+          <p className="text-center text-gray-500 text-sm">
             {siteSettings?.footer?.copyright || `© ${currentYear} ${siteSettings?.title || 'Blog'}. All rights reserved.`}
           </p>
         </div>
