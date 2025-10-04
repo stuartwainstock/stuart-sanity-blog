@@ -155,10 +155,10 @@ export default defineType({
           fields: [
             defineField({
               name: 'bookSearch',
-              title: '🔍 Search Books',
-              type: 'url',
-              description: 'Click to search for books on Open Library, then copy the details to the fields below',
-              initialValue: 'https://openlibrary.org/search',
+              title: '💡 Book Search Helper',
+              type: 'string',
+              description: 'Search for books at openlibrary.org, then copy the details to the fields below. This field is just for your reference.',
+              placeholder: 'Search for books at openlibrary.org to get accurate details',
             }),
             defineField({
               name: 'title',
