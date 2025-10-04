@@ -1,6 +1,7 @@
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
+import {unsplashImageAsset} from 'sanity-plugin-asset-source-unsplash'
 import {author, blockContent, category, homepage, page, post, seo, siteSettings} from './schemaTypes'
 
 export default defineConfig({
@@ -52,6 +53,7 @@ export default defineConfig({
           ]),
     }),
     visionTool(),
+    unsplashImageAsset(),
   ],
   schema: {
     types: [author, blockContent, category, homepage, page, post, seo, siteSettings],
