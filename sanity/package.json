@@ -19,8 +19,7 @@
     "react": "^19.1",
     "react-dom": "^19.1",
     "sanity": "^4.10.2",
-    "styled-components": "^6.1.18",
-    "@heroicons/react": "^2.0.18"
+    "styled-components": "^6.1.18"
   },
   "devDependencies": {
     "@sanity/eslint-config-studio": "^5.0.2",
