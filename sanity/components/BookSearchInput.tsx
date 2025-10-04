@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { StringInputProps, useFormValue } from 'sanity'
+import { StringInputProps, useFormValue, set } from 'sanity'
 
 interface OpenLibraryBook {
   key: string
@@ -64,12 +64,13 @@ export default function BookSearchInput(props: StringInputProps) {
     // Simple approach: Just update the search field to show what was selected
     // The user can then copy the information to other fields manually
     const bookInfo = `${book.title} by ${book.author_name?.join(', ') || 'Unknown Author'}`
-    props.onChange?.(bookInfo)
+    props.onChange?.(set(bookInfo))
   }
 
   const clearSelection = () => {
     setSelectedBook(null)
     setSearchQuery('')
+    props.onChange?.(set(''))
   }
 
   const getCoverUrl = (coverId: number) => {
