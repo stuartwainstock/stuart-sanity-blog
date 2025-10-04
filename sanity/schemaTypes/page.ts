@@ -83,6 +83,9 @@ export default defineType({
               name: 'date',
               title: 'Date',
               type: 'date',
+              options: {
+                dateFormat: 'YYYY-MM',
+              },
               validation: (Rule) => Rule.required(),
             }),
             defineField({
