@@ -82,7 +82,7 @@ export default async function PageComponent({ params }: PageProps) {
       
       {/* Hero Section */}
       <header 
-        className="py-32 px-8" 
+        className="pt-32 pb-2 px-8" 
         role="banner"
         aria-labelledby="page-title"
       >
