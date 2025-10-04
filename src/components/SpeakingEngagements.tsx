@@ -44,7 +44,7 @@ export default function SpeakingEngagements({ engagements }: SpeakingEngagements
     >
       <h2 
         id="engagements-heading"
-        className="text-4xl font-semibold mb-12 text-gray-900 leading-tight"
+        className="text-2xl font-semibold mb-8 text-gray-900 leading-tight"
       >
         Speaking & Writing
       </h2>
