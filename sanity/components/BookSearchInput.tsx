@@ -58,24 +58,26 @@ export default function BookSearchInput(props: StringInputProps) {
     setShowResults(false)
     setSearchQuery('')
     
-    // Update the form values
-    const updatedBooks = [...(formValue || [])]
-    if (currentIndex !== undefined && updatedBooks[currentIndex]) {
-      updatedBooks[currentIndex] = {
-        ...updatedBooks[currentIndex],
-        title: book.title,
-        author: book.author_name?.join(', ') || 'Unknown Author',
-        description: book.subject?.slice(0, 3).join(', ') || '',
-        url: `https://openlibrary.org${book.key}`,
-        isbn: book.isbn?.[0] || '',
-        publishedYear: book.first_publish_year?.toString() || '',
-        publisher: book.publisher?.[0] || '',
-        coverId: book.cover_i?.toString() || ''
-      }
-      
-      // Trigger form update
-      props.onChange?.(updatedBooks)
+    // Update the form values using the correct path
+    const currentBook = formValue?.[currentIndex] || {}
+    const updatedBook = {
+      ...currentBook,
+      title: book.title,
+      author: book.author_name?.join(', ') || 'Unknown Author',
+      description: book.subject?.slice(0, 3).join(', ') || '',
+      url: `https://openlibrary.org${book.key}`,
+      isbn: book.isbn?.[0] || '',
+      publishedYear: book.first_publish_year?.toString() || '',
+      publisher: book.publisher?.[0] || '',
+      coverId: book.cover_i?.toString() || ''
     }
+    
+    // Update the specific book in the array
+    const updatedBooks = [...(formValue || [])]
+    updatedBooks[currentIndex] = updatedBook
+    
+    // Trigger form update
+    props.onChange?.(updatedBooks)
   }
 
   const clearSelection = () => {
@@ -88,10 +90,10 @@ export default function BookSearchInput(props: StringInputProps) {
   }
 
   return (
-    <div style={{ padding: '16px', border: '1px solid #e1e5e9', borderRadius: '6px', backgroundColor: '#fafbfc' }}>
+    <div style={{ padding: '16px', border: '1px solid #d1d5db', borderRadius: '6px', backgroundColor: '#f9fafb' }}>
       {/* Search Input */}
       <div style={{ position: 'relative', marginBottom: '16px' }}>
-        <div style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
+        <div style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#6b7280' }}>
           <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
@@ -108,7 +110,17 @@ export default function BookSearchInput(props: StringInputProps) {
             borderRadius: '4px',
             fontSize: '14px',
             outline: 'none',
-            backgroundColor: 'white'
+            backgroundColor: 'white',
+            color: '#111827',
+            transition: 'border-color 0.2s ease'
+          }}
+          onFocus={(e) => {
+            e.target.style.borderColor = '#3b82f6'
+            e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)'
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = '#d1d5db'
+            e.target.style.boxShadow = 'none'
           }}
         />
         {isSearching && (
