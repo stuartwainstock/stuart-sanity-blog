@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { StringInputProps, useFormValue, useFormValuePath } from 'sanity'
+import { StringInputProps, useFormValue } from 'sanity'
 
 interface OpenLibraryBook {
   key: string
@@ -24,14 +24,11 @@ export default function BookSearchInput(props: StringInputProps) {
   const [selectedBook, setSelectedBook] = useState<OpenLibraryBook | null>(null)
   const [showResults, setShowResults] = useState(false)
 
-  // Get the current path and form value
-  const currentPath = useFormValuePath()
+  // Get the current form value
   const formValue = useFormValue(['readingList']) as any[]
   
-  // Extract the book index from the current path
-  const pathSegments = currentPath || []
-  const bookIndex = pathSegments.findIndex(segment => segment === 'readingList') + 1
-  const currentIndex = bookIndex >= 0 ? bookIndex : 0
+  // Simple approach - we don't need to know the exact index
+  // The component will work regardless of the book's position in the array
 
   useEffect(() => {
     if (searchQuery.length > 2) {
@@ -68,9 +65,6 @@ export default function BookSearchInput(props: StringInputProps) {
     // The user can then copy the information to other fields manually
     const bookInfo = `${book.title} by ${book.author_name?.join(', ') || 'Unknown Author'}`
     props.onChange?.(bookInfo)
-    
-    // Show the book details in the selected book display
-    // This gives the user all the information they need to copy to other fields
   }
 
   const clearSelection = () => {
