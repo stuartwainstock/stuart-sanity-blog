@@ -64,6 +64,83 @@ export default defineType({
       hidden: ({document}) => !document?.showInNavigation,
     }),
     defineField({
+      name: 'speakingEngagements',
+      title: 'Speaking Engagements',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          name: 'engagement',
+          title: 'Engagement',
+          fields: [
+            defineField({
+              name: 'title',
+              title: 'Event Title',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'date',
+              title: 'Date',
+              type: 'date',
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'type',
+              title: 'Type',
+              type: 'string',
+              options: {
+                list: [
+                  { title: 'Speaking', value: 'speaking' },
+                  { title: 'Writing', value: 'writing' },
+                  { title: 'Interview', value: 'interview' },
+                  { title: 'Podcast', value: 'podcast' },
+                  { title: 'Workshop', value: 'workshop' },
+                  { title: 'Conference', value: 'conference' },
+                  { title: 'Blog', value: 'blog' },
+                  { title: 'Article', value: 'article' },
+                ],
+                layout: 'dropdown',
+              },
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'url',
+              title: 'URL',
+              type: 'url',
+              description: 'Link to the event, article, or external resource',
+            }),
+            defineField({
+              name: 'description',
+              title: 'Description',
+              type: 'text',
+              rows: 2,
+              description: 'Optional additional details about the engagement',
+            }),
+          ],
+          preview: {
+            select: {
+              title: 'title',
+              type: 'type',
+              date: 'date',
+            },
+            prepare(selection) {
+              const { title, type, date } = selection
+              const formattedDate = date ? new Date(date).toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long' 
+              }) : 'No date'
+              return {
+                title: title || 'Untitled',
+                subtitle: `${type} • ${formattedDate}`,
+              }
+            },
+          },
+        },
+      ],
+      description: 'Add speaking engagements, publications, interviews, and other professional activities',
+    }),
+    defineField({
       name: 'seo',
       title: 'SEO',
       type: 'seo',

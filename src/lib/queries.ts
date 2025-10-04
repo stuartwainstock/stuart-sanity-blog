@@ -151,6 +151,14 @@ export const pageQuery = groq`
     body,
     showInNavigation,
     navigationOrder,
+    speakingEngagements[] {
+      _key,
+      title,
+      date,
+      type,
+      url,
+      description
+    },
     seo
   }
 `

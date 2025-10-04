@@ -57,6 +57,15 @@ export interface Post {
   seo?: SEO
 }
 
+export interface SpeakingEngagement {
+  _key: string
+  title: string
+  date: string
+  type: 'speaking' | 'writing' | 'interview' | 'podcast' | 'workshop' | 'conference' | 'blog' | 'article'
+  url?: string
+  description?: string
+}
+
 export interface Page {
   _id: string
   title: string
@@ -68,6 +77,7 @@ export interface Page {
   body?: any[]
   showInNavigation?: boolean
   navigationOrder?: number
+  speakingEngagements?: SpeakingEngagement[]
   seo?: SEO
 }
 

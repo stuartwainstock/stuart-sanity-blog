@@ -5,6 +5,7 @@ import { pageQuery, pagesQuery } from '@/lib/queries'
 import { Page } from '@/lib/types'
 import { getImageUrl } from '@/lib/sanity'
 import PortableText from '@/components/PortableText'
+import SpeakingEngagements from '@/components/SpeakingEngagements'
 
 interface PageProps {
   params: { slug: string }
@@ -125,6 +126,11 @@ export default async function PageComponent({ params }: PageProps) {
           <div className="text-[30px] font-light tracking-[2px] leading-[1.6] text-gray-600">
             <PortableText value={page.body} />
           </div>
+        )}
+        
+        {/* Speaking Engagements */}
+        {page.speakingEngagements && page.speakingEngagements.length > 0 && (
+          <SpeakingEngagements engagements={page.speakingEngagements} />
         )}
       </main>
     </div>
