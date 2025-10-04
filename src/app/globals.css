@@ -135,6 +135,23 @@ html {
   outline-offset: 2px;
 }
 
+/* Text selection styles - inverse colors */
+::selection {
+  background-color: #1f2937; /* Dark gray background */
+  color: #f9fafb; /* Light text */
+}
+
+::-moz-selection {
+  background-color: #1f2937; /* Dark gray background */
+  color: #f9fafb; /* Light text */
+}
+
+/* Alternative selection style for better contrast */
+::-webkit-selection {
+  background-color: #1f2937; /* Dark gray background */
+  color: #f9fafb; /* Light text */
+}
+
 /* Custom prose styles for better typography */
 .prose {
   color: #374151;
