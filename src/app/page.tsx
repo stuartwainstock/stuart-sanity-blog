@@ -49,7 +49,7 @@ export default async function Home() {
               {hero.title}
             </h1>
             {hero.subtitle && (
-              <p className="text-xl md:text-2xl mb-12 text-gray-600 max-w-3xl leading-relaxed">
+              <p className="text-[30px] font-light tracking-[2px] leading-[1.6] mb-12 text-gray-600 max-w-3xl">
                 {hero.subtitle}
               </p>
             )}
