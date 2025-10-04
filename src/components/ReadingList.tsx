@@ -48,23 +48,23 @@ export default function ReadingList({ books }: ReadingListProps) {
     >
       <h2 
         id="reading-list-heading"
-        className="text-2xl font-semibold mb-8 text-gray-900 leading-tight"
+        className="text-3xl font-bold mb-12 text-gray-900 leading-tight"
       >
         Reading List
       </h2>
       
-      <div className="space-y-16">
+      <div className="space-y-12">
         {sortedCategories.map((category) => (
-          <div key={category} className="space-y-6">
+          <div key={category} className="space-y-4">
             <h3 
-              className="text-2xl font-bold text-gray-900 border-b-2 border-gray-300 pb-3"
+              className="text-xl font-semibold text-gray-800 border-b border-gray-200 pb-2"
               id={`category-${category}`}
             >
               {getCategoryLabel(category)}
             </h3>
             
             <div 
-              className="space-y-6"
+              className="space-y-4"
               role="list"
               aria-labelledby={`category-${category}`}
               aria-label={`Books in ${getCategoryLabel(category)} category`}
@@ -72,14 +72,14 @@ export default function ReadingList({ books }: ReadingListProps) {
               {groupedBooks[category].map((book, index) => {
                 const bookContent = (
                   <div 
-                    className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-6 py-4 border-b border-gray-100 last:border-b-0 hover:bg-gray-50/50 transition-colors rounded-lg px-3 -mx-3"
+                    className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-6 py-3 border-b border-gray-100 last:border-b-0 hover:bg-gray-50/30 transition-colors rounded-md px-2 -mx-2"
                     role="listitem"
                   >
                     <div className="flex-1">
-                      <h4 className="text-2xl font-semibold text-gray-900 mb-2 leading-tight">
+                      <h4 className="text-lg font-medium text-gray-900 mb-1 leading-tight">
                         {book.title}
                       </h4>
-                      <p className="text-lg text-gray-600 mb-3 font-medium">
+                      <p className="text-base text-gray-600 mb-2">
                         by {book.author}
                       </p>
                       <div className="flex flex-wrap gap-3 text-sm text-gray-500 mb-3">
