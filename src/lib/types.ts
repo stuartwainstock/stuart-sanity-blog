@@ -73,6 +73,12 @@ export interface Book {
   category: 'leadership' | 'visual-design' | 'design-systems' | 'user-experience' | 'product-management' | 'business' | 'technology' | 'psychology' | 'philosophy' | 'fiction' | 'biography' | 'other'
   url?: string
   description?: string
+  googleBooksId?: string
+  publishedDate?: string
+  publisher?: string
+  pageCount?: number
+  thumbnail?: string
+  isbn?: string
 }
 
 export interface Page {
