@@ -95,7 +95,7 @@ export default async function PageComponent({ params }: PageProps) {
               {page.title}
             </h1>
             {page.excerpt && (
-              <p className="text-[30px] font-light tracking-[2px] leading-[1.6] mb-16 text-gray-600 max-w-4xl">
+              <p className="text-[30px] font-light tracking-[2px] leading-[1.6] mb-8 text-gray-600 max-w-4xl">
                 {page.excerpt}
               </p>
             )}
