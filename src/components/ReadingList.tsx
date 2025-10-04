@@ -53,18 +53,18 @@ export default function ReadingList({ books }: ReadingListProps) {
         Reading List
       </h2>
       
-      <div className="space-y-12">
+      <div className="space-y-16">
         {sortedCategories.map((category) => (
-          <div key={category} className="space-y-4">
+          <div key={category} className="space-y-6">
             <h3 
-              className="text-lg font-medium text-gray-700 border-b border-gray-200 pb-2"
+              className="text-2xl font-bold text-gray-900 border-b-2 border-gray-300 pb-3"
               id={`category-${category}`}
             >
               {getCategoryLabel(category)}
             </h3>
             
             <div 
-              className="space-y-4"
+              className="space-y-6"
               role="list"
               aria-labelledby={`category-${category}`}
               aria-label={`Books in ${getCategoryLabel(category)} category`}
@@ -72,29 +72,29 @@ export default function ReadingList({ books }: ReadingListProps) {
               {groupedBooks[category].map((book, index) => {
                 const bookContent = (
                   <div 
-                    className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 py-3 border-b border-gray-200 last:border-b-0"
+                    className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-6 py-4 border-b border-gray-100 last:border-b-0 hover:bg-gray-50/50 transition-colors rounded-lg px-3 -mx-3"
                     role="listitem"
                   >
                     <div className="flex-1">
-                      <h4 className="text-xl font-medium text-gray-900 mb-1">
+                      <h4 className="text-2xl font-semibold text-gray-900 mb-2 leading-tight">
                         {book.title}
                       </h4>
-                      <p className="text-lg text-gray-600 mb-2">
+                      <p className="text-lg text-gray-600 mb-3 font-medium">
                         by {book.author}
                       </p>
-                      <div className="flex flex-wrap gap-2 text-xs text-gray-500 mb-2">
+                      <div className="flex flex-wrap gap-3 text-sm text-gray-500 mb-3">
                         {book.publishedYear && (
-                          <span>{book.publishedYear}</span>
+                          <span className="bg-gray-100 px-2 py-1 rounded-md">{book.publishedYear}</span>
                         )}
                         {book.publisher && (
-                          <span>• {book.publisher}</span>
+                          <span className="bg-gray-100 px-2 py-1 rounded-md">{book.publisher}</span>
                         )}
                         {book.isbn && (
-                          <span>• ISBN: {book.isbn}</span>
+                          <span className="bg-gray-100 px-2 py-1 rounded-md">ISBN: {book.isbn}</span>
                         )}
                       </div>
                       {book.description && (
-                        <p className="text-sm text-gray-500 leading-relaxed">
+                        <p className="text-base text-gray-600 leading-relaxed">
                           {book.description}
                         </p>
                       )}
@@ -106,7 +106,7 @@ export default function ReadingList({ books }: ReadingListProps) {
                   <Link
                     key={book._key || index}
                     href={book.url}
-                    className="block hover:bg-gray-50 focus:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md transition-colors"
+                    className="block focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-lg transition-all duration-200"
                     aria-label={`${book.title} by ${book.author} - ${getCategoryLabel(book.category)}`}
                   >
                     {bookContent}
