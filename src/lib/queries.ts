@@ -12,7 +12,9 @@ export const postsQuery = groq`
         _id,
         url
       },
-      alt
+      alt,
+      caption,
+      credit
     },
     publishedAt,
     featured,
@@ -25,7 +27,8 @@ export const postsQuery = groq`
           _id,
           url
         },
-        alt
+        alt,
+        credit
       }
     },
     categories[]->{
@@ -49,7 +52,9 @@ export const postQuery = groq`
         _id,
         url
       },
-      alt
+      alt,
+      caption,
+      credit
     },
     publishedAt,
     featured,
@@ -64,7 +69,8 @@ export const postQuery = groq`
           _id,
           url
         },
-        alt
+        alt,
+        credit
       },
       social
     },
@@ -91,7 +97,9 @@ export const featuredPostsQuery = groq`
         _id,
         url
       },
-      alt
+      alt,
+      caption,
+      credit
     },
     publishedAt,
     author->{
@@ -103,7 +111,8 @@ export const featuredPostsQuery = groq`
           _id,
           url
         },
-        alt
+        alt,
+        credit
       }
     },
     categories[]->{
@@ -127,7 +136,9 @@ export const pagesQuery = groq`
         _id,
         url
       },
-      alt
+      alt,
+      caption,
+      credit
     },
     showInNavigation,
     navigationOrder
@@ -146,7 +157,9 @@ export const pageQuery = groq`
         _id,
         url
       },
-      alt
+      alt,
+      caption,
+      credit
     },
     body,
     showInNavigation,
@@ -194,7 +207,8 @@ export const siteSettingsQuery = groq`
         _id,
         url
       },
-      alt
+      alt,
+      credit
     },
     favicon {
       asset->{
@@ -232,7 +246,9 @@ export const postsByCategoryQuery = groq`
         _id,
         url
       },
-      alt
+      alt,
+      caption,
+      credit
     },
     publishedAt,
     author->{
@@ -244,7 +260,8 @@ export const postsByCategoryQuery = groq`
           _id,
           url
         },
-        alt
+        alt,
+        credit
       }
     },
     categories[]->{
@@ -286,7 +303,9 @@ export const postsByAuthorQuery = groq`
         _id,
         url
       },
-      alt
+      alt,
+      caption,
+      credit
     },
     publishedAt,
     categories[]->{
@@ -334,7 +353,14 @@ export const homepageQuery = groq`
     seo {
       metaTitle,
       metaDescription,
-      openGraphImage,
+      openGraphImage {
+        asset->{
+          _id,
+          url
+        },
+        alt,
+        credit
+      },
       keywords,
       noIndex
     }

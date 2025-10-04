@@ -33,7 +33,9 @@ export const getImageUrl = (source: SanityImage, width?: number, height?: number
       imageBuilder = imageBuilder.height(height)
     }
     
-    return imageBuilder.url()
+    const url = imageBuilder.url()
+    console.log('Generated image URL:', url)
+    return url
   } catch (error) {
     console.error('Error generating image URL:', error)
     return '/placeholder-image.jpg' // Fallback image

@@ -115,6 +115,20 @@ export default async function PageComponent({ params }: PageProps) {
             className="object-cover"
             priority
           />
+          {page.mainImage.credit && (
+            <div className="absolute bottom-4 right-4 bg-black bg-opacity-50 text-white text-sm px-3 py-1 rounded">
+              Photo by {page.mainImage.credit}
+            </div>
+          )}
+        </div>
+      )}
+      
+      {/* Image Caption */}
+      {page.mainImage?.caption && (
+        <div className="max-w-5xl mx-auto px-8 py-4">
+          <p className="text-sm text-gray-600 text-center italic">
+            {page.mainImage.caption}
+          </p>
         </div>
       )}
 
