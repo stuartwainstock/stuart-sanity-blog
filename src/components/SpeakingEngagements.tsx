@@ -61,16 +61,16 @@ export default function SpeakingEngagements({ engagements }: SpeakingEngagements
               role="listitem"
             >
               <div className="flex-1">
-                <h3 className="text-[30px] font-light tracking-[2px] leading-[1.6] text-gray-600 mb-1">
+                <h3 className="text-xl font-medium text-gray-900 mb-2">
                   {engagement.title}
                 </h3>
                 {engagement.description && (
-                  <p className="text-lg text-gray-500 mb-2">
+                  <p className="text-lg text-gray-600 mb-3 leading-relaxed">
                     {engagement.description}
                   </p>
                 )}
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-500">
-                  <span className="inline-flex items-center">
+                  <span className="inline-flex items-center font-medium">
                     <span className="sr-only">Type: </span>
                     {getTypeLabel(engagement.type)}
                   </span>
