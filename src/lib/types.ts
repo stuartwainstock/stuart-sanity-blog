@@ -109,19 +109,5 @@ export interface Homepage {
       url: string
     }
   }
-  featuredSection: {
-    title: string
-    subtitle?: string
-  }
-  recentSection: {
-    title: string
-    subtitle?: string
-  }
-  ctaSection: {
-    title: string
-    subtitle?: string
-    buttonText: string
-    buttonUrl: string
-  }
   seo?: SEO
 }

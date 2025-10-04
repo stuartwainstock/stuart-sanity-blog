@@ -311,20 +311,6 @@ export const homepageQuery = groq`
         url
       }
     },
-    featuredSection {
-      title,
-      subtitle
-    },
-    recentSection {
-      title,
-      subtitle
-    },
-    ctaSection {
-      title,
-      subtitle,
-      buttonText,
-      buttonUrl
-    },
     seo {
       metaTitle,
       metaDescription,
