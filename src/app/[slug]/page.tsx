@@ -122,7 +122,7 @@ export default async function PageComponent({ params }: PageProps) {
         className="max-w-5xl mx-auto px-8 py-16"
       >
         {page.body && (
-          <div className="prose prose-lg max-w-none">
+          <div className="text-[30px] font-light tracking-[2px] leading-[1.6] text-gray-600">
             <PortableText value={page.body} />
           </div>
         )}
