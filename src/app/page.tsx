@@ -25,7 +25,7 @@ export default async function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#e8e8e8]">
       {/* Skip to main content link for keyboard users */}
       <a 
         href="#main-content" 

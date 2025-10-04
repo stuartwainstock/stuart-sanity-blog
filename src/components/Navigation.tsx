@@ -24,7 +24,7 @@ export default function Navigation({ siteSettings, navigationPages = [] }: Navig
 
   return (
     <nav 
-      className="bg-white border-b border-gray-200" 
+      className="bg-[#e8e8e8] border-b border-gray-200" 
       role="navigation"
       aria-label="Main navigation"
     >
@@ -119,7 +119,7 @@ export default function Navigation({ siteSettings, navigationPages = [] }: Navig
             role="menu"
             aria-label="Mobile navigation menu"
           >
-            <div className="px-6 pt-4 pb-6 space-y-2 bg-white border-t border-gray-200">
+            <div className="px-6 pt-4 pb-6 space-y-2 bg-[#e8e8e8] border-t border-gray-200">
               <Link
                 href="/"
                 className="block text-gray-600 hover:text-gray-900 focus:text-gray-900 px-3 py-2 text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md"

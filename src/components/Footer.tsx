@@ -10,7 +10,7 @@ export default function Footer({ siteSettings }: FooterProps) {
 
   return (
     <footer 
-      className="bg-white border-t border-gray-200" 
+      className="bg-[#e8e8e8] border-t border-gray-200" 
       role="contentinfo"
       aria-label="Site footer"
     >

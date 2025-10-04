@@ -61,7 +61,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className={workSans.variable}>
-      <body className={`${workSans.className} antialiased min-h-screen flex flex-col`}>
+      <body className={`${workSans.className} antialiased min-h-screen flex flex-col bg-[#e8e8e8]`}>
         <Navigation siteSettings={siteSettings || undefined} navigationPages={navigationPages} />
         <main className="flex-grow" id="main-content">
           {children}
