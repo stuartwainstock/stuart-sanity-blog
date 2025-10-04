@@ -44,7 +44,7 @@ export default async function Home() {
           <div className="text-left">
             <h1 
               id="hero-title"
-              className="text-5xl md:text-7xl font-light mb-8 text-gray-900 leading-tight"
+              className="text-4xl font-semibold mb-8 text-gray-900 leading-tight"
             >
               {hero.title}
             </h1>
