@@ -36,20 +36,20 @@ export default async function Home() {
       
       {/* Hero Section */}
       <section 
-        className="py-24 px-6" 
+        className="py-32 px-8" 
         role="banner"
         aria-labelledby="hero-title"
       >
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           <div className="text-left">
             <h1 
               id="hero-title"
-              className="text-4xl font-semibold mb-8 text-gray-900 leading-tight"
+              className="text-4xl font-semibold mb-12 text-gray-900 leading-tight"
             >
               {hero.title}
             </h1>
             {hero.subtitle && (
-              <p className="text-[30px] font-light tracking-[2px] leading-[1.6] mb-12 text-gray-600 max-w-3xl">
+              <p className="text-[30px] font-light tracking-[2px] leading-[1.6] mb-16 text-gray-600 max-w-4xl">
                 {hero.subtitle}
               </p>
             )}
