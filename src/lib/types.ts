@@ -66,6 +66,15 @@ export interface SpeakingEngagement {
   description?: string
 }
 
+export interface Book {
+  _key: string
+  title: string
+  author: string
+  category: 'leadership' | 'visual-design' | 'design-systems' | 'user-experience' | 'product-management' | 'business' | 'technology' | 'psychology' | 'philosophy' | 'fiction' | 'biography' | 'other'
+  url?: string
+  description?: string
+}
+
 export interface Page {
   _id: string
   title: string
@@ -78,6 +87,7 @@ export interface Page {
   showInNavigation?: boolean
   navigationOrder?: number
   speakingEngagements?: SpeakingEngagement[]
+  readingList?: Book[]
   seo?: SEO
 }
 

@@ -1,0 +1,115 @@
+import Link from 'next/link'
+import { Book } from '@/lib/types'
+
+interface ReadingListProps {
+  books: Book[]
+}
+
+export default function ReadingList({ books }: ReadingListProps) {
+  if (!books || books.length === 0) {
+    return null
+  }
+
+  const getCategoryLabel = (category: string) => {
+    const categoryLabels: Record<string, string> = {
+      'leadership': 'Leadership',
+      'visual-design': 'Visual Design',
+      'design-systems': 'Design Systems',
+      'user-experience': 'User Experience',
+      'product-management': 'Product Management',
+      'business': 'Business',
+      'technology': 'Technology',
+      'psychology': 'Psychology',
+      'philosophy': 'Philosophy',
+      'fiction': 'Fiction',
+      'biography': 'Biography',
+      'other': 'Other',
+    }
+    return categoryLabels[category] || category
+  }
+
+  // Group books by category
+  const groupedBooks = books.reduce((acc, book) => {
+    const category = book.category
+    if (!acc[category]) {
+      acc[category] = []
+    }
+    acc[category].push(book)
+    return acc
+  }, {} as Record<string, Book[]>)
+
+  // Sort categories alphabetically
+  const sortedCategories = Object.keys(groupedBooks).sort()
+
+  return (
+    <section 
+      className="mt-16"
+      aria-labelledby="reading-list-heading"
+    >
+      <h2 
+        id="reading-list-heading"
+        className="text-2xl font-semibold mb-8 text-gray-900 leading-tight"
+      >
+        Reading List
+      </h2>
+      
+      <div className="space-y-12">
+        {sortedCategories.map((category) => (
+          <div key={category} className="space-y-4">
+            <h3 
+              className="text-lg font-medium text-gray-700 border-b border-gray-200 pb-2"
+              id={`category-${category}`}
+            >
+              {getCategoryLabel(category)}
+            </h3>
+            
+            <div 
+              className="space-y-4"
+              role="list"
+              aria-labelledby={`category-${category}`}
+              aria-label={`Books in ${getCategoryLabel(category)} category`}
+            >
+              {groupedBooks[category].map((book, index) => {
+                const bookContent = (
+                  <div 
+                    className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 py-3 border-b border-gray-200 last:border-b-0"
+                    role="listitem"
+                  >
+                    <div className="flex-1">
+                      <h4 className="text-xl font-medium text-gray-900 mb-1">
+                        {book.title}
+                      </h4>
+                      <p className="text-lg text-gray-600 mb-2">
+                        by {book.author}
+                      </p>
+                      {book.description && (
+                        <p className="text-sm text-gray-500 leading-relaxed">
+                          {book.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )
+
+                return book.url ? (
+                  <Link
+                    key={book._key || index}
+                    href={book.url}
+                    className="block hover:bg-gray-50 focus:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md transition-colors"
+                    aria-label={`${book.title} by ${book.author} - ${getCategoryLabel(book.category)}`}
+                  >
+                    {bookContent}
+                  </Link>
+                ) : (
+                  <div key={book._key || index}>
+                    {bookContent}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}

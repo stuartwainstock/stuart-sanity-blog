@@ -6,6 +6,7 @@ import { Page } from '@/lib/types'
 import { getImageUrl } from '@/lib/sanity'
 import PortableText from '@/components/PortableText'
 import SpeakingEngagements from '@/components/SpeakingEngagements'
+import ReadingList from '@/components/ReadingList'
 
 interface PageProps {
   params: { slug: string }
@@ -131,6 +132,11 @@ export default async function PageComponent({ params }: PageProps) {
         {/* Speaking Engagements */}
         {page.speakingEngagements && page.speakingEngagements.length > 0 && (
           <SpeakingEngagements engagements={page.speakingEngagements} />
+        )}
+        
+        {/* Reading List */}
+        {page.readingList && page.readingList.length > 0 && (
+          <ReadingList books={page.readingList} />
         )}
       </main>
     </div>

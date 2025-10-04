@@ -159,6 +159,14 @@ export const pageQuery = groq`
       url,
       description
     },
+    readingList[] {
+      _key,
+      title,
+      author,
+      category,
+      url,
+      description
+    },
     seo
   }
 `

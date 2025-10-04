@@ -144,6 +144,83 @@ export default defineType({
       description: 'Add speaking engagements, publications, interviews, and other professional activities',
     }),
     defineField({
+      name: 'readingList',
+      title: 'Reading List',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          name: 'book',
+          title: 'Book',
+          fields: [
+            defineField({
+              name: 'title',
+              title: 'Book Title',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'author',
+              title: 'Author',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'category',
+              title: 'Category',
+              type: 'string',
+              options: {
+                list: [
+                  { title: 'Leadership', value: 'leadership' },
+                  { title: 'Visual Design', value: 'visual-design' },
+                  { title: 'Design Systems', value: 'design-systems' },
+                  { title: 'User Experience', value: 'user-experience' },
+                  { title: 'Product Management', value: 'product-management' },
+                  { title: 'Business', value: 'business' },
+                  { title: 'Technology', value: 'technology' },
+                  { title: 'Psychology', value: 'psychology' },
+                  { title: 'Philosophy', value: 'philosophy' },
+                  { title: 'Fiction', value: 'fiction' },
+                  { title: 'Biography', value: 'biography' },
+                  { title: 'Other', value: 'other' },
+                ],
+                layout: 'dropdown',
+              },
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'url',
+              title: 'URL',
+              type: 'url',
+              description: 'Link to the book (Amazon, publisher, etc.)',
+            }),
+            defineField({
+              name: 'description',
+              title: 'Description',
+              type: 'text',
+              rows: 2,
+              description: 'Optional notes about the book',
+            }),
+          ],
+          preview: {
+            select: {
+              title: 'title',
+              author: 'author',
+              category: 'category',
+            },
+            prepare(selection) {
+              const { title, author, category } = selection
+              return {
+                title: title || 'Untitled',
+                subtitle: `${author} • ${category}`,
+              }
+            },
+          },
+        },
+      ],
+      description: 'Add books to your reading list, organized by category',
+    }),
+    defineField({
       name: 'seo',
       title: 'SEO',
       type: 'seo',
