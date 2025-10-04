@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { StringInputProps, useFormValue } from 'sanity'
+import { StringInputProps, useFormValue, useFormValuePath } from 'sanity'
 
 interface OpenLibraryBook {
   key: string
@@ -24,8 +24,14 @@ export default function BookSearchInput(props: StringInputProps) {
   const [selectedBook, setSelectedBook] = useState<OpenLibraryBook | null>(null)
   const [showResults, setShowResults] = useState(false)
 
+  // Get the current path and form value
+  const currentPath = useFormValuePath()
   const formValue = useFormValue(['readingList']) as any[]
-  const currentIndex = props.path?.[0] as number
+  
+  // Extract the book index from the current path
+  const pathSegments = currentPath || []
+  const bookIndex = pathSegments.findIndex(segment => segment === 'readingList') + 1
+  const currentIndex = bookIndex >= 0 ? bookIndex : 0
 
   useEffect(() => {
     if (searchQuery.length > 2) {
@@ -58,29 +64,13 @@ export default function BookSearchInput(props: StringInputProps) {
     setShowResults(false)
     setSearchQuery('')
     
-    // Get the current form value
-    const currentBooks = formValue || []
-    const currentBook = currentBooks[currentIndex] || {}
+    // Simple approach: Just update the search field to show what was selected
+    // The user can then copy the information to other fields manually
+    const bookInfo = `${book.title} by ${book.author_name?.join(', ') || 'Unknown Author'}`
+    props.onChange?.(bookInfo)
     
-    // Create updated book object
-    const updatedBook = {
-      ...currentBook,
-      title: book.title,
-      author: book.author_name?.join(', ') || 'Unknown Author',
-      description: book.subject?.slice(0, 3).join(', ') || '',
-      url: `https://openlibrary.org${book.key}`,
-      isbn: book.isbn?.[0] || '',
-      publishedYear: book.first_publish_year?.toString() || '',
-      publisher: book.publisher?.[0] || '',
-      coverId: book.cover_i?.toString() || ''
-    }
-    
-    // Create new array with updated book
-    const updatedBooks = [...currentBooks]
-    updatedBooks[currentIndex] = updatedBook
-    
-    // Update the form
-    props.onChange?.(updatedBooks)
+    // Show the book details in the selected book display
+    // This gives the user all the information they need to copy to other fields
   }
 
   const clearSelection = () => {
@@ -174,8 +164,8 @@ export default function BookSearchInput(props: StringInputProps) {
 
       {/* Selected Book Display */}
       {selectedBook && (
-        <div style={{ padding: '12px', backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '6px', marginBottom: '16px' }}>
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+        <div style={{ padding: '16px', backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '6px', marginBottom: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '12px' }}>
             <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#16a34a', marginTop: '2px' }}>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
@@ -192,6 +182,20 @@ export default function BookSearchInput(props: StringInputProps) {
               >
                 Clear selection
               </button>
+            </div>
+          </div>
+          
+          {/* Book Details for Copying */}
+          <div style={{ backgroundColor: 'white', padding: '12px', borderRadius: '4px', border: '1px solid #d1d5db' }}>
+            <h5 style={{ fontSize: '12px', fontWeight: '600', color: '#374151', margin: '0 0 8px 0' }}>Copy these details to the fields below:</h5>
+            <div style={{ fontSize: '11px', color: '#6b7280', lineHeight: '1.4' }}>
+              <div><strong>Title:</strong> {selectedBook.title}</div>
+              <div><strong>Author:</strong> {selectedBook.author_name?.join(', ')}</div>
+              {selectedBook.first_publish_year && <div><strong>Year:</strong> {selectedBook.first_publish_year}</div>}
+              {selectedBook.publisher?.[0] && <div><strong>Publisher:</strong> {selectedBook.publisher[0]}</div>}
+              {selectedBook.isbn?.[0] && <div><strong>ISBN:</strong> {selectedBook.isbn[0]}</div>}
+              {selectedBook.subject && <div><strong>Subjects:</strong> {selectedBook.subject.slice(0, 3).join(', ')}</div>}
+              <div><strong>URL:</strong> https://openlibrary.org{selectedBook.key}</div>
             </div>
           </div>
         </div>
