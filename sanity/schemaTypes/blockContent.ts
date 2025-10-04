@@ -47,11 +47,27 @@ export default defineType({
           name: 'alt',
           type: 'string',
           title: 'Alternative Text',
+          description: 'Describe the image for screen readers. This is required for accessibility.',
+          validation: (Rule) => 
+            Rule.required()
+              .min(10)
+              .max(125)
+              .warning('Alt text should be 10-125 characters for optimal accessibility'),
+          options: {
+            isHighlighted: true,
+          },
         },
         {
           name: 'caption',
           type: 'string',
           title: 'Caption',
+          description: 'Optional caption that will be displayed below the image',
+        },
+        {
+          name: 'credit',
+          type: 'string',
+          title: 'Photo Credit',
+          description: 'Credit the photographer (auto-populated for Unsplash images)',
         },
       ],
     }),

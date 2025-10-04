@@ -28,6 +28,11 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
               unoptimized
             />
           </Link>
+          {post.mainImage.credit && (
+            <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+              Photo by {post.mainImage.credit}
+            </div>
+          )}
         </div>
       )}
       

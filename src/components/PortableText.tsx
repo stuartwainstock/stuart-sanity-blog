@@ -24,6 +24,11 @@ const components: PortableTextComponents = {
             {value.caption}
           </p>
         )}
+        {value.credit && (
+          <p className="text-xs text-gray-500 text-center mt-1">
+            Photo by {value.credit}
+          </p>
+        )}
       </div>
     ),
     codeBlock: ({ value }: any) => (

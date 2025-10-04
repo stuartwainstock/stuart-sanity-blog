@@ -4,6 +4,8 @@ export interface SanityImage {
     url: string
   }
   alt?: string
+  caption?: string
+  credit?: string
 }
 
 export interface SEO {
