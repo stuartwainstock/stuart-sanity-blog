@@ -58,8 +58,11 @@ export default function BookSearchInput(props: StringInputProps) {
     setShowResults(false)
     setSearchQuery('')
     
-    // Update the form values using the correct path
-    const currentBook = formValue?.[currentIndex] || {}
+    // Get the current form value
+    const currentBooks = formValue || []
+    const currentBook = currentBooks[currentIndex] || {}
+    
+    // Create updated book object
     const updatedBook = {
       ...currentBook,
       title: book.title,
@@ -72,11 +75,11 @@ export default function BookSearchInput(props: StringInputProps) {
       coverId: book.cover_i?.toString() || ''
     }
     
-    // Update the specific book in the array
-    const updatedBooks = [...(formValue || [])]
+    // Create new array with updated book
+    const updatedBooks = [...currentBooks]
     updatedBooks[currentIndex] = updatedBook
     
-    // Trigger form update
+    // Update the form
     props.onChange?.(updatedBooks)
   }
 
