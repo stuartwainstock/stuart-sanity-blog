@@ -1,4 +1,5 @@
 import {defineField, defineType} from 'sanity'
+import BookSearchInput from '../components/BookSearchInput'
 
 export default defineType({
   name: 'page',
@@ -155,10 +156,12 @@ export default defineType({
           fields: [
             defineField({
               name: 'bookSearch',
-              title: '💡 Book Search Helper',
+              title: '🔍 Search Books',
               type: 'string',
-              description: 'Search for books at openlibrary.org, then copy the details to the fields below. This field is just for your reference.',
-              placeholder: 'Search for books at openlibrary.org to get accurate details',
+              description: 'Search for books to auto-populate details',
+              components: {
+                input: BookSearchInput,
+              },
             }),
             defineField({
               name: 'title',
