@@ -44,16 +44,12 @@ export default function ReadingList({ books }: ReadingListProps) {
   return (
     <section 
       className="mt-16"
-      aria-labelledby="reading-list-heading"
+      aria-labelledby="reading-list-content"
     >
-      <h2 
-        id="reading-list-heading"
-        className="text-3xl font-bold mb-12 text-gray-900 leading-tight"
+      <div 
+        id="reading-list-content"
+        className="space-y-12"
       >
-        Reading List
-      </h2>
-      
-      <div className="space-y-12">
         {sortedCategories.map((category) => (
           <div key={category} className="space-y-4">
             <h3 
