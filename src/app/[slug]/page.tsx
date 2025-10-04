@@ -71,18 +71,35 @@ export default async function PageComponent({ params }: PageProps) {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#e8e8e8]">
+      {/* Skip to main content link for keyboard users */}
+      <a 
+        href="#main-content" 
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-gray-900 text-white px-4 py-2 rounded-md z-50"
+      >
+        Skip to main content
+      </a>
+      
       {/* Hero Section */}
-      <header className="bg-gray-50 py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            {page.title}
-          </h1>
-          {page.excerpt && (
-            <p className="text-xl text-gray-600">
-              {page.excerpt}
-            </p>
-          )}
+      <header 
+        className="py-32 px-8" 
+        role="banner"
+        aria-labelledby="page-title"
+      >
+        <div className="max-w-5xl mx-auto">
+          <div className="text-left">
+            <h1 
+              id="page-title"
+              className="text-4xl font-semibold mb-12 text-gray-900 leading-tight"
+            >
+              {page.title}
+            </h1>
+            {page.excerpt && (
+              <p className="text-[30px] font-light tracking-[2px] leading-[1.6] mb-16 text-gray-600 max-w-4xl">
+                {page.excerpt}
+              </p>
+            )}
+          </div>
         </div>
       </header>
 
@@ -100,11 +117,16 @@ export default async function PageComponent({ params }: PageProps) {
       )}
 
       {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <main 
+        id="main-content"
+        className="max-w-5xl mx-auto px-8 py-16"
+      >
         {page.body && (
-          <PortableText value={page.body} />
+          <div className="prose prose-lg max-w-none">
+            <PortableText value={page.body} />
+          </div>
         )}
-      </div>
+      </main>
     </div>
   )
 }
