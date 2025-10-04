@@ -82,6 +82,17 @@ export default function ReadingList({ books }: ReadingListProps) {
                       <p className="text-lg text-gray-600 mb-2">
                         by {book.author}
                       </p>
+                      <div className="flex flex-wrap gap-2 text-xs text-gray-500 mb-2">
+                        {book.publishedYear && (
+                          <span>{book.publishedYear}</span>
+                        )}
+                        {book.publisher && (
+                          <span>• {book.publisher}</span>
+                        )}
+                        {book.isbn && (
+                          <span>• ISBN: {book.isbn}</span>
+                        )}
+                      </div>
                       {book.description && (
                         <p className="text-sm text-gray-500 leading-relaxed">
                           {book.description}

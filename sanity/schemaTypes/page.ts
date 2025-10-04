@@ -154,13 +154,10 @@ export default defineType({
           title: 'Book',
           fields: [
             defineField({
-              name: 'googleBooksSearch',
-              title: 'Search Google Books',
+              name: 'bookSearch',
+              title: 'Search Open Library',
               type: 'string',
               description: 'Search for books to auto-populate details',
-              components: {
-                input: () => import('../components/GoogleBooksInput').then(mod => mod.default),
-              },
             }),
             defineField({
               name: 'title',
@@ -211,15 +208,14 @@ export default defineType({
               description: 'Optional notes about the book',
             }),
             defineField({
-              name: 'googleBooksId',
-              title: 'Google Books ID',
+              name: 'isbn',
+              title: 'ISBN',
               type: 'string',
               hidden: true,
-              description: 'Internal Google Books identifier',
             }),
             defineField({
-              name: 'publishedDate',
-              title: 'Published Date',
+              name: 'publishedYear',
+              title: 'Published Year',
               type: 'string',
               hidden: true,
             }),
@@ -230,20 +226,8 @@ export default defineType({
               hidden: true,
             }),
             defineField({
-              name: 'pageCount',
-              title: 'Page Count',
-              type: 'number',
-              hidden: true,
-            }),
-            defineField({
-              name: 'thumbnail',
-              title: 'Book Cover Thumbnail',
-              type: 'url',
-              hidden: true,
-            }),
-            defineField({
-              name: 'isbn',
-              title: 'ISBN',
+              name: 'coverId',
+              title: 'Cover ID',
               type: 'string',
               hidden: true,
             }),

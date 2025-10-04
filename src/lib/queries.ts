@@ -166,12 +166,10 @@ export const pageQuery = groq`
       category,
       url,
       description,
-      googleBooksId,
-      publishedDate,
+      isbn,
+      publishedYear,
       publisher,
-      pageCount,
-      thumbnail,
-      isbn
+      coverId
     },
     seo
   }
