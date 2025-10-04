@@ -1,25 +1,20 @@
 import Link from 'next/link'
 import { sanityClient } from '@/lib/sanity'
-import { featuredPostsQuery, postsQuery, homepageQuery } from '@/lib/queries'
-import { Post, Homepage } from '@/lib/types'
-import PostCard from '@/components/PostCard'
+import { homepageQuery } from '@/lib/queries'
+import { Homepage } from '@/lib/types'
 
 async function getHomeData() {
   try {
-    const [homepage, featuredPosts, recentPosts] = await Promise.all([
-      sanityClient.fetch<Homepage>(homepageQuery),
-      sanityClient.fetch<Post[]>(featuredPostsQuery),
-      sanityClient.fetch<Post[]>(`${postsQuery}[0...6]`),
-    ])
-    return { homepage, featuredPosts, recentPosts }
+    const homepage = await sanityClient.fetch<Homepage>(homepageQuery)
+    return { homepage }
   } catch (error) {
     console.error('Error fetching home data:', error)
-    return { homepage: null, featuredPosts: [], recentPosts: [] }
+    return { homepage: null }
   }
 }
 
 export default async function Home() {
-  const { homepage, featuredPosts, recentPosts } = await getHomeData()
+  const { homepage } = await getHomeData()
 
   // Fallback content if no homepage content is found
   const hero = homepage?.hero || {
@@ -27,23 +22,6 @@ export default async function Home() {
     subtitle: 'Discover insights, tutorials, and stories from our community of writers and creators.',
     primaryButton: { text: 'Explore All Posts', url: '/blog' },
     secondaryButton: { text: 'Learn More', url: '/about' }
-  }
-
-  const featuredSection = homepage?.featuredSection || {
-    title: 'Featured Posts',
-    subtitle: 'Our most popular and recommended content'
-  }
-
-  const recentSection = homepage?.recentSection || {
-    title: 'Recent Posts',
-    subtitle: 'Stay up to date with our latest content'
-  }
-
-  const ctaSection = homepage?.ctaSection || {
-    title: 'Ready to Start Reading?',
-    subtitle: 'Join thousands of readers who stay informed with our regular updates and insights.',
-    buttonText: 'Browse All Posts',
-    buttonUrl: '/blog'
   }
 
   return (
