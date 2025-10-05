@@ -100,6 +100,7 @@ export interface Page {
 export interface SiteSettings {
   title: string
   description?: string
+  journalDescription?: string
   logo?: SanityImage
   favicon?: SanityImage
   url?: string

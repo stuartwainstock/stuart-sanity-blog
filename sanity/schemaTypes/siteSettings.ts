@@ -18,6 +18,14 @@ export default defineType({
       rows: 4,
     }),
     defineField({
+      name: 'journalDescription',
+      title: 'Journal Description',
+      type: 'text',
+      rows: 3,
+      description: 'Description text that appears on the journal page',
+      validation: (Rule) => Rule.max(200).warning('Keep it concise for better readability'),
+    }),
+    defineField({
       name: 'logo',
       title: 'Logo',
       type: 'image',

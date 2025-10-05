@@ -72,7 +72,7 @@ export default function Navigation({ siteSettings, navigationPages = [] }: Navig
               className="text-gray-600 hover:text-gray-900 focus:text-gray-900 px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md"
               role="menuitem"
             >
-              Blog
+              Journal
             </Link>
             {navigationPages.map((page) => (
               <Link
@@ -135,7 +135,7 @@ export default function Navigation({ siteSettings, navigationPages = [] }: Navig
                 onClick={closeMenu}
                 role="menuitem"
               >
-                Blog
+                Journal
               </Link>
               {navigationPages.map((page) => (
                 <Link

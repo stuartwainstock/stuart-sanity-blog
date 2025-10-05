@@ -1,19 +1,20 @@
 import { sanityClient } from '@/lib/sanity'
-import { postsQuery, categoriesQuery } from '@/lib/queries'
-import { Post, Category } from '@/lib/types'
+import { postsQuery, categoriesQuery, siteSettingsQuery } from '@/lib/queries'
+import { Post, Category, SiteSettings } from '@/lib/types'
 import PostCard from '@/components/PostCard'
 import Link from 'next/link'
 
-async function getBlogData() {
+async function getJournalData() {
   try {
-    const [posts, categories] = await Promise.all([
+    const [posts, categories, siteSettings] = await Promise.all([
       sanityClient.fetch<Post[]>(postsQuery),
       sanityClient.fetch<Category[]>(categoriesQuery),
+      sanityClient.fetch<SiteSettings>(siteSettingsQuery),
     ])
-    return { posts, categories }
+    return { posts, categories, siteSettings }
   } catch (error) {
-    console.error('Error fetching blog data:', error)
-    return { posts: [], categories: [] }
+    console.error('Error fetching journal data:', error)
+    return { posts: [], categories: [], siteSettings: null }
   }
 }
 
@@ -22,8 +23,8 @@ export const metadata = {
   description: 'Read our latest blog posts and articles',
 }
 
-export default async function BlogPage() {
-  const { posts, categories } = await getBlogData()
+export default async function JournalPage() {
+  const { posts, categories, siteSettings } = await getJournalData()
 
   return (
     <div className="min-h-screen py-12">
@@ -34,7 +35,7 @@ export default async function BlogPage() {
             Journal
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Explore our collection of articles, tutorials, and insights from our team and community.
+            {siteSettings?.journalDescription || 'Explore our collection of articles, tutorials, and insights from our team and community.'}
           </p>
         </div>
 
