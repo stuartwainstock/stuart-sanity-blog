@@ -19,7 +19,7 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
     <article className={`bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow ${featured ? 'md:flex' : ''}`}>
       {post.mainImage && (
         <div className={`relative ${featured ? 'md:w-1/2' : 'w-full h-48'}`}>
-          <Link href={`/blog/${post.slug.current}`}>
+          <Link href={`/journal/${post.slug.current}`}>
             <Image
               src={getImageUrl(post.mainImage, featured ? 600 : 400, featured ? 400 : 250)}
               alt={post.mainImage.alt || post.title}
@@ -60,7 +60,7 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
         )}
         
         <h2 className={`font-bold text-gray-900 mb-3 ${featured ? 'text-2xl' : 'text-xl'}`}>
-          <Link href={`/blog/${post.slug.current}`} className="hover:text-blue-600 transition-colors">
+          <Link href={`/journal/${post.slug.current}`} className="hover:text-blue-600 transition-colors">
             {post.title}
           </Link>
         </h2>
@@ -100,7 +100,7 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
         {featured && (
           <div className="mt-4">
             <Link
-              href={`/blog/${post.slug.current}`}
+              href={`/journal/${post.slug.current}`}
               className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
             >
               Read more

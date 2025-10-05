@@ -87,10 +87,10 @@ export default function Footer({ siteSettings }: FooterProps) {
                 </li>
                 <li>
                   <Link 
-                    href="/blog" 
+                    href="/journal" 
                     className="text-gray-600 hover:text-gray-900 focus:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md px-1 py-0.5"
                   >
-                    Blog
+                    Journal
                   </Link>
                 </li>
                 {siteSettings?.footer?.links?.map((link, index) => (

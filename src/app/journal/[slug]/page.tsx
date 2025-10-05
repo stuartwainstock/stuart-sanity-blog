@@ -230,16 +230,16 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </section>
       )}
 
-      {/* Back to Blog */}
+      {/* Back to Journal */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         <Link
-          href="/blog"
+          href="/journal"
           className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
         >
           <svg className="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
-          Back to Blog
+          Back to Journal
         </Link>
       </div>
     </article>

@@ -95,7 +95,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Other Categories</h2>
           <div className="flex flex-wrap gap-3">
             <Link
-              href="/blog"
+              href="/journal"
               className="px-4 py-2 bg-gray-100 text-gray-800 rounded-full hover:bg-gray-200 transition-colors"
             >
               All Posts
@@ -141,7 +141,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
               Check back soon for new content in the {currentCategory.title} category.
             </p>
             <Link
-              href="/blog"
+              href="/journal"
               className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
             >
               <svg className="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

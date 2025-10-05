@@ -44,7 +44,7 @@ export default async function BlogPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Browse by Category</h2>
             <div className="flex flex-wrap gap-3">
               <Link
-                href="/blog"
+                href="/journal"
                 className="px-4 py-2 bg-gray-100 text-gray-800 rounded-full hover:bg-gray-200 transition-colors"
               >
                 All Posts

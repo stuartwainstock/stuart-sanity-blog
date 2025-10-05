@@ -20,7 +20,7 @@ export default async function Home() {
   const hero = homepage?.hero || {
     title: 'Welcome to Our Blog',
     subtitle: 'Discover insights, tutorials, and stories from our community of writers and creators.',
-    primaryButton: { text: 'Explore All Posts', url: '/blog' },
+    primaryButton: { text: 'Explore All Posts', url: '/journal' },
     secondaryButton: { text: 'Learn More', url: '/about' }
   }
 

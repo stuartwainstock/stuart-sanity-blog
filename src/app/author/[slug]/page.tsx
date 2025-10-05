@@ -172,7 +172,7 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
               {author.name} hasn't published any posts yet.
             </p>
             <Link
-              href="/blog"
+              href="/journal"
               className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
             >
               Browse All Posts
