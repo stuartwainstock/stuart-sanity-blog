@@ -33,8 +33,10 @@ export const getImageUrl = (source: SanityImage, width?: number, height?: number
       imageBuilder = imageBuilder.height(height)
     }
     
+    // Add quality parameter for better optimization
+    imageBuilder = imageBuilder.quality(85)
+    
     const url = imageBuilder.url()
-    console.log('Generated image URL:', url)
     return url
   } catch (error) {
     console.error('Error generating image URL:', error)

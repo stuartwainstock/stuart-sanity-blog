@@ -114,6 +114,7 @@ export default async function PageComponent({ params }: PageProps) {
             fill
             className="object-cover"
             priority
+            unoptimized
           />
           {page.mainImage.credit && (
             <div className="absolute bottom-4 right-4 bg-black bg-opacity-50 text-white text-sm px-3 py-1 rounded">

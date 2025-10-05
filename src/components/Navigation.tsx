@@ -43,6 +43,7 @@ export default function Navigation({ siteSettings, navigationPages = [] }: Navig
                   width={32}
                   height={32}
                   className="rounded"
+                  unoptimized
                 />
               ) : (
                 <div className="w-8 h-8 bg-gray-900 rounded flex items-center justify-center" aria-hidden="true">
