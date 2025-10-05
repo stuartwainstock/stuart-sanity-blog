@@ -43,9 +43,6 @@ export default defineType({
               .min(10)
               .max(125)
               .warning('Alt text should be 10-125 characters for optimal accessibility'),
-          options: {
-            isHighlighted: true,
-          },
         },
         {
           name: 'credit',
