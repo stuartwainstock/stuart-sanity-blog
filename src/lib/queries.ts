@@ -233,7 +233,17 @@ export const SITE_SETTINGS_QUERY = groq`
     },
     url,
     social,
-    footer,
+    footer {
+      copyright,
+      sections[] {
+        title,
+        links[] {
+          title,
+          url,
+          external
+        }
+      }
+    },
     seo
   }
 `
