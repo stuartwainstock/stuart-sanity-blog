@@ -313,7 +313,7 @@ export type Seo = {
     _type: 'image'
   }
   keywords?: Array<string>
-  noIndex?: 'true' | 'false'
+  noIndex?: 'false' | 'true'
 }
 
 export type Category = {
