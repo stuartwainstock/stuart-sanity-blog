@@ -1,5 +1,5 @@
 import { sanityClient } from '@/lib/sanity'
-import { postsQuery, categoriesQuery, siteSettingsQuery } from '@/lib/queries'
+import { POSTS_QUERY, CATEGORIES_QUERY, SITE_SETTINGS_QUERY } from '@/lib/queries'
 import { Post, Category, SiteSettings } from '@/lib/types'
 import PostCard from '@/components/PostCard'
 import Link from 'next/link'
@@ -7,9 +7,9 @@ import Link from 'next/link'
 async function getJournalData() {
   try {
     const [posts, categories, siteSettings] = await Promise.all([
-      sanityClient.fetch<Post[]>(postsQuery),
-      sanityClient.fetch<Category[]>(categoriesQuery),
-      sanityClient.fetch<SiteSettings>(siteSettingsQuery),
+      sanityClient.fetch<Post[]>(POSTS_QUERY),
+      sanityClient.fetch<Category[]>(CATEGORIES_QUERY),
+      sanityClient.fetch<SiteSettings>(SITE_SETTINGS_QUERY),
     ])
     return { posts, categories, siteSettings }
   } catch (error) {

@@ -4,7 +4,7 @@ import "./globals.css";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { sanityClient } from "@/lib/sanity";
-import { siteSettingsQuery, navigationQuery } from "@/lib/queries";
+import { SITE_SETTINGS_QUERY, NAVIGATION_QUERY } from "@/lib/queries";
 import { SiteSettings, Page } from "@/lib/types";
 
 const workSans = Work_Sans({
@@ -16,8 +16,8 @@ const workSans = Work_Sans({
 async function getLayoutData() {
   try {
     const [siteSettings, navigationPages] = await Promise.all([
-      sanityClient.fetch<SiteSettings>(siteSettingsQuery),
-      sanityClient.fetch<Page[]>(navigationQuery),
+      sanityClient.fetch<SiteSettings>(SITE_SETTINGS_QUERY),
+      sanityClient.fetch<Page[]>(NAVIGATION_QUERY),
     ]);
     return { siteSettings, navigationPages };
   } catch (error) {

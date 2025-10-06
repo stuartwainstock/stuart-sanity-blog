@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { sanityClient } from '@/lib/sanity'
-import { postsByCategoryQuery, categoriesQuery } from '@/lib/queries'
+import { POSTS_BY_CATEGORY_QUERY, CATEGORIES_QUERY } from '@/lib/queries'
 import { Post, Category } from '@/lib/types'
 import PostCard from '@/components/PostCard'
 
@@ -12,8 +12,8 @@ interface CategoryPageProps {
 async function getCategoryData(slug: string) {
   try {
     const [posts, categories] = await Promise.all([
-      sanityClient.fetch<Post[]>(postsByCategoryQuery, { slug }),
-      sanityClient.fetch<Category[]>(categoriesQuery),
+      sanityClient.fetch<Post[]>(POSTS_BY_CATEGORY_QUERY, { slug }),
+      sanityClient.fetch<Category[]>(CATEGORIES_QUERY),
     ])
     
     const currentCategory = categories.find(cat => cat.slug.current === slug)
@@ -27,7 +27,7 @@ async function getCategoryData(slug: string) {
 
 export async function generateStaticParams() {
   try {
-    const categories = await sanityClient.fetch<Category[]>(categoriesQuery)
+    const categories = await sanityClient.fetch<Category[]>(CATEGORIES_QUERY)
     return categories.map((category) => ({
       slug: category.slug.current,
     }))

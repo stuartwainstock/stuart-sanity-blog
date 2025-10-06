@@ -1,5 +1,5 @@
 import { sanityClient } from '@/lib/sanity'
-import { postsQuery, categoriesQuery } from '@/lib/queries'
+import { POSTS_QUERY, CATEGORIES_QUERY } from '@/lib/queries'
 import { Post, Category } from '@/lib/types'
 import PostCard from '@/components/PostCard'
 import Link from 'next/link'
@@ -7,8 +7,8 @@ import Link from 'next/link'
 async function getBlogData() {
   try {
     const [posts, categories] = await Promise.all([
-      sanityClient.fetch<Post[]>(postsQuery),
-      sanityClient.fetch<Category[]>(categoriesQuery),
+      sanityClient.fetch<Post[]>(POSTS_QUERY),
+      sanityClient.fetch<Category[]>(CATEGORIES_QUERY),
     ])
     return { posts, categories }
   } catch (error) {

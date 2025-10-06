@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { sanityClient } from '@/lib/sanity'
-import { pageQuery, pagesQuery } from '@/lib/queries'
+import { PAGE_QUERY, PAGES_QUERY } from '@/lib/queries'
 import { Page } from '@/lib/types'
 import { getImageUrl } from '@/lib/sanity'
 import PortableText from '@/components/PortableText'
@@ -14,7 +14,7 @@ interface PageProps {
 
 async function getPage(slug: string): Promise<Page | null> {
   try {
-    const page = await sanityClient.fetch<Page>(pageQuery, { slug })
+    const page = await sanityClient.fetch<Page>(PAGE_QUERY, { slug })
     return page
   } catch (error) {
     console.error('Error fetching page:', error)

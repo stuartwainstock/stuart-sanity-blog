@@ -1,11 +1,11 @@
 import Link from 'next/link'
 import { sanityClient } from '@/lib/sanity'
-import { homepageQuery } from '@/lib/queries'
+import { HOMEPAGE_QUERY } from '@/lib/queries'
 import { Homepage } from '@/lib/types'
 
 async function getHomeData() {
   try {
-    const homepage = await sanityClient.fetch<Homepage>(homepageQuery)
+    const homepage = await sanityClient.fetch<Homepage>(HOMEPAGE_QUERY)
     return { homepage }
   } catch (error) {
     console.error('Error fetching home data:', error)

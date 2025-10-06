@@ -1,5 +1,5 @@
 import { sanityClient } from '@/lib/sanity'
-import { authorQuery, postsByAuthorQuery } from '@/lib/queries'
+import { AUTHOR_QUERY, POSTS_BY_AUTHOR_QUERY } from '@/lib/queries'
 import { Author, Post } from '@/lib/types'
 import PostCard from '@/components/PostCard'
 import Image from 'next/image'
@@ -15,8 +15,8 @@ interface AuthorPageProps {
 async function getAuthorData(slug: string) {
   try {
     const [author, posts] = await Promise.all([
-      sanityClient.fetch<Author>(authorQuery, { slug }),
-      sanityClient.fetch<Post[]>(postsByAuthorQuery, { slug }),
+      sanityClient.fetch<Author>(AUTHOR_QUERY, { slug }),
+      sanityClient.fetch<Post[]>(POSTS_BY_AUTHOR_QUERY, { slug }),
     ])
     return { author, posts }
   } catch (error) {

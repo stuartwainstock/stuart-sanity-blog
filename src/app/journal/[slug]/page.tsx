@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { sanityClient } from '@/lib/sanity'
-import { postQuery, postsQuery } from '@/lib/queries'
+import { POST_QUERY, POSTS_QUERY } from '@/lib/queries'
 import { Post } from '@/lib/types'
 import { getImageUrl } from '@/lib/sanity'
 import PortableText from '@/components/PortableText'
@@ -13,7 +13,7 @@ interface BlogPostPageProps {
 
 async function getPost(slug: string): Promise<Post | null> {
   try {
-    const post = await sanityClient.fetch<Post>(postQuery, { slug })
+    const post = await sanityClient.fetch<Post>(POST_QUERY, { slug })
     return post
   } catch (error) {
     console.error('Error fetching post:', error)
@@ -23,7 +23,7 @@ async function getPost(slug: string): Promise<Post | null> {
 
 export async function generateStaticParams() {
   try {
-    const posts = await sanityClient.fetch<Post[]>(postsQuery)
+    const posts = await sanityClient.fetch<Post[]>(POSTS_QUERY)
     return posts.map((post) => ({
       slug: post.slug.current,
     }))
