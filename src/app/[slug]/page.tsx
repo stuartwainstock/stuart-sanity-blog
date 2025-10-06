@@ -84,7 +84,7 @@ export default async function PageComponent({ params }: PageProps) {
       
       {/* Hero Section */}
       <header 
-        className="pt-32 pb-2 px-8" 
+        className="pt-24 pb-4 px-8" 
         role="banner"
         aria-labelledby="page-title"
       >
@@ -97,7 +97,7 @@ export default async function PageComponent({ params }: PageProps) {
               {page.title}
             </h1>
             {page.excerpt && (
-              <p className="text-[30px] font-light tracking-[2px] leading-[1.6] mb-16 text-gray-600 max-w-4xl">
+              <p className="text-[30px] font-light tracking-[2px] leading-[1.6] mb-8 text-gray-600 max-w-4xl">
                 {page.excerpt}
               </p>
             )}
@@ -136,7 +136,7 @@ export default async function PageComponent({ params }: PageProps) {
       {/* Content */}
       <main 
         id="main-content"
-        className="max-w-5xl mx-auto px-8 py-16"
+        className="max-w-5xl mx-auto px-8 pt-8 pb-16"
       >
         {page.body && (
           <div className="text-[30px] font-light tracking-[2px] leading-[1.6] text-gray-600">
