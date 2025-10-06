@@ -8,10 +8,6 @@ interface FooterProps {
 export default function Footer({ siteSettings }: FooterProps) {
   const currentYear = new Date().getFullYear()
 
-  // Debug logging to help troubleshoot
-  console.log('Footer siteSettings:', siteSettings)
-  console.log('Footer sections:', siteSettings?.footer?.sections)
-
   return (
     <footer 
       className="bg-[#e8e8e8] border-t border-gray-200" 
