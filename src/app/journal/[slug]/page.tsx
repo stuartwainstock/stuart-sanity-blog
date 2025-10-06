@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
       title: post.seo?.metaTitle || post.title,
       description: post.seo?.metaDescription || post.excerpt,
       images: post.seo?.openGraphImage ? [getImageUrl(post.seo.openGraphImage, 1200, 630)] : 
-              post.mainImage ? [getImageUrl(post.mainImage, 1200, 630)] : [],
+              (post.mainImage && post.mainImage.asset) ? [getImageUrl(post.mainImage, 1200, 630)] : [],
       type: 'article',
       publishedTime: post.publishedAt,
       authors: post.author ? [post.author.name] : [],
@@ -60,7 +60,7 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
       title: post.seo?.metaTitle || post.title,
       description: post.seo?.metaDescription || post.excerpt,
       images: post.seo?.openGraphImage ? [getImageUrl(post.seo.openGraphImage, 1200, 630)] : 
-              post.mainImage ? [getImageUrl(post.mainImage, 1200, 630)] : [],
+              (post.mainImage && post.mainImage.asset) ? [getImageUrl(post.mainImage, 1200, 630)] : [],
     },
   }
 }
@@ -149,7 +149,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       </header>
 
       {/* Featured Image */}
-      {post.mainImage && (
+      {post.mainImage && post.mainImage.asset && (
         <div className="relative h-96 md:h-[500px] bg-gray-100">
           <Image
             src={getImageUrl(post.mainImage, 1200, 600)}

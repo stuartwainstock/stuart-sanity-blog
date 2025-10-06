@@ -51,7 +51,7 @@ export async function generateMetadata({ params }: PageProps) {
       title: page.seo?.metaTitle || page.title,
       description: page.seo?.metaDescription || page.excerpt,
       images: page.seo?.openGraphImage ? [getImageUrl(page.seo.openGraphImage, 1200, 630)] : 
-              page.mainImage ? [getImageUrl(page.mainImage, 1200, 630)] : [],
+              (page.mainImage && page.mainImage.asset) ? [getImageUrl(page.mainImage, 1200, 630)] : [],
       type: 'website',
     },
     twitter: {
@@ -59,7 +59,7 @@ export async function generateMetadata({ params }: PageProps) {
       title: page.seo?.metaTitle || page.title,
       description: page.seo?.metaDescription || page.excerpt,
       images: page.seo?.openGraphImage ? [getImageUrl(page.seo.openGraphImage, 1200, 630)] : 
-              page.mainImage ? [getImageUrl(page.mainImage, 1200, 630)] : [],
+              (page.mainImage && page.mainImage.asset) ? [getImageUrl(page.mainImage, 1200, 630)] : [],
     },
     robots: page.seo?.noIndex ? 'noindex, nofollow' : 'index, follow',
   }
@@ -106,7 +106,7 @@ export default async function PageComponent({ params }: PageProps) {
       </header>
 
       {/* Featured Image */}
-      {page.mainImage && (
+      {page.mainImage && page.mainImage.asset && (
         <div className="relative h-96 md:h-[400px] bg-gray-100">
           <Image
             src={getImageUrl(page.mainImage, 1200, 600)}
@@ -125,7 +125,7 @@ export default async function PageComponent({ params }: PageProps) {
       )}
       
       {/* Image Caption */}
-      {page.mainImage?.caption && (
+      {page.mainImage && page.mainImage.asset && page.mainImage.caption && (
         <div className="max-w-5xl mx-auto px-8 py-4">
           <p className="text-sm text-gray-600 text-center italic">
             {page.mainImage.caption}
