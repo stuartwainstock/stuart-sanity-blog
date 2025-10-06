@@ -200,8 +200,11 @@ export const PAGE_QUERY = groq`
 `
 
 // Get navigation pages
-export const NAVIGATION_QUERY = groq``
-  *[_type == "page" && showInNavigation == true] | order(navigationOrder asc) {
+export const NAVIGATION_QUERY = groq`
+  *[
+    _type == "page"
+    && showInNavigation == "true"
+  ] | order(navigationOrder asc) {
     _id,
     title,
     slug
@@ -209,7 +212,7 @@ export const NAVIGATION_QUERY = groq``
 `
 
 // Get site settings
-export const siteSettingsQuery = groq`
+export const SITE_SETTINGS_QUERY = groq`
   *[_type == "siteSettings"][0] {
     title,
     description,
@@ -236,7 +239,7 @@ export const siteSettingsQuery = groq`
 `
 
 // Get all categories
-export const categoriesQuery = groq`
+export const CATEGORIES_QUERY = groq`
   *[_type == "category"] | order(title asc) {
     _id,
     title,
@@ -247,7 +250,7 @@ export const categoriesQuery = groq`
 `
 
 // Get posts by category
-export const postsByCategoryQuery = groq`
+export const POSTS_BY_CATEGORY_QUERY = groq`
   *[_type == "post" && references(*[_type == "category" && slug.current == $slug]._id)] | order(publishedAt desc) {
     _id,
     title,
@@ -304,7 +307,7 @@ export const authorsQuery = groq`
 `
 
 // Get posts by author
-export const postsByAuthorQuery = groq`
+export const POSTS_BY_AUTHOR_QUERY = groq`
   *[_type == "post" && author._ref == *[_type == "author" && slug.current == $slug][0]._id] | order(publishedAt desc) {
     _id,
     title,
