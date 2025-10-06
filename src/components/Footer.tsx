@@ -25,7 +25,7 @@ export default function Footer({ siteSettings }: FooterProps) {
               {siteSettings?.description || 'A modern blog built with Next.js and Sanity.'}
             </p>
             {siteSettings?.social && (
-              <div className="flex space-x-6" role="list" aria-label="Social media links">
+              <div className="flex space-x-6" aria-label="Social media links">
                 {siteSettings.social.twitter && (
                   <a
                     href={`https://twitter.com/${siteSettings.social.twitter}`}
@@ -79,7 +79,7 @@ export default function Footer({ siteSettings }: FooterProps) {
                 {section.title}
               </h3>
               <nav aria-label={`${section.title} navigation`}>
-                <ul className="space-y-3" role="list">
+                <ul className="space-y-3">
                   {section.links?.map((link, linkIndex) => (
                     <li key={linkIndex}>
                       {link.external ? (

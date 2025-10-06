@@ -61,7 +61,6 @@ export default function ReadingList({ books }: ReadingListProps) {
             
             <div 
               className="space-y-4"
-              role="list"
               aria-labelledby={`category-${category}`}
               aria-label={`Books in ${getCategoryLabel(category)} category`}
             >
@@ -69,7 +68,6 @@ export default function ReadingList({ books }: ReadingListProps) {
                 const bookContent = (
                   <div 
                     className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-6 py-3 border-b border-gray-100 last:border-b-0 hover:bg-gray-50/30 transition-colors rounded-md px-2 -mx-2"
-                    role="listitem"
                   >
                     <div className="flex-1">
                       <h4 className="text-lg font-medium text-gray-900 mb-1 leading-tight">

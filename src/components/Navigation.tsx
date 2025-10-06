@@ -53,18 +53,16 @@ export default function Navigation({ siteSettings, navigationPages = [] }: Navig
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8" role="menubar">
+          <div className="hidden md:flex items-center space-x-8">
             <Link
               href="/"
               className="text-gray-600 hover:text-gray-900 focus:text-gray-900 px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md"
-              role="menuitem"
             >
               Home
             </Link>
             <Link
               href="/journal"
               className="text-gray-600 hover:text-gray-900 focus:text-gray-900 px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md"
-              role="menuitem"
             >
               Journal
             </Link>
@@ -73,7 +71,6 @@ export default function Navigation({ siteSettings, navigationPages = [] }: Navig
                 key={page._id}
                 href={`/${page.slug.current}`}
                 className="text-gray-600 hover:text-gray-900 focus:text-gray-900 px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md"
-                role="menuitem"
               >
                 {page.title}
               </Link>
@@ -111,7 +108,6 @@ export default function Navigation({ siteSettings, navigationPages = [] }: Navig
           <div 
             id="mobile-menu"
             className="md:hidden"
-            role="menu"
             aria-label="Mobile navigation menu"
           >
             <div className="px-6 pt-4 pb-6 space-y-2 bg-[#e8e8e8] border-t border-gray-200">
@@ -119,7 +115,6 @@ export default function Navigation({ siteSettings, navigationPages = [] }: Navig
                 href="/"
                 className="block text-gray-600 hover:text-gray-900 focus:text-gray-900 px-3 py-2 text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md"
                 onClick={closeMenu}
-                role="menuitem"
               >
                 Home
               </Link>
@@ -127,7 +122,6 @@ export default function Navigation({ siteSettings, navigationPages = [] }: Navig
                 href="/journal"
                 className="block text-gray-600 hover:text-gray-900 focus:text-gray-900 px-3 py-2 text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md"
                 onClick={closeMenu}
-                role="menuitem"
               >
                 Journal
               </Link>
@@ -137,7 +131,6 @@ export default function Navigation({ siteSettings, navigationPages = [] }: Navig
                   href={`/${page.slug.current}`}
                   className="block text-gray-600 hover:text-gray-900 focus:text-gray-900 px-3 py-2 text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md"
                   onClick={closeMenu}
-                  role="menuitem"
                 >
                   {page.title}
                 </Link>

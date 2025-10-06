@@ -51,14 +51,12 @@ export default function SpeakingEngagements({ engagements }: SpeakingEngagements
       
       <div 
         className="space-y-6"
-        role="list"
         aria-label="Speaking engagements and publications"
       >
         {sortedEngagements.map((engagement, index) => {
           const engagementContent = (
             <div 
               className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 py-3 border-b border-gray-200 last:border-b-0"
-              role="listitem"
             >
               <div className="flex-1">
                 <h3 className="text-xl font-medium text-gray-900 mb-2">
