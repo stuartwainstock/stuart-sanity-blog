@@ -33,24 +33,18 @@ export default function Navigation({ siteSettings, navigationPages = [] }: Navig
           <div className="flex items-center">
             <Link 
               href="/" 
-              className="flex items-center space-x-3 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md"
+              className="flex items-center focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md"
               aria-label={`${siteSettings?.title || 'Blog'} - Go to homepage`}
             >
-              {siteSettings?.logo ? (
+              {siteSettings?.logo && (
                 <Image
                   src={getImageUrl(siteSettings.logo, 32, 32)}
                   alt=""
                   width={32}
                   height={32}
-                  className="rounded"
+                  className="rounded mr-3"
                   unoptimized
                 />
-              ) : (
-                <div className="w-8 h-8 bg-gray-900 rounded flex items-center justify-center" aria-hidden="true">
-                  <span className="text-white font-medium text-sm">
-                    {siteSettings?.title?.charAt(0) || 'B'}
-                  </span>
-                </div>
               )}
               <span className="font-medium text-lg text-gray-900">
                 {siteSettings?.title || 'Blog'}
