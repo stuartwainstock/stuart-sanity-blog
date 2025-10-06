@@ -1,15 +1,17 @@
-import {defineField, defineType} from 'sanity'
+import {defineField, defineType, defineArrayMember} from 'sanity'
+import {DocumentIcon} from '@sanity/icons'
 
-export default defineType({
+export const post = defineType({
   name: 'post',
   title: 'Blog Post',
   type: 'document',
+  icon: DocumentIcon,
   fields: [
     defineField({
       name: 'title',
       title: 'Title',
       type: 'string',
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => Rule.required().error('Title is required'),
     }),
     defineField({
       name: 'slug',
@@ -19,13 +21,14 @@ export default defineType({
         source: 'title',
         maxLength: 96,
       },
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => Rule.required().error('Slug is required for URL generation'),
     }),
     defineField({
       name: 'author',
       title: 'Author',
-      type: 'reference',
-      to: {type: 'author'},
+      type: 'array',
+      of: [defineArrayMember({type: 'reference', to: {type: 'author'}})],
+      validation: (Rule) => Rule.required().error('At least one author is required'),
     }),
     defineField({
       name: 'mainImage',
@@ -64,20 +67,36 @@ export default defineType({
       name: 'categories',
       title: 'Categories',
       type: 'array',
-      of: [{type: 'reference', to: {type: 'category'}}],
+      of: [defineArrayMember({type: 'reference', to: {type: 'category'}})],
     }),
     defineField({
       name: 'publishedAt',
       title: 'Published at',
       type: 'datetime',
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => Rule.required().error('Publication date is required'),
     }),
     defineField({
       name: 'excerpt',
       title: 'Excerpt',
       type: 'text',
       rows: 4,
-      validation: (Rule) => Rule.max(200),
+      validation: (Rule) => [
+        Rule.max(200).warning('Keep excerpts under 200 characters for better readability'),
+        Rule.required().error('Excerpt is required for post previews'),
+      ],
+    }),
+    defineField({
+      name: 'featured',
+      title: 'Featured',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'Yes', value: 'true'},
+          {title: 'No', value: 'false'},
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'false',
     }),
     defineField({
       name: 'body',
@@ -85,28 +104,37 @@ export default defineType({
       type: 'blockContent',
     }),
     defineField({
-      name: 'featured',
-      title: 'Featured Post',
-      type: 'boolean',
-      description: 'Mark this post as featured to highlight it on the homepage',
-      initialValue: false,
-    }),
-    defineField({
       name: 'seo',
       title: 'SEO',
       type: 'seo',
     }),
   ],
-
+  groups: [
+    {
+      name: 'content',
+      title: 'Content',
+      icon: DocumentIcon,
+      default: true,
+    },
+    {
+      name: 'seo',
+      title: 'SEO',
+      icon: DocumentIcon,
+    },
+  ],
   preview: {
     select: {
       title: 'title',
-      author: 'author.name',
+      author: 'author.0.name',
       media: 'mainImage',
+      publishedAt: 'publishedAt',
     },
     prepare(selection) {
-      const {author} = selection
-      return {...selection, subtitle: author && `by ${author}`}
+      const {title, author, publishedAt} = selection
+      return {
+        title: title || 'Untitled',
+        subtitle: `${author || 'No author'} • ${publishedAt ? new Date(publishedAt).toLocaleDateString() : 'Not published'}`,
+      }
     },
   },
 })

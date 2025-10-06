@@ -1,7 +1,7 @@
 import { groq } from 'next-sanity'
 
 // Get all posts with authors and categories
-export const postsQuery = groq`
+export const POSTS_QUERY = groq`
   *[_type == "post"] | order(publishedAt desc) {
     _id,
     title,
@@ -41,8 +41,11 @@ export const postsQuery = groq`
 `
 
 // Get a single post by slug
-export const postQuery = groq`
-  *[_type == "post" && slug.current == $slug][0] {
+export const POST_QUERY = groq`
+  *[
+    _type == "post"
+    && slug.current == $slug
+  ][0]{
     _id,
     title,
     slug,
@@ -86,8 +89,11 @@ export const postQuery = groq`
 `
 
 // Get featured posts
-export const featuredPostsQuery = groq`
-  *[_type == "post" && featured == true] | order(publishedAt desc) {
+export const FEATURED_POSTS_QUERY = groq`
+  *[
+    _type == "post"
+    && featured == "true"
+  ] | order(publishedAt desc) {
     _id,
     title,
     slug,
@@ -125,8 +131,10 @@ export const featuredPostsQuery = groq`
 `
 
 // Get all pages
-export const pagesQuery = groq`
-  *[_type == "page"] | order(navigationOrder asc) {
+export const PAGES_QUERY = groq`
+  *[
+    _type == "page"
+  ] | order(navigationOrder asc) {
     _id,
     title,
     slug,
@@ -146,8 +154,11 @@ export const pagesQuery = groq`
 `
 
 // Get a single page by slug
-export const pageQuery = groq`
-  *[_type == "page" && slug.current == $slug][0] {
+export const PAGE_QUERY = groq`
+  *[
+    _type == "page"
+    && slug.current == $slug
+  ][0]{
     _id,
     title,
     slug,
@@ -189,7 +200,7 @@ export const pageQuery = groq`
 `
 
 // Get navigation pages
-export const navigationQuery = groq`
+export const NAVIGATION_QUERY = groq``
   *[_type == "page" && showInNavigation == true] | order(navigationOrder asc) {
     _id,
     title,
@@ -318,8 +329,11 @@ export const postsByAuthorQuery = groq`
   }
 `
 
-export const authorQuery = groq`
-  *[_type == "author" && slug.current == $slug][0] {
+export const AUTHOR_QUERY = groq`
+  *[
+    _type == "author"
+    && slug.current == $slug
+  ][0]{
     _id,
     name,
     slug,
@@ -335,8 +349,10 @@ export const authorQuery = groq`
   }
 `
 
-export const homepageQuery = groq`
-  *[_type == "homepage"][0] {
+export const HOMEPAGE_QUERY = groq`
+  *[
+    _type == "homepage"
+  ][0]{
     _id,
     title,
     hero {

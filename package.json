@@ -9,7 +9,9 @@
     "lint": "eslint",
     "type-check": "tsc --noEmit",
     "studio": "cd sanity && sanity dev",
-    "studio:deploy": "cd sanity && sanity deploy"
+    "studio:deploy": "cd sanity && sanity deploy",
+    "typegen": "cd sanity && npm run typegen",
+    "typecheck": "cd sanity && npm run typecheck"
   },
   "dependencies": {
     "@next/font": "^14.2.15",

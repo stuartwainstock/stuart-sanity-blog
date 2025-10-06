@@ -1,9 +1,11 @@
 import {defineField, defineType} from 'sanity'
+import {SeoIcon} from '@sanity/icons'
 
-export default defineType({
+export const seo = defineType({
   name: 'seo',
   title: 'SEO',
   type: 'object',
+  icon: SeoIcon,
   fields: [
     defineField({
       name: 'metaTitle',
@@ -58,9 +60,16 @@ export default defineType({
     defineField({
       name: 'noIndex',
       title: 'No Index',
-      type: 'boolean',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'Yes', value: 'true'},
+          {title: 'No', value: 'false'},
+        ],
+        layout: 'radio',
+      },
       description: 'Prevent search engines from indexing this page',
-      initialValue: false,
+      initialValue: 'false',
     }),
   ],
   preview: {

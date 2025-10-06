@@ -1,10 +1,12 @@
 import {defineField, defineType} from 'sanity'
+import {DocumentIcon} from '@sanity/icons'
 import BookSearchInput from '../components/BookSearchInput'
 
-export default defineType({
+export const page = defineType({
   name: 'page',
   title: 'Page',
   type: 'document',
+  icon: DocumentIcon,
   fields: [
     defineField({
       name: 'title',

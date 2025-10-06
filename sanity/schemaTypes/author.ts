@@ -1,15 +1,17 @@
 import {defineField, defineType} from 'sanity'
+import {UserIcon} from '@sanity/icons'
 
-export default defineType({
+export const author = defineType({
   name: 'author',
   title: 'Author',
   type: 'document',
+  icon: UserIcon,
   fields: [
     defineField({
       name: 'name',
       title: 'Name',
       type: 'string',
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => Rule.required().error('Author name is required'),
     }),
     defineField({
       name: 'slug',
@@ -19,7 +21,7 @@ export default defineType({
         source: 'name',
         maxLength: 96,
       },
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => Rule.required().error('Slug is required for URL generation'),
     }),
     defineField({
       name: 'image',
@@ -65,7 +67,7 @@ export default defineType({
       name: 'email',
       title: 'Email',
       type: 'string',
-      validation: (Rule) => Rule.email(),
+      validation: (Rule) => Rule.email().error('Please enter a valid email address'),
     }),
     defineField({
       name: 'website',
@@ -77,28 +79,49 @@ export default defineType({
       title: 'Social Links',
       type: 'object',
       fields: [
-        {
+        defineField({
           name: 'twitter',
           title: 'Twitter',
           type: 'string',
-        },
-        {
+        }),
+        defineField({
           name: 'linkedin',
           title: 'LinkedIn',
           type: 'string',
-        },
-        {
+        }),
+        defineField({
           name: 'github',
           title: 'GitHub',
           type: 'string',
-        },
+        }),
       ],
     }),
+  ],
+  groups: [
+    {
+      name: 'content',
+      title: 'Content',
+      icon: UserIcon,
+      default: true,
+    },
+    {
+      name: 'social',
+      title: 'Social',
+      icon: UserIcon,
+    },
   ],
   preview: {
     select: {
       title: 'name',
+      subtitle: 'email',
       media: 'image',
+    },
+    prepare(selection) {
+      const {title, subtitle} = selection
+      return {
+        title: title || 'Untitled',
+        subtitle: subtitle || 'No email',
+      }
     },
   },
 })
