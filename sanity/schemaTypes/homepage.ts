@@ -1,11 +1,9 @@
 import { defineField, defineType } from 'sanity'
-import { HomeIcon } from '@sanity/icons'
 
 export const homepage = defineType({
   name: 'homepage',
   title: 'Homepage',
   type: 'document',
-  icon: HomeIcon,
   fields: [
     defineField({
       name: 'title',

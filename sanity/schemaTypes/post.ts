@@ -1,11 +1,9 @@
 import {defineField, defineType, defineArrayMember} from 'sanity'
-import {DocumentIcon} from '@sanity/icons'
 
 export const post = defineType({
   name: 'post',
   title: 'Blog Post',
   type: 'document',
-  icon: DocumentIcon,
   fields: [
     defineField({
       name: 'title',
@@ -113,13 +111,11 @@ export const post = defineType({
     {
       name: 'content',
       title: 'Content',
-      icon: DocumentIcon,
       default: true,
     },
     {
       name: 'seo',
       title: 'SEO',
-      icon: DocumentIcon,
     },
   ],
   preview: {

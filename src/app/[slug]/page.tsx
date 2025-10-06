@@ -24,7 +24,7 @@ async function getPage(slug: string): Promise<Page | null> {
 
 export async function generateStaticParams() {
   try {
-    const pages = await sanityClient.fetch<Page[]>(pagesQuery)
+    const pages = await sanityClient.fetch<Page[]>(PAGES_QUERY)
     return pages.map((page) => ({
       slug: page.slug.current,
     }))
