@@ -71,16 +71,23 @@ export const page = defineType({
     defineField({
       name: 'showInNavigation',
       title: 'Show in Navigation',
-      type: 'boolean',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'Yes', value: 'true'},
+          {title: 'No', value: 'false'},
+        ],
+        layout: 'radio',
+      },
       description: 'Display this page in the main navigation menu',
-      initialValue: false,
+      initialValue: 'false',
     }),
     defineField({
       name: 'navigationOrder',
       title: 'Navigation Order',
       type: 'number',
       description: 'Order in navigation menu (lower numbers appear first)',
-      hidden: ({document}) => !document?.showInNavigation,
+      hidden: ({document}) => document?.showInNavigation !== 'true',
     }),
     defineField({
       name: 'speakingEngagements',

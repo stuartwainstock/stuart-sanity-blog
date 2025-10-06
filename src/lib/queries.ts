@@ -203,7 +203,7 @@ export const PAGE_QUERY = groq`
 export const NAVIGATION_QUERY = groq`
   *[
     _type == "page"
-    && showInNavigation == "true"
+    && (showInNavigation == "true" || showInNavigation == true)
   ] | order(navigationOrder asc) {
     _id,
     title,
