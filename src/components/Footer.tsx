@@ -16,7 +16,7 @@ export default function Footer({ siteSettings }: FooterProps) {
     >
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-          {/* Site Info */}
+          {/* Site Info - Always first column */}
           <div>
             <h3 className="text-lg font-medium mb-4 text-gray-900">
               {siteSettings?.title || 'Blog'}
@@ -72,42 +72,39 @@ export default function Footer({ siteSettings }: FooterProps) {
             )}
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-lg font-medium mb-4 text-gray-900">Quick Links</h3>
-            <nav aria-label="Footer navigation">
-              <ul className="space-y-3" role="list">
-                <li>
-                  <Link 
-                    href="/" 
-                    className="text-gray-600 hover:text-gray-900 focus:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md px-1 py-0.5"
-                  >
-                    Home
-                  </Link>
-                </li>
-                <li>
-                  <Link 
-                    href="/journal" 
-                    className="text-gray-600 hover:text-gray-900 focus:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md px-1 py-0.5"
-                  >
-                    Journal
-                  </Link>
-                </li>
-                {siteSettings?.footer?.links?.map((link, index) => (
-                  <li key={index}>
-                    <Link 
-                      href={link.url} 
-                      className="text-gray-600 hover:text-gray-900 focus:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md px-1 py-0.5"
-                    >
-                      {link.title}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          </div>
-
-          
+          {/* Configurable Footer Sections */}
+          {siteSettings?.footer?.sections?.map((section, sectionIndex) => (
+            <div key={sectionIndex}>
+              <h3 className="text-lg font-medium mb-4 text-gray-900">
+                {section.title}
+              </h3>
+              <nav aria-label={`${section.title} navigation`}>
+                <ul className="space-y-3" role="list">
+                  {section.links?.map((link, linkIndex) => (
+                    <li key={linkIndex}>
+                      {link.external ? (
+                        <a
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-gray-600 hover:text-gray-900 focus:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md px-1 py-0.5"
+                        >
+                          {link.title}
+                        </a>
+                      ) : (
+                        <Link
+                          href={link.url}
+                          className="text-gray-600 hover:text-gray-900 focus:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md px-1 py-0.5"
+                        >
+                          {link.title}
+                        </Link>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </div>
+          ))}
         </div>
 
         <div className="mt-12 pt-8 border-t border-gray-200">

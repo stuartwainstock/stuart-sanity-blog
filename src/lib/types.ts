@@ -113,9 +113,13 @@ export interface SiteSettings {
   }
   footer?: {
     copyright?: string
-    links?: Array<{
+    sections?: Array<{
       title: string
-      url: string
+      links?: Array<{
+        title: string
+        url: string
+        external?: boolean
+      }>
     }>
   }
   seo?: SEO

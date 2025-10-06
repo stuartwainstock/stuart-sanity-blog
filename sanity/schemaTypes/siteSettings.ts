@@ -107,24 +107,66 @@ export const siteSettings = defineType({
           type: 'string',
         },
         {
-          name: 'links',
-          title: 'Footer Links',
+          name: 'sections',
+          title: 'Footer Sections',
           type: 'array',
           of: [
             {
               type: 'object',
+              name: 'footerSection',
+              title: 'Footer Section',
               fields: [
                 {
                   name: 'title',
-                  title: 'Title',
+                  title: 'Section Title',
                   type: 'string',
+                  validation: (Rule) => Rule.required(),
                 },
                 {
-                  name: 'url',
-                  title: 'URL',
-                  type: 'string',
+                  name: 'links',
+                  title: 'Section Links',
+                  type: 'array',
+                  of: [
+                    {
+                      type: 'object',
+                      fields: [
+                        {
+                          name: 'title',
+                          title: 'Link Title',
+                          type: 'string',
+                          validation: (Rule) => Rule.required(),
+                        },
+                        {
+                          name: 'url',
+                          title: 'Link URL',
+                          type: 'string',
+                          validation: (Rule) => Rule.required(),
+                        },
+                        {
+                          name: 'external',
+                          title: 'External Link',
+                          type: 'boolean',
+                          description: 'Check if this link opens in a new tab',
+                          initialValue: false,
+                        },
+                      ],
+                    },
+                  ],
                 },
               ],
+              preview: {
+                select: {
+                  title: 'title',
+                  subtitle: 'links',
+                },
+                prepare({ title, subtitle }) {
+                  const linkCount = subtitle?.length || 0;
+                  return {
+                    title: title,
+                    subtitle: `${linkCount} link${linkCount !== 1 ? 's' : ''}`,
+                  };
+                },
+              },
             },
           ],
         },
