@@ -59,7 +59,7 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
         )}
         
         <h2 className={`font-bold text-gray-900 mb-3 ${featured ? 'text-2xl' : 'text-xl'}`}>
-          <Link href={`/journal/${post.slug.current}`} className="hover:text-blue-600 transition-colors">
+          <Link href={`/journal/${post.slug.current}`} className="text-[rgb(79,79,79)] hover:text-[rgb(79,79,79)] transition-colors">
             {post.title}
           </Link>
         </h2>
@@ -85,7 +85,7 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
                 )}
                 <Link
                   href={`/author/${post.author.slug.current}`}
-                  className="hover:text-blue-600 transition-colors"
+                  className="text-[rgb(79,79,79)] hover:text-[rgb(79,79,79)] transition-colors"
                 >
                   {post.author.name}
                 </Link>
