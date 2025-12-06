@@ -22,8 +22,8 @@
     "@sanity/vision": "^4.10.2",
     "next": "^15.5.7",
     "next-sanity": "^11.4.2",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
     "sanity": "^4.10.2",
     "sanity-plugin-asset-source-unsplash": "^4.0.1"
   },
