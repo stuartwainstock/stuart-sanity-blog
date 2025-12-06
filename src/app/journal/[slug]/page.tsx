@@ -21,6 +21,9 @@ async function getPost(slug: string): Promise<Post | null> {
   }
 }
 
+// Revalidate every hour
+export const revalidate = 3600
+
 export async function generateStaticParams() {
   try {
     const posts = await sanityClient.fetch<Post[]>(POSTS_QUERY)
@@ -157,7 +160,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             fill
             className="object-cover"
             priority
-            unoptimized
           />
         </div>
       )}

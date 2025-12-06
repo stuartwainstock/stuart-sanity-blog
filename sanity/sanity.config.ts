@@ -7,8 +7,8 @@ import {author, blockContent, category, homepage, page, post, seo, siteSettings}
 export default defineConfig({
   name: 'default',
   title: 'Blog CMS',
-  projectId: 'ojv692hs',
-  dataset: 'production',
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'ojv692hs',
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
   basePath: '/studio', // This is important for the studio route
   plugins: [
     structureTool({

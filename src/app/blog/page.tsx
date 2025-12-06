@@ -4,6 +4,9 @@ import { Post, Category } from '@/lib/types'
 import PostCard from '@/components/PostCard'
 import Link from 'next/link'
 
+// Revalidate every hour
+export const revalidate = 3600
+
 async function getBlogData() {
   try {
     const [posts, categories] = await Promise.all([

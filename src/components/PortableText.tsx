@@ -17,7 +17,6 @@ const components: PortableTextComponents = {
           width={800}
           height={600}
           className="rounded-lg"
-          unoptimized
         />
         {value.caption && (
           <p className="text-sm text-gray-600 text-center mt-2 italic">
@@ -33,7 +32,12 @@ const components: PortableTextComponents = {
     ),
     codeBlock: ({ value }: any) => (
       <div className="my-8">
-        <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
+        <pre 
+          className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"
+          role="region"
+          aria-label={`Code block: ${value.language || 'text'}`}
+          tabIndex={0}
+        >
           <code className={`language-${value.language || 'text'}`}>
             {value.code}
           </code>

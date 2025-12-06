@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { SiteSettings, Page } from '@/lib/types'
 import { getImageUrl } from '@/lib/sanity'
 
@@ -13,6 +13,9 @@ interface NavigationProps {
 
 export default function Navigation({ siteSettings, navigationPages = [] }: NavigationProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  const firstLinkRef = useRef<HTMLAnchorElement>(null)
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
@@ -21,6 +24,31 @@ export default function Navigation({ siteSettings, navigationPages = [] }: Navig
   const closeMenu = () => {
     setIsMenuOpen(false)
   }
+
+  // Focus management for mobile menu
+  useEffect(() => {
+    if (isMenuOpen && firstLinkRef.current) {
+      // Focus first link when menu opens
+      firstLinkRef.current.focus()
+    } else if (!isMenuOpen && buttonRef.current) {
+      // Return focus to button when menu closes
+      buttonRef.current.focus()
+    }
+  }, [isMenuOpen])
+
+  // Close menu on Escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isMenuOpen) {
+        closeMenu()
+      }
+    }
+
+    if (isMenuOpen) {
+      document.addEventListener('keydown', handleEscape)
+      return () => document.removeEventListener('keydown', handleEscape)
+    }
+  }, [isMenuOpen])
 
   return (
     <nav 
@@ -39,11 +67,10 @@ export default function Navigation({ siteSettings, navigationPages = [] }: Navig
               {siteSettings?.logo && (
                 <Image
                   src={getImageUrl(siteSettings.logo, 32, 32)}
-                  alt=""
+                  alt={siteSettings.logo.alt || `${siteSettings?.title || 'Blog'} logo`}
                   width={32}
                   height={32}
                   className="rounded mr-3"
-                  unoptimized
                 />
               )}
               <span className="font-medium text-lg text-gray-900">
@@ -80,6 +107,7 @@ export default function Navigation({ siteSettings, navigationPages = [] }: Navig
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center">
             <button
+              ref={buttonRef}
               onClick={toggleMenu}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -106,15 +134,19 @@ export default function Navigation({ siteSettings, navigationPages = [] }: Navig
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <div 
+            ref={menuRef}
             id="mobile-menu"
             className="md:hidden"
             aria-label="Mobile navigation menu"
+            role="menu"
           >
             <div className="px-6 pt-4 pb-6 space-y-2 bg-[#e8e8e8] border-t border-gray-200">
               <Link
+                ref={firstLinkRef}
                 href="/"
                 className="block text-gray-600 hover:text-gray-900 focus:text-gray-900 px-3 py-2 text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md"
                 onClick={closeMenu}
+                role="menuitem"
               >
                 Home
               </Link>
@@ -122,6 +154,7 @@ export default function Navigation({ siteSettings, navigationPages = [] }: Navig
                 href="/journal"
                 className="block text-gray-600 hover:text-gray-900 focus:text-gray-900 px-3 py-2 text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md"
                 onClick={closeMenu}
+                role="menuitem"
               >
                 Journal
               </Link>
@@ -131,6 +164,7 @@ export default function Navigation({ siteSettings, navigationPages = [] }: Navig
                   href={`/${page.slug.current}`}
                   className="block text-gray-600 hover:text-gray-900 focus:text-gray-900 px-3 py-2 text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md"
                   onClick={closeMenu}
+                  role="menuitem"
                 >
                   {page.title}
                 </Link>

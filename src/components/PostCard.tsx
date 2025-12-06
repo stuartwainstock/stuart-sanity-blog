@@ -25,7 +25,6 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
               alt={post.mainImage.alt || post.title}
               fill
               className="object-cover hover:scale-105 transition-transform duration-300"
-              unoptimized
             />
           </Link>
           {post.mainImage.credit && (
@@ -82,7 +81,6 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
                     width={32}
                     height={32}
                     className="rounded-full"
-                    unoptimized
                   />
                 )}
                 <Link

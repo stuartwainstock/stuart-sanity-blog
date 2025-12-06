@@ -12,6 +12,9 @@ interface AuthorPageProps {
   }
 }
 
+// Revalidate every hour
+export const revalidate = 3600
+
 async function getAuthorData(slug: string) {
   try {
     const [author, posts] = await Promise.all([
@@ -73,7 +76,6 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
                   alt={author.image.alt || author.name}
                   fill
                   className="rounded-full object-cover border-4 border-white shadow-lg"
-                  unoptimized
                 />
               </div>
             )}

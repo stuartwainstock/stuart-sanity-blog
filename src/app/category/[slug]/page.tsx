@@ -25,6 +25,9 @@ async function getCategoryData(slug: string) {
   }
 }
 
+// Revalidate every hour
+export const revalidate = 3600
+
 export async function generateStaticParams() {
   try {
     const categories = await sanityClient.fetch<Category[]>(CATEGORIES_QUERY)
