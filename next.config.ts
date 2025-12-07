@@ -52,17 +52,17 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=()'
+            value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()'
           },
           {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.sanity.io",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.sanity.io https://vercel.live",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com data:",
               "img-src 'self' data: blob: https://cdn.sanity.io",
-              "connect-src 'self' https://*.sanity.io https://*.sanity.run",
+              "connect-src 'self' https://*.sanity.io https://*.sanity.run https://vercel.live",
               "frame-src 'self' https://*.sanity.io",
               "object-src 'none'",
               "base-uri 'self'",
