@@ -4,6 +4,13 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  compiler: {
+    // Target modern browsers to reduce transpilation and polyfills
+    // This reduces bundle size and improves performance
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn'],
+    } : false,
+  },
   images: {
     remotePatterns: [
       {
