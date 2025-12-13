@@ -1,9 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   compiler: {
     // Target modern browsers to reduce transpilation and polyfills
     // This reduces bundle size and improves performance
