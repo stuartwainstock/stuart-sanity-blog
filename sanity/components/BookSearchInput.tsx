@@ -201,7 +201,7 @@ export default function BookSearchInput(props: StringInputProps) {
         Can't find the book? You can still enter the details manually in the fields below.
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes spin {
           to { transform: rotate(360deg); }
         }
