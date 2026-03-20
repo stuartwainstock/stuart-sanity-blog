@@ -9,7 +9,7 @@ import SpeakingEngagements from '@/components/SpeakingEngagements'
 import ReadingList from '@/components/ReadingList'
 
 interface PageProps {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 async function getPage(slug: string): Promise<Page | null> {
@@ -38,7 +38,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PageProps) {
-  const page = await getPage(params.slug)
+  const { slug } = await params
+  const page = await getPage(slug)
   
   if (!page) {
     return {
@@ -69,7 +70,8 @@ export async function generateMetadata({ params }: PageProps) {
 }
 
 export default async function PageComponent({ params }: PageProps) {
-  const page = await getPage(params.slug)
+  const { slug } = await params
+  const page = await getPage(slug)
 
   if (!page) {
     notFound()

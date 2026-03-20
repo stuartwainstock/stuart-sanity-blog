@@ -7,9 +7,9 @@ import { getImageUrl } from '@/lib/sanity'
 import Link from 'next/link'
 
 interface AuthorPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 // Revalidate every hour
@@ -29,7 +29,8 @@ async function getAuthorData(slug: string) {
 }
 
 export async function generateMetadata({ params }: AuthorPageProps) {
-  const { author } = await getAuthorData(params.slug)
+  const { slug } = await params
+  const { author } = await getAuthorData(slug)
   
   if (!author) {
     return {
@@ -44,7 +45,8 @@ export async function generateMetadata({ params }: AuthorPageProps) {
 }
 
 export default async function AuthorPage({ params }: AuthorPageProps) {
-  const { author, posts } = await getAuthorData(params.slug)
+  const { slug } = await params
+  const { author, posts } = await getAuthorData(slug)
 
   if (!author) {
     return (

@@ -6,7 +6,7 @@ import { Post, Category } from '@/lib/types'
 import PostCard from '@/components/PostCard'
 
 interface CategoryPageProps {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 async function getCategoryData(slug: string) {
@@ -41,7 +41,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: CategoryPageProps) {
-  const { currentCategory } = await getCategoryData(params.slug)
+  const { slug } = await params
+  const { currentCategory } = await getCategoryData(slug)
   
   if (!currentCategory) {
     return {
@@ -56,7 +57,8 @@ export async function generateMetadata({ params }: CategoryPageProps) {
 }
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
-  const { posts, categories, currentCategory } = await getCategoryData(params.slug)
+  const { slug } = await params
+  const { posts, categories, currentCategory } = await getCategoryData(slug)
 
   if (!currentCategory) {
     notFound()
@@ -104,7 +106,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
               All Posts
             </Link>
             {categories
-              .filter(cat => cat.slug.current !== params.slug)
+              .filter(cat => cat.slug.current !== slug)
               .map((category) => (
                 <Link
                   key={category._id}
