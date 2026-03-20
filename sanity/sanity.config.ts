@@ -4,14 +4,10 @@ import {visionTool} from '@sanity/vision'
 import {unsplashImageAsset} from 'sanity-plugin-asset-source-unsplash'
 import {author, blockContent, category, homepage, page, post, seo, siteSettings} from './schemaTypes'
 
-const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
-const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET
-
-if (!projectId || !dataset) {
-  throw new Error(
-    'Missing Sanity environment variables. Set NEXT_PUBLIC_SANITY_PROJECT_ID and NEXT_PUBLIC_SANITY_DATASET.'
-  )
-}
+// Studio runs as static assets in production, so env vars may not be present
+// at runtime. Keep env override support, but fall back to this project's values.
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'ojv692hs'
+const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
 
 export default defineConfig({
   name: 'default',
