@@ -2,9 +2,18 @@ import { createClient } from 'next-sanity'
 import imageUrlBuilder from '@sanity/image-url'
 import { SanityImage } from './types'
 
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
+const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET
+
+if (!projectId || !dataset) {
+  throw new Error(
+    'Missing Sanity environment variables. Set NEXT_PUBLIC_SANITY_PROJECT_ID and NEXT_PUBLIC_SANITY_DATASET.'
+  )
+}
+
 export const config = {
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'ojv692hs',
+  dataset,
+  projectId,
   apiVersion: '2023-05-03',
   useCdn: process.env.NODE_ENV === 'production', // Use CDN in production for better performance
 }

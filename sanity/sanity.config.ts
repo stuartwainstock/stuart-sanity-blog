@@ -4,11 +4,20 @@ import {visionTool} from '@sanity/vision'
 import {unsplashImageAsset} from 'sanity-plugin-asset-source-unsplash'
 import {author, blockContent, category, homepage, page, post, seo, siteSettings} from './schemaTypes'
 
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
+const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET
+
+if (!projectId || !dataset) {
+  throw new Error(
+    'Missing Sanity environment variables. Set NEXT_PUBLIC_SANITY_PROJECT_ID and NEXT_PUBLIC_SANITY_DATASET.'
+  )
+}
+
 export default defineConfig({
   name: 'default',
   title: 'Blog CMS',
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'ojv692hs',
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
+  projectId,
+  dataset,
   basePath: '/studio', // This is important for the studio route
   plugins: [
     structureTool({

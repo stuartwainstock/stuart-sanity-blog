@@ -14,7 +14,6 @@
     "typecheck": "cd sanity && npm run typecheck"
   },
   "dependencies": {
-    "@next/font": "^14.2.15",
     "@portabletext/react": "^4.0.3",
     "@sanity/client": "^7.11.2",
     "@sanity/image-url": "^1.2.0",
