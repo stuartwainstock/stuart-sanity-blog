@@ -67,16 +67,16 @@ export default function ReadingList({ books }: ReadingListProps) {
               {groupedBooks[category].map((book, index) => {
                 const bookContent = (
                   <div 
-                    className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-6 py-3 border-b border-gray-100 last:border-b-0 hover:bg-gray-50/30 transition-colors rounded-md px-2 -mx-2"
+                    className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-6 py-2 border-b border-gray-100 last:border-b-0 hover:bg-gray-50/30 transition-colors rounded-md px-2 -mx-2"
                   >
                     <div className="flex-1">
                       <h4 className="text-lg font-medium text-gray-900 mb-1 leading-tight">
                         {book.title}
                       </h4>
-                      <p className="text-base text-gray-600 mb-2">
+                      <p className="text-base text-gray-600 mb-1">
                         by {book.author}
                       </p>
-                      <div className="flex flex-wrap gap-3 text-sm text-gray-500 mb-3">
+                      <div className="flex flex-wrap gap-3 text-sm text-gray-500 mb-1">
                         {book.publishedYear && (
                           <span className="bg-gray-100 px-2 py-1 rounded-md">{book.publishedYear}</span>
                         )}
