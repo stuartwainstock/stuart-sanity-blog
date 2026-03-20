@@ -58,16 +58,12 @@ export const seo = defineType({
     defineField({
       name: 'noIndex',
       title: 'Search Engine Visibility',
-      type: 'string',
+      type: 'boolean',
       options: {
-        list: [
-          {title: 'Show in search results', value: 'false'},
-          {title: 'Hide from search results', value: 'true'},
-        ],
-        layout: 'radio',
+        layout: 'checkbox',
       },
       description: 'Choose whether this page should appear in Google and other search engines. Hide pages that are private, drafts, or not meant for public discovery.',
-      initialValue: 'false',
+      initialValue: false,
     }),
   ],
   preview: {
