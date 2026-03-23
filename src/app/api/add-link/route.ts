@@ -8,6 +8,15 @@ const sanityWriteToken = process.env.SANITY_API_WRITE_TOKEN
 const addLinkApiKey = process.env.QUICK_ADD_API_KEY
 
 const hasSanityConfig = Boolean(projectId && dataset && sanityWriteToken)
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, x-api-key',
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: corsHeaders })
+}
 
 function isValidUrl(value: string): boolean {
   try {
@@ -36,13 +45,13 @@ function getSourceDomain(value: string): string {
 export async function POST(request: NextRequest) {
   const incomingApiKey = request.headers.get('x-api-key')
   if (!addLinkApiKey || incomingApiKey !== addLinkApiKey) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
   }
 
   if (!hasSanityConfig) {
     return NextResponse.json(
       { error: 'Server is missing Sanity write configuration.' },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     )
   }
 
@@ -50,12 +59,12 @@ export async function POST(request: NextRequest) {
   try {
     body = await request.json()
   } catch {
-    return NextResponse.json({ error: 'Invalid JSON body.' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid JSON body.' }, { status: 400, headers: corsHeaders })
   }
 
   const url = body.url?.trim()
   if (!url || !isValidUrl(url)) {
-    return NextResponse.json({ error: 'Please provide a valid URL.' }, { status: 400 })
+    return NextResponse.json({ error: 'Please provide a valid URL.' }, { status: 400, headers: corsHeaders })
   }
 
   try {
@@ -95,7 +104,7 @@ export async function POST(request: NextRequest) {
           url: existing.url || normalizedUrl,
           sourceDomain: existing.sourceDomain || sourceDomain,
         },
-        { status: 200 }
+        { status: 200, headers: corsHeaders }
       )
     }
 
@@ -103,7 +112,7 @@ export async function POST(request: NextRequest) {
     if (error) {
       return NextResponse.json(
         { error: `Failed to fetch metadata: ${error}` },
-        { status: 422 }
+        { status: 422, headers: corsHeaders }
       )
     }
 
@@ -145,13 +154,13 @@ export async function POST(request: NextRequest) {
         url: created.url,
         sourceDomain: created.sourceDomain,
       },
-      { status: 201 }
+      { status: 201, headers: corsHeaders }
     )
   } catch (err) {
     console.error('Failed to add link:', err)
     return NextResponse.json(
       { error: 'Unexpected server error while adding link.' },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     )
   }
 }
