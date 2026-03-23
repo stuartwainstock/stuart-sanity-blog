@@ -124,24 +124,49 @@ async function createResourceFromUrl(url: string) {
     let image = ''
     let metadataWarning: string | undefined
 
-    const { result, error } = await ogs({ url, timeout: 10000 })
-    if (error) {
-      metadataWarning = String(error)
-    } else {
-      title =
-        result.ogTitle ||
-        result.twitterTitle ||
-        result.dcTitle ||
-        url
-      summary =
-        result.ogDescription ||
-        result.twitterDescription ||
-        result.dcDescription ||
-        ''
-      image =
-        result.ogImage?.[0]?.url ||
-        result.twitterImage?.[0]?.url ||
-        ''
+    // ogs can throw, or return { error: true, result: { error: "...", ... } } — never block create.
+    try {
+      const ogsResponse = await ogs({ url, timeout: 10000 })
+      const { result, error } = ogsResponse as {
+        result?: {
+          success?: boolean
+          error?: string
+          ogTitle?: string
+          twitterTitle?: string
+          dcTitle?: string
+          ogDescription?: string
+          twitterDescription?: string
+          dcDescription?: string
+          ogImage?: { url?: string }[]
+          twitterImage?: { url?: string }[]
+        }
+        error?: boolean | string
+      }
+
+      if (error) {
+        const fromResult =
+          result && typeof result.error === 'string' ? result.error : undefined
+        metadataWarning =
+          fromResult ||
+          (typeof error === 'string' ? error : JSON.stringify(ogsResponse))
+      } else if (result) {
+        title =
+          result.ogTitle ||
+          result.twitterTitle ||
+          result.dcTitle ||
+          url
+        summary =
+          result.ogDescription ||
+          result.twitterDescription ||
+          result.dcDescription ||
+          ''
+        image =
+          result.ogImage?.[0]?.url ||
+          result.twitterImage?.[0]?.url ||
+          ''
+      }
+    } catch (ogsErr) {
+      metadataWarning = getErrorDetail(ogsErr)
     }
 
     // Sanity `url` fields reject empty strings — omit `image` when missing.
