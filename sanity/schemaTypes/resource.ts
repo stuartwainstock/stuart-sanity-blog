@@ -45,11 +45,13 @@ export const resource = defineType({
           { title: 'Inbox', value: 'inbox' },
           { title: 'Reviewed', value: 'reviewed' },
           { title: 'Published', value: 'published' },
+          { title: 'Rejected', value: 'rejected' },
         ],
         layout: 'radio',
       },
       initialValue: 'inbox',
       validation: (Rule) => Rule.required(),
+      description: 'Rejected items are queued for deletion in the Rejected view.',
     }),
     defineField({
       name: 'mediaType',

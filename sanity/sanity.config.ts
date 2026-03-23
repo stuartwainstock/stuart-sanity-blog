@@ -91,6 +91,15 @@ export default defineConfig({
                           .filter('_type == "resource" && status == "published"')
                           .defaultOrdering([{field: 'addedDate', direction: 'desc'}])
                       ),
+                    S.listItem()
+                      .title('Rejected (Delete Queue)')
+                      .child(
+                        S.documentList()
+                          .title('Rejected Resources (Queued for Deletion)')
+                          .schemaType('resource')
+                          .filter('_type == "resource" && status == "rejected"')
+                          .defaultOrdering([{field: 'addedDate', direction: 'desc'}])
+                      ),
                   ])
               ),
             S.divider(),

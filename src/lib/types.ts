@@ -69,7 +69,7 @@ export interface SpeakingEngagement {
 }
 
 export type ResourceMediaType = 'article' | 'book' | 'video' | 'podcast' | 'tool' | 'other'
-export type ResourceStatus = 'inbox' | 'reviewed' | 'published'
+export type ResourceStatus = 'inbox' | 'reviewed' | 'published' | 'rejected'
 
 export interface Resource {
   _id: string
