@@ -111,6 +111,7 @@ async function createResourceFromUrl(url: string) {
       result.twitterImage?.[0]?.url ||
       ''
 
+    // Sanity `url` fields reject empty strings — omit `image` when missing.
     const created = await client.create({
       _type: 'resource',
       title,
@@ -118,7 +119,7 @@ async function createResourceFromUrl(url: string) {
       sourceDomain,
       normalizedUrl,
       summary,
-      image,
+      ...(image ? { image } : {}),
       mediaType: 'article',
       status: 'inbox',
       tags: [],
@@ -138,7 +139,16 @@ async function createResourceFromUrl(url: string) {
     }
   } catch (err) {
     console.error('Failed to add link:', err)
-    return { status: 500, body: { error: 'Unexpected server error while adding link.' } }
+    const message =
+      err instanceof Error ? err.message : typeof err === 'string' ? err : 'Unknown error'
+    return {
+      status: 500,
+      body: {
+        error: 'Unexpected server error while adding link.',
+        // Helps debug Vercel logs + client without exposing stack in production detail field
+        detail: message,
+      },
+    }
   }
 }
 
