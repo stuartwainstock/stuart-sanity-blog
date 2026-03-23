@@ -1,45 +1,37 @@
 import Link from 'next/link'
-import { Book } from '@/lib/types'
+import { Resource } from '@/lib/types'
 
 interface ReadingListProps {
-  books: Book[]
+  resources: Resource[]
 }
 
-export default function ReadingList({ books }: ReadingListProps) {
-  if (!books || books.length === 0) {
+export default function ReadingList({ resources }: ReadingListProps) {
+  if (!resources || resources.length === 0) {
     return null
   }
 
-  const getCategoryLabel = (category: string) => {
-    const categoryLabels: Record<string, string> = {
-      'leadership': 'Leadership',
-      'visual-design': 'Visual Design',
-      'design-systems': 'Design Systems',
-      'user-experience': 'User Experience',
-      'product-management': 'Product Management',
-      'business': 'Business',
-      'technology': 'Technology',
-      'psychology': 'Psychology',
-      'philosophy': 'Philosophy',
-      'fiction': 'Fiction',
-      'biography': 'Biography',
-      'other': 'Other',
+  const getMediaLabel = (mediaType: string) => {
+    const labels: Record<string, string> = {
+      article: 'Articles',
+      book: 'Books',
+      video: 'Videos',
+      podcast: 'Podcasts',
+      tool: 'Tools',
+      other: 'Other',
     }
-    return categoryLabels[category] || category
+    return labels[mediaType] || mediaType
   }
 
-  // Group books by category
-  const groupedBooks = books.reduce((acc, book) => {
-    const category = book.category
-    if (!acc[category]) {
-      acc[category] = []
+  const groupedResources = resources.reduce((acc, resource) => {
+    const mediaType = resource.mediaType || 'other'
+    if (!acc[mediaType]) {
+      acc[mediaType] = []
     }
-    acc[category].push(book)
+    acc[mediaType].push(resource)
     return acc
-  }, {} as Record<string, Book[]>)
+  }, {} as Record<string, Resource[]>)
 
-  // Sort categories alphabetically
-  const sortedCategories = Object.keys(groupedBooks).sort()
+  const sortedMediaTypes = Object.keys(groupedResources).sort()
 
   return (
     <section 
@@ -50,64 +42,70 @@ export default function ReadingList({ books }: ReadingListProps) {
         id="reading-list-content"
         className="space-y-12"
       >
-        {sortedCategories.map((category) => (
-          <div key={category} className="space-y-4">
+        {sortedMediaTypes.map((mediaType) => (
+          <div key={mediaType} className="space-y-4">
             <h3 
               className="text-xl font-semibold text-gray-800 border-b border-gray-200 pb-2"
-              id={`category-${category}`}
+              id={`media-type-${mediaType}`}
             >
-              {getCategoryLabel(category)}
+              {getMediaLabel(mediaType)}
             </h3>
             
             <div 
               className="space-y-4"
-              aria-labelledby={`category-${category}`}
-              aria-label={`Books in ${getCategoryLabel(category)} category`}
+              aria-labelledby={`media-type-${mediaType}`}
+              aria-label={`Resources in ${getMediaLabel(mediaType)} group`}
             >
-              {groupedBooks[category].map((book, index) => {
-                const bookContent = (
+              {groupedResources[mediaType].map((resource) => {
+                const resourceContent = (
                   <div 
                     className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-6 py-2 border-b border-gray-100 last:border-b-0 hover:bg-gray-50/30 transition-colors rounded-md px-2 -mx-2"
                   >
                     <div className="flex-1">
                       <h4 className="text-lg font-medium text-gray-900 mb-1 leading-tight">
-                        {book.title}
+                        {resource.title}
                       </h4>
-                      <p className="text-base text-gray-600 mb-1">
-                        by {book.author}
-                      </p>
                       <div className="flex flex-wrap gap-3 text-sm text-gray-500 mb-1">
-                        {book.publishedYear && (
-                          <span className="bg-gray-100 px-2 py-1 rounded-md">{book.publishedYear}</span>
+                        {resource.sourceDomain && (
+                          <span className="bg-gray-100 px-2 py-1 rounded-md">{resource.sourceDomain}</span>
                         )}
-                        {book.publisher && (
-                          <span className="bg-gray-100 px-2 py-1 rounded-md">{book.publisher}</span>
+                        <span className="bg-gray-100 px-2 py-1 rounded-md capitalize">{resource.mediaType}</span>
+                        {resource.addedDate && (
+                          <span className="bg-gray-100 px-2 py-1 rounded-md">
+                            {new Date(resource.addedDate).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                            })}
+                          </span>
                         )}
-                        {book.isbn && (
-                          <span className="bg-gray-100 px-2 py-1 rounded-md">ISBN: {book.isbn}</span>
+                        {resource.tags && resource.tags.length > 0 && (
+                          <span className="bg-gray-100 px-2 py-1 rounded-md">
+                            {resource.tags.slice(0, 2).join(', ')}
+                          </span>
                         )}
                       </div>
-                      {book.description && (
+                      {resource.summary && (
                         <p className="text-base text-gray-600 leading-relaxed">
-                          {book.description}
+                          {resource.summary}
                         </p>
                       )}
                     </div>
                   </div>
                 )
 
-                return book.url ? (
+                return resource.url ? (
                   <Link
-                    key={book._key || index}
-                    href={book.url}
+                    key={resource._id}
+                    href={resource.url}
                     className="block focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-lg transition-all duration-200"
-                    aria-label={`${book.title} by ${book.author} - ${getCategoryLabel(book.category)}`}
+                    aria-label={`${resource.title} - ${getMediaLabel(resource.mediaType)}`}
                   >
-                    {bookContent}
+                    {resourceContent}
                   </Link>
                 ) : (
-                  <div key={book._key || index}>
-                    {bookContent}
+                  <div key={resource._id}>
+                    {resourceContent}
                   </div>
                 )
               })}

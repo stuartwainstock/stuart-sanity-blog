@@ -68,17 +68,21 @@ export interface SpeakingEngagement {
   description?: string
 }
 
-export interface Book {
-  _key: string
+export type ResourceMediaType = 'article' | 'book' | 'video' | 'podcast' | 'tool' | 'other'
+export type ResourceStatus = 'inbox' | 'reviewed' | 'published'
+
+export interface Resource {
+  _id: string
   title: string
-  author: string
-  category: 'leadership' | 'visual-design' | 'design-systems' | 'user-experience' | 'product-management' | 'business' | 'technology' | 'psychology' | 'philosophy' | 'fiction' | 'biography' | 'other'
-  url?: string
-  description?: string
-  isbn?: string
-  publishedYear?: string
-  publisher?: string
-  coverId?: string
+  url: string
+  summary?: string
+  image?: string
+  addedDate: string
+  mediaType: ResourceMediaType
+  status: ResourceStatus
+  sourceDomain?: string
+  normalizedUrl?: string
+  tags?: string[]
 }
 
 export interface Page {
@@ -93,7 +97,6 @@ export interface Page {
   showInNavigation?: boolean
   navigationOrder?: number
   speakingEngagements?: SpeakingEngagement[]
-  readingList?: Book[]
   seo?: SEO
 }
 

@@ -183,18 +183,6 @@ export const PAGE_QUERY = groq`
       url,
       description
     },
-    readingList[] {
-      _key,
-      title,
-      author,
-      category,
-      url,
-      description,
-      isbn,
-      publishedYear,
-      publisher,
-      coverId
-    },
     seo
   }
 `
@@ -394,5 +382,24 @@ export const HOMEPAGE_QUERY = groq`
       keywords,
       noIndex
     }
+  }
+`
+
+export const PUBLISHED_RESOURCES_QUERY = groq`
+  *[
+    _type == "resource" &&
+    status == "published"
+  ] | order(addedDate desc) {
+    _id,
+    title,
+    url,
+    summary,
+    image,
+    addedDate,
+    mediaType,
+    status,
+    sourceDomain,
+    normalizedUrl,
+    tags
   }
 `

@@ -202,7 +202,7 @@ QUICK_ADD_API_KEY=your-bookmarklet-secret
 
 ### Quick-Add Link Bookmarklet
 
-This project includes a secure endpoint at `/api/add-link` that can create `link` documents in Sanity by scraping Open Graph metadata from a URL.
+This project includes a secure endpoint at `/api/add-link` that creates `resource` documents in Sanity by scraping Open Graph metadata from a URL.
 
 #### 1) Set required env vars
 
@@ -228,18 +228,26 @@ javascript:(async()=>{const endpoint='https://stuart-sanity-blog.vercel.app/api/
 
 #### 3) Use it
 
-Open any page you want to save, click the bookmarklet, and a new `link` document will be created in Sanity with:
+Open any page you want to save, click the bookmarklet, and a new `resource` document will be created in Sanity with:
 
 - `title`
 - `url`
 - `summary`
 - `image` (OG image URL)
 - `addedDate` (current time)
+- `mediaType: "article"`
+- `status: "inbox"` (publish from Studio when ready)
 
 The API also performs two quality-of-life behaviors:
 
 - **URL dedupe**: uses a normalized URL (hash removed, trailing slash normalized) and skips creating duplicates.
 - **Domain tagging**: auto-populates `sourceDomain` (for example, `nytimes.com`) from the saved link.
+
+### Reading List Workflow
+
+- Capture from the browser bookmarklet into the `Resources` collection.
+- Review items in Studio and update `status` from `inbox`/`reviewed` to `published`.
+- Only `published` resources render on `/reading-list`.
 
 ## Development
 

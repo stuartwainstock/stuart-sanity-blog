@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
       url?: string
       sourceDomain?: string
     } | null>(
-      `*[_type == "link" && normalizedUrl == $normalizedUrl][0]{
+      `*[_type == "resource" && normalizedUrl == $normalizedUrl][0]{
         _id,
         title,
         url,
@@ -123,13 +123,16 @@ export async function POST(request: NextRequest) {
       ''
 
     const created = await client.create({
-      _type: 'link',
+      _type: 'resource',
       title,
       url: normalizedUrl,
       sourceDomain,
       normalizedUrl,
       summary,
       image,
+      mediaType: 'article',
+      status: 'inbox',
+      tags: [],
       addedDate: new Date().toISOString(),
     })
 

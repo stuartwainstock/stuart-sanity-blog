@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { sanityClient } from '@/lib/sanity'
-import { PAGE_QUERY, PAGES_QUERY } from '@/lib/queries'
-import { Page } from '@/lib/types'
+import { PAGE_QUERY, PAGES_QUERY, PUBLISHED_RESOURCES_QUERY } from '@/lib/queries'
+import { Page, Resource } from '@/lib/types'
 import { getImageUrl } from '@/lib/sanity'
 import PortableText from '@/components/PortableText'
 import SpeakingEngagements from '@/components/SpeakingEngagements'
@@ -75,6 +75,12 @@ export default async function PageComponent({ params }: PageProps) {
 
   if (!page) {
     notFound()
+  }
+
+  let readingListResources: Resource[] = []
+  if (slug === 'reading-list') {
+    const resources = await sanityClient.fetch<Resource[]>(PUBLISHED_RESOURCES_QUERY)
+    readingListResources = resources || []
   }
 
   return (
@@ -154,8 +160,8 @@ export default async function PageComponent({ params }: PageProps) {
         )}
         
         {/* Reading List */}
-        {page.readingList && page.readingList.length > 0 && (
-          <ReadingList books={page.readingList} />
+        {readingListResources.length > 0 && (
+          <ReadingList resources={readingListResources} />
         )}
       </main>
     </div>

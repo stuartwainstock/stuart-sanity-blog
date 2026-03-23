@@ -2,7 +2,7 @@ import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
 import {unsplashImageAsset} from 'sanity-plugin-asset-source-unsplash'
-import {author, blockContent, category, homepage, link, page, post, seo, siteSettings} from './schemaTypes'
+import {author, blockContent, category, homepage, link, page, post, resource, seo, siteSettings} from './schemaTypes'
 
 // Studio runs as static assets in production, so env vars may not be present
 // at runtime. Keep env override support, but fall back to this project's values.
@@ -50,6 +50,49 @@ export default defineConfig({
               .title('Links')
               .schemaType('link')
               .child(S.documentTypeList('link').title('Links')),
+            S.listItem()
+              .title('Resources')
+              .schemaType('resource')
+              .child(
+                S.list()
+                  .title('Resources')
+                  .items([
+                    S.listItem()
+                      .title('All Resources')
+                      .child(
+                        S.documentTypeList('resource')
+                          .title('All Resources')
+                          .defaultOrdering([{field: 'addedDate', direction: 'desc'}])
+                      ),
+                    S.listItem()
+                      .title('Inbox')
+                      .child(
+                        S.documentList()
+                          .title('Inbox Resources')
+                          .schemaType('resource')
+                          .filter('_type == "resource" && status == "inbox"')
+                          .defaultOrdering([{field: 'addedDate', direction: 'desc'}])
+                      ),
+                    S.listItem()
+                      .title('Reviewed')
+                      .child(
+                        S.documentList()
+                          .title('Reviewed Resources')
+                          .schemaType('resource')
+                          .filter('_type == "resource" && status == "reviewed"')
+                          .defaultOrdering([{field: 'addedDate', direction: 'desc'}])
+                      ),
+                    S.listItem()
+                      .title('Published')
+                      .child(
+                        S.documentList()
+                          .title('Published Resources')
+                          .schemaType('resource')
+                          .filter('_type == "resource" && status == "published"')
+                          .defaultOrdering([{field: 'addedDate', direction: 'desc'}])
+                      ),
+                  ])
+              ),
             S.divider(),
             S.listItem()
               .title('Authors')
@@ -65,6 +108,6 @@ export default defineConfig({
     unsplashImageAsset(),
   ],
   schema: {
-    types: [author, blockContent, category, homepage, link, page, post, seo, siteSettings],
+    types: [author, blockContent, category, homepage, link, page, post, resource, seo, siteSettings],
   },
 })
