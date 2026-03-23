@@ -42,6 +42,33 @@ function getSourceDomain(value: string): string {
   return new URL(value).hostname.replace(/^www\./, '')
 }
 
+/** Human-readable message when ogs returns `error: true` (result.error may not always be a string at runtime). */
+function formatOgsFailure(ogsResponse: unknown): string {
+  if (!ogsResponse || typeof ogsResponse !== 'object') {
+    return 'Open Graph fetch failed'
+  }
+  const top = ogsResponse as Record<string, unknown>
+  const inner = top.result
+  if (inner && typeof inner === 'object') {
+    const r = inner as Record<string, unknown>
+    if (typeof r.error === 'string' && r.error.length > 0) {
+      const code =
+        r.errorDetails && typeof r.errorDetails === 'object'
+          ? (r.errorDetails as { code?: string }).code
+          : undefined
+      return code ? `${r.error} (${code})` : r.error
+    }
+  }
+  if (typeof top.error === 'string' && top.error.length > 0) {
+    return top.error
+  }
+  try {
+    return JSON.stringify(ogsResponse)
+  } catch {
+    return 'Open Graph fetch failed'
+  }
+}
+
 function getErrorDetail(err: unknown): string {
   if (err instanceof Error) {
     return err.message
@@ -144,11 +171,7 @@ async function createResourceFromUrl(url: string) {
       }
 
       if (error) {
-        const fromResult =
-          result && typeof result.error === 'string' ? result.error : undefined
-        metadataWarning =
-          fromResult ||
-          (typeof error === 'string' ? error : JSON.stringify(ogsResponse))
+        metadataWarning = formatOgsFailure(ogsResponse)
       } else if (result) {
         title =
           result.ogTitle ||
