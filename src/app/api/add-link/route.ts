@@ -42,6 +42,32 @@ function getSourceDomain(value: string): string {
   return new URL(value).hostname.replace(/^www\./, '')
 }
 
+function getErrorDetail(err: unknown): string {
+  if (err instanceof Error) {
+    return err.message
+  }
+  if (typeof err === 'string') {
+    return err
+  }
+  if (err && typeof err === 'object') {
+    const maybe = err as Record<string, unknown>
+    const known =
+      (typeof maybe.message === 'string' && maybe.message) ||
+      (typeof maybe.description === 'string' && maybe.description) ||
+      (typeof maybe.error === 'string' && maybe.error) ||
+      (typeof maybe.details === 'string' && maybe.details)
+
+    if (known) return known
+
+    try {
+      return JSON.stringify(err)
+    } catch {
+      return 'Unserializable non-Error object thrown'
+    }
+  }
+  return 'Unknown error value thrown'
+}
+
 async function createResourceFromUrl(url: string) {
   if (!hasSanityConfig) {
     return { status: 500, body: { error: 'Server is missing Sanity write configuration.' } }
@@ -139,8 +165,7 @@ async function createResourceFromUrl(url: string) {
     }
   } catch (err) {
     console.error('Failed to add link:', err)
-    const message =
-      err instanceof Error ? err.message : typeof err === 'string' ? err : 'Unknown error'
+    const message = getErrorDetail(err)
     return {
       status: 500,
       body: {
