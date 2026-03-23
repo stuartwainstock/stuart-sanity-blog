@@ -196,7 +196,45 @@ For production deployment, set these environment variables:
 ```env
 NEXT_PUBLIC_SANITY_PROJECT_ID=your-project-id
 NEXT_PUBLIC_SANITY_DATASET=production
+SANITY_API_WRITE_TOKEN=your-write-token
+QUICK_ADD_API_KEY=your-bookmarklet-secret
 ```
+
+### Quick-Add Link Bookmarklet
+
+This project includes a secure endpoint at `/api/add-link` that can create `link` documents in Sanity by scraping Open Graph metadata from a URL.
+
+#### 1) Set required env vars
+
+Add these to your local `.env.local` and your production host:
+
+```env
+SANITY_API_WRITE_TOKEN=your-write-token
+QUICK_ADD_API_KEY=your-bookmarklet-secret
+```
+
+- `SANITY_API_WRITE_TOKEN` should be a Sanity token with write access.
+- `QUICK_ADD_API_KEY` is shared between the API route and your bookmarklet.
+
+#### 2) Create a bookmark in Chrome
+
+- Create a new bookmark.
+- Name it something like `Quick Add Link`.
+- Paste this as the bookmark URL (replace domain + key):
+
+```javascript
+javascript:(async()=>{const endpoint='https://stuart-sanity-blog.vercel.app/api/add-link';const apiKey='REPLACE_WITH_YOUR_QUICK_ADD_API_KEY';const url=window.location.href;try{const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey},body:JSON.stringify({url})});const data=await res.json();if(!res.ok)throw new Error(data.error||'Request failed');alert(`Saved: ${data.title||url}`);}catch(e){alert(`Quick-Add failed: ${e.message}`);}})();
+```
+
+#### 3) Use it
+
+Open any page you want to save, click the bookmarklet, and a new `link` document will be created in Sanity with:
+
+- `title`
+- `url`
+- `summary`
+- `image` (OG image URL)
+- `addedDate` (current time)
 
 ## Development
 
