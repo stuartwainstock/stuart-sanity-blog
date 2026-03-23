@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Quick Add Resource",
+  "version": "1.0.0",
+  "description": "Save the current tab as a Resource via /api/add-link.",
+  "permissions": ["activeTab", "tabs", "storage"],
+  "host_permissions": ["https://stuart-sanity-blog.vercel.app/*"],
+  "action": {
+    "default_title": "Quick Add Resource",
+    "default_popup": "popup.html"
+  }
+}

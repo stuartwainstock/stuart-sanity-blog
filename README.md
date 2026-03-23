@@ -249,6 +249,28 @@ The API also performs two quality-of-life behaviors:
 - Review items in Studio and update `status` from `inbox`/`reviewed` to `published`.
 - Only `published` resources render on `/reading-list`.
 
+### Quick-Add Chrome/Arc Extension (Alternative)
+
+If bookmarklets are unreliable in your browser (for example Arc), use the extension in `extensions/quick-add/`.
+
+#### Install (Developer mode)
+
+1. Open `chrome://extensions` (works in Chrome + Arc).
+2. Enable **Developer mode**.
+3. Click **Load unpacked**.
+4. Select `extensions/quick-add` from this repo.
+
+#### Configure + use
+
+1. Open the extension popup.
+2. Set:
+   - Endpoint: `https://stuart-sanity-blog.vercel.app/api/add-link`
+   - API key: your `QUICK_ADD_API_KEY`
+3. Click **Save Settings**.
+4. Navigate to any article and click **Save Current Tab**.
+
+The extension calls your existing `/api/add-link` endpoint and creates `resource` docs with `status: "inbox"`.
+
 ## Development
 
 ### Available Scripts
