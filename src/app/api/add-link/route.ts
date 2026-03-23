@@ -117,25 +117,32 @@ async function createResourceFromUrl(url: string) {
       }
     }
 
+    // Metadata scraping can fail for certificate/network reasons on some sites.
+    // We still create a resource so capture flow never blocks.
+    let title = url
+    let summary = ''
+    let image = ''
+    let metadataWarning: string | undefined
+
     const { result, error } = await ogs({ url, timeout: 10000 })
     if (error) {
-      return { status: 422, body: { error: `Failed to fetch metadata: ${error}` } }
+      metadataWarning = String(error)
+    } else {
+      title =
+        result.ogTitle ||
+        result.twitterTitle ||
+        result.dcTitle ||
+        url
+      summary =
+        result.ogDescription ||
+        result.twitterDescription ||
+        result.dcDescription ||
+        ''
+      image =
+        result.ogImage?.[0]?.url ||
+        result.twitterImage?.[0]?.url ||
+        ''
     }
-
-    const title =
-      result.ogTitle ||
-      result.twitterTitle ||
-      result.dcTitle ||
-      url
-    const summary =
-      result.ogDescription ||
-      result.twitterDescription ||
-      result.dcDescription ||
-      ''
-    const image =
-      result.ogImage?.[0]?.url ||
-      result.twitterImage?.[0]?.url ||
-      ''
 
     // Sanity `url` fields reject empty strings — omit `image` when missing.
     const created = await client.create({
@@ -161,6 +168,7 @@ async function createResourceFromUrl(url: string) {
         title: created.title,
         url: created.url,
         sourceDomain: created.sourceDomain,
+        ...(metadataWarning ? { metadataWarning } : {}),
       },
     }
   } catch (err) {
