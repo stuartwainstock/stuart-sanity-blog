@@ -18,6 +18,21 @@ export const link = defineType({
       validation: (Rule) => Rule.required().uri({ allowRelative: false }),
     }),
     defineField({
+      name: 'sourceDomain',
+      title: 'Source Domain',
+      type: 'string',
+      readOnly: true,
+      description: 'Auto-populated from the URL hostname.',
+    }),
+    defineField({
+      name: 'normalizedUrl',
+      title: 'Normalized URL',
+      type: 'string',
+      hidden: true,
+      readOnly: true,
+      description: 'Internal canonical URL used for deduplication.',
+    }),
+    defineField({
       name: 'summary',
       title: 'Summary',
       type: 'text',

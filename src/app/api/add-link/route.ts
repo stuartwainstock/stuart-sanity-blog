@@ -18,6 +18,21 @@ function isValidUrl(value: string): boolean {
   }
 }
 
+function normalizeUrl(value: string): string {
+  const parsed = new URL(value)
+  parsed.hash = ''
+
+  if (parsed.pathname !== '/' && parsed.pathname.endsWith('/')) {
+    parsed.pathname = parsed.pathname.slice(0, -1)
+  }
+
+  return parsed.toString()
+}
+
+function getSourceDomain(value: string): string {
+  return new URL(value).hostname.replace(/^www\./, '')
+}
+
 export async function POST(request: NextRequest) {
   const incomingApiKey = request.headers.get('x-api-key')
   if (!addLinkApiKey || incomingApiKey !== addLinkApiKey) {
@@ -44,6 +59,46 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    const normalizedUrl = normalizeUrl(url)
+    const sourceDomain = getSourceDomain(normalizedUrl)
+
+    const client = createClient({
+      projectId,
+      dataset,
+      apiVersion: '2023-05-03',
+      token: sanityWriteToken,
+      useCdn: false,
+    })
+
+    const existing = await client.fetch<{
+      _id: string
+      title?: string
+      url?: string
+      sourceDomain?: string
+    } | null>(
+      `*[_type == "link" && normalizedUrl == $normalizedUrl][0]{
+        _id,
+        title,
+        url,
+        sourceDomain
+      }`,
+      { normalizedUrl }
+    )
+
+    if (existing) {
+      return NextResponse.json(
+        {
+          ok: true,
+          duplicate: true,
+          id: existing._id,
+          title: existing.title || normalizedUrl,
+          url: existing.url || normalizedUrl,
+          sourceDomain: existing.sourceDomain || sourceDomain,
+        },
+        { status: 200 }
+      )
+    }
+
     const { result, error } = await ogs({ url, timeout: 10000 })
     if (error) {
       return NextResponse.json(
@@ -67,25 +122,26 @@ export async function POST(request: NextRequest) {
       result.twitterImage?.[0]?.url ||
       ''
 
-    const client = createClient({
-      projectId,
-      dataset,
-      apiVersion: '2023-05-03',
-      token: sanityWriteToken,
-      useCdn: false,
-    })
-
     const created = await client.create({
       _type: 'link',
       title,
-      url,
+      url: normalizedUrl,
+      sourceDomain,
+      normalizedUrl,
       summary,
       image,
       addedDate: new Date().toISOString(),
     })
 
     return NextResponse.json(
-      { ok: true, id: created._id, title: created.title, url: created.url },
+      {
+        ok: true,
+        duplicate: false,
+        id: created._id,
+        title: created.title,
+        url: created.url,
+        sourceDomain: created.sourceDomain,
+      },
       { status: 201 }
     )
   } catch (err) {

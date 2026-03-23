@@ -236,6 +236,11 @@ Open any page you want to save, click the bookmarklet, and a new `link` document
 - `image` (OG image URL)
 - `addedDate` (current time)
 
+The API also performs two quality-of-life behaviors:
+
+- **URL dedupe**: uses a normalized URL (hash removed, trailing slash normalized) and skips creating duplicates.
+- **Domain tagging**: auto-populates `sourceDomain` (for example, `nytimes.com`) from the saved link.
+
 ## Development
 
 ### Available Scripts
