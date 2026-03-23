@@ -42,29 +42,12 @@ function getSourceDomain(value: string): string {
   return new URL(value).hostname.replace(/^www\./, '')
 }
 
-export async function POST(request: NextRequest) {
-  const incomingApiKey = request.headers.get('x-api-key')
-  if (!addLinkApiKey || incomingApiKey !== addLinkApiKey) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
-  }
-
+async function createResourceFromUrl(url: string) {
   if (!hasSanityConfig) {
-    return NextResponse.json(
-      { error: 'Server is missing Sanity write configuration.' },
-      { status: 500, headers: corsHeaders }
-    )
+    return { status: 500, body: { error: 'Server is missing Sanity write configuration.' } }
   }
-
-  let body: { url?: string } = {}
-  try {
-    body = await request.json()
-  } catch {
-    return NextResponse.json({ error: 'Invalid JSON body.' }, { status: 400, headers: corsHeaders })
-  }
-
-  const url = body.url?.trim()
   if (!url || !isValidUrl(url)) {
-    return NextResponse.json({ error: 'Please provide a valid URL.' }, { status: 400, headers: corsHeaders })
+    return { status: 400, body: { error: 'Please provide a valid URL.' } }
   }
 
   try {
@@ -95,8 +78,9 @@ export async function POST(request: NextRequest) {
     )
 
     if (existing) {
-      return NextResponse.json(
-        {
+      return {
+        status: 200,
+        body: {
           ok: true,
           duplicate: true,
           id: existing._id,
@@ -104,16 +88,12 @@ export async function POST(request: NextRequest) {
           url: existing.url || normalizedUrl,
           sourceDomain: existing.sourceDomain || sourceDomain,
         },
-        { status: 200, headers: corsHeaders }
-      )
+      }
     }
 
     const { result, error } = await ogs({ url, timeout: 10000 })
     if (error) {
-      return NextResponse.json(
-        { error: `Failed to fetch metadata: ${error}` },
-        { status: 422, headers: corsHeaders }
-      )
+      return { status: 422, body: { error: `Failed to fetch metadata: ${error}` } }
     }
 
     const title =
@@ -145,8 +125,9 @@ export async function POST(request: NextRequest) {
       addedDate: new Date().toISOString(),
     })
 
-    return NextResponse.json(
-      {
+    return {
+      status: 201,
+      body: {
         ok: true,
         duplicate: false,
         id: created._id,
@@ -154,13 +135,39 @@ export async function POST(request: NextRequest) {
         url: created.url,
         sourceDomain: created.sourceDomain,
       },
-      { status: 201, headers: corsHeaders }
-    )
+    }
   } catch (err) {
     console.error('Failed to add link:', err)
-    return NextResponse.json(
-      { error: 'Unexpected server error while adding link.' },
-      { status: 500, headers: corsHeaders }
-    )
+    return { status: 500, body: { error: 'Unexpected server error while adding link.' } }
   }
+}
+
+export async function POST(request: NextRequest) {
+  const incomingApiKey = request.headers.get('x-api-key')
+  if (!addLinkApiKey || incomingApiKey !== addLinkApiKey) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
+  }
+
+  let body: { url?: string } = {}
+  try {
+    body = await request.json()
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body.' }, { status: 400, headers: corsHeaders })
+  }
+
+  const result = await createResourceFromUrl(body.url?.trim() || '')
+  return NextResponse.json(result.body, { status: result.status, headers: corsHeaders })
+}
+
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url)
+  const incomingApiKey = searchParams.get('key')
+  const url = searchParams.get('url')?.trim() || ''
+
+  if (!addLinkApiKey || incomingApiKey !== addLinkApiKey) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const result = await createResourceFromUrl(url)
+  return NextResponse.json(result.body, { status: result.status })
 }

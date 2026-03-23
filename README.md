@@ -223,7 +223,7 @@ QUICK_ADD_API_KEY=your-bookmarklet-secret
 - Paste this as the bookmark URL (replace domain + key):
 
 ```javascript
-javascript:(function(){var endpoint='https://stuart-sanity-blog.vercel.app/api/add-link';var apiKey='REPLACE_WITH_YOUR_QUICK_ADD_API_KEY';var url=window.location.href;fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey},body:JSON.stringify({url:url})}).then(function(res){return res.json().catch(function(){return {error:'Invalid JSON response'}}).then(function(data){if(!res.ok)throw new Error(data.error||('HTTP '+res.status));return data})}).then(function(data){alert('Saved: '+(data.title||url))}).catch(function(err){alert('Quick-Add failed: '+(err&&err.message?err.message:String(err)))})})();
+javascript:(function(){var endpoint='https://stuart-sanity-blog.vercel.app/api/add-link';var apiKey='REPLACE_WITH_YOUR_QUICK_ADD_API_KEY';var target=endpoint+'?url='+encodeURIComponent(window.location.href)+'&key='+encodeURIComponent(apiKey);window.open(target,'_blank','noopener,noreferrer');})();
 ```
 
 #### 3) Use it
