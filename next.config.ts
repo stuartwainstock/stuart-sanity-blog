@@ -56,12 +56,12 @@ const nextConfig: NextConfig = {
             value: [
               "default-src 'self'",
               process.env.NODE_ENV === 'development'
-                ? "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.sanity.io https://vercel.live"
-                : "script-src 'self' 'unsafe-inline' https://cdn.sanity.io https://vercel.live",
+                ? "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.sanity.io https://vercel.live https://www.googletagmanager.com"
+                : "script-src 'self' 'unsafe-inline' https://cdn.sanity.io https://vercel.live https://www.googletagmanager.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com data:",
-              "img-src 'self' data: blob: https://cdn.sanity.io",
-              "connect-src 'self' https://*.sanity.io https://*.sanity.run https://vercel.live",
+              "img-src 'self' data: blob: https://cdn.sanity.io https://www.google-analytics.com",
+              "connect-src 'self' https://*.sanity.io https://*.sanity.run https://vercel.live https://www.google-analytics.com https://region1.google-analytics.com https://www.googletagmanager.com",
               "frame-src 'self' https://*.sanity.io",
               "object-src 'none'",
               "base-uri 'self'",
