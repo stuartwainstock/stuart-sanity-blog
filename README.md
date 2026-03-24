@@ -1,13 +1,13 @@
 # Sanity Blog
 
-A modern, full-featured blog built with Next.js 15 and Sanity CMS. This project includes both a beautiful frontend and a powerful content management system.
+A modern, full-featured blog built with Next.js 16 and Sanity CMS. This project includes both a frontend and a content management system.
 
 ## Features
 
 ### Frontend
 - 🎨 Modern, responsive design with Tailwind CSS
 - 📱 Mobile-first approach
-- ⚡ Built with Next.js 15 App Router
+- ⚡ Built with Next.js 16 App Router
 - 🖼️ Optimized images with Next.js Image component
 - 📝 Rich text content with Portable Text
 - 🏷️ Category-based organization
@@ -28,7 +28,7 @@ A modern, full-featured blog built with Next.js 15 and Sanity CMS. This project 
 ## Quick Start
 
 ### Prerequisites
-- Node.js 18+ 
+- Node.js 20+
 - npm or yarn
 - A Sanity account (free at [sanity.io](https://sanity.io))
 
@@ -76,31 +76,36 @@ A modern, full-featured blog built with Next.js 15 and Sanity CMS. This project 
 ```
 sanity-blog/
 ├── src/
-│   ├── app/                    # Next.js App Router pages
-│   │   ├── blog/              # Blog listing and post pages
-│   │   ├── category/          # Category pages
-│   │   ├── [slug]/            # Dynamic pages
-│   │   ├── layout.tsx         # Root layout
-│   │   └── page.tsx           # Homepage
-│   ├── components/            # React components
-│   │   ├── Navigation.tsx     # Site navigation
-│   │   ├── Footer.tsx         # Site footer
-│   │   ├── PostCard.tsx       # Blog post card
-│   │   └── PortableText.tsx   # Rich text renderer
-│   └── lib/                   # Utilities and configurations
-│       ├── sanity.ts          # Sanity client setup
-│       ├── queries.ts         # GROQ queries
-│       └── types.ts           # TypeScript types
-├── sanity/                    # Sanity Studio
-│   ├── schemaTypes/          # Content schemas
-│   │   ├── post.ts           # Blog post schema
-│   │   ├── page.ts           # Page schema
-│   │   ├── author.ts         # Author schema
-│   │   ├── category.ts       # Category schema
-│   │   ├── siteSettings.ts   # Site settings schema
-│   │   └── index.ts          # Schema exports
-│   └── sanity.config.ts      # Studio configuration
-└── public/                   # Static assets
+│   ├── app/                         # Next.js App Router routes
+│   │   ├── api/add-link/route.ts    # Quick-add ingestion endpoint
+│   │   ├── blog/                     # Blog listing and post pages
+│   │   ├── author/                   # Author pages
+│   │   ├── category/                 # Category pages
+│   │   ├── journal/                  # Journal pages
+│   │   ├── studio/                   # Embedded Sanity Studio route
+│   │   ├── [slug]/                   # Dynamic page route
+│   │   ├── layout.tsx                # Root layout
+│   │   └── page.tsx                  # Homepage
+│   ├── components/                   # React components
+│   │   ├── GoogleAnalytics.tsx       # GA4 baseline tracking
+│   │   ├── Navigation.tsx            # Site navigation
+│   │   ├── ReadingList.tsx           # Unified resource list UI
+│   │   ├── SpeakingEngagements.tsx   # Speaking list UI
+│   │   └── ...
+│   └── lib/                          # Utilities and configs
+│       ├── sanity.ts                 # Sanity client setup
+│       ├── queries.ts                # GROQ queries
+│       └── types.ts                  # TypeScript types
+├── sanity/                           # Sanity Studio source
+│   ├── schemaTypes/
+│   │   ├── resource.ts               # Unified resource model
+│   │   ├── link.ts                   # Legacy/transition link schema
+│   │   └── ...
+│   ├── scripts/                      # One-off migration scripts
+│   └── sanity.config.ts              # Studio structure/config
+├── extensions/
+│   └── quick-add/                    # Chrome/Arc quick-add extension
+└── public/                           # Static assets
 ```
 
 ## Content Management
@@ -148,6 +153,7 @@ sanity-blog/
 - Rich text content
 - Navigation settings
 - SEO metadata
+- Supports rich sections like speaking engagements
 
 #### Authors
 - Name and bio
@@ -166,6 +172,12 @@ sanity-blog/
 - Social media links
 - Footer configuration
 - Default SEO settings
+
+#### Resources (Unified Reading List)
+- URL-based resources captured from bookmarklet/extension
+- Workflow status: `inbox`, `reviewed`, `published`, `rejected`
+- Media type support: article, book, video, podcast, tool, other
+- `published` resources render on `/reading-list`
 
 ## Deployment
 
