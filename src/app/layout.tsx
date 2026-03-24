@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Work_Sans } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
@@ -63,7 +64,9 @@ export default async function RootLayout({
   return (
     <html lang="en" className={workSans.variable}>
       <body className={`${workSans.className} antialiased min-h-screen flex flex-col bg-[#e8e8e8]`}>
-        <GoogleAnalytics />
+        <Suspense fallback={null}>
+          <GoogleAnalytics />
+        </Suspense>
         <Navigation siteSettings={siteSettings || undefined} navigationPages={navigationPages} />
         <main className="grow" id="main-content">
           {children}
