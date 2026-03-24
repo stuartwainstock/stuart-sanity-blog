@@ -3,6 +3,7 @@ import { Work_Sans } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { sanityClient } from "@/lib/sanity";
 import { SITE_SETTINGS_QUERY, NAVIGATION_QUERY } from "@/lib/queries";
 import { SiteSettings, Page } from "@/lib/types";
@@ -62,8 +63,9 @@ export default async function RootLayout({
   return (
     <html lang="en" className={workSans.variable}>
       <body className={`${workSans.className} antialiased min-h-screen flex flex-col bg-[#e8e8e8]`}>
+        <GoogleAnalytics />
         <Navigation siteSettings={siteSettings || undefined} navigationPages={navigationPages} />
-        <main className="flex-grow" id="main-content">
+        <main className="grow" id="main-content">
           {children}
         </main>
         <Footer siteSettings={siteSettings || undefined} />

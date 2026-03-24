@@ -198,7 +198,10 @@ NEXT_PUBLIC_SANITY_PROJECT_ID=your-project-id
 NEXT_PUBLIC_SANITY_DATASET=production
 SANITY_API_WRITE_TOKEN=your-write-token
 QUICK_ADD_API_KEY=your-bookmarklet-secret
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 ```
+
+- `NEXT_PUBLIC_GA_MEASUREMENT_ID` enables baseline GA4 pageview tracking.
 
 ### Quick-Add Link Bookmarklet
 
