@@ -143,7 +143,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   >
                     {post.author.name}
                   </Link>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-700">
                     Published on {formattedDate}
                   </p>
                 </div>

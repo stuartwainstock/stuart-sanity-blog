@@ -65,13 +65,13 @@ export default function ReadingList({ resources }: ReadingListProps) {
                       <h4 className="text-lg font-medium text-gray-900 mb-1 leading-tight">
                         {resource.title}
                       </h4>
-                      <div className="flex flex-wrap gap-3 text-sm text-gray-500 mb-1">
+                      <div className="flex flex-wrap gap-3 text-sm text-gray-700 mb-1">
                         {resource.sourceDomain && (
-                          <span className="bg-gray-100 px-2 py-1 rounded-md">{resource.sourceDomain}</span>
+                          <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded-md">{resource.sourceDomain}</span>
                         )}
-                        <span className="bg-gray-100 px-2 py-1 rounded-md capitalize">{resource.mediaType}</span>
+                        <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded-md capitalize">{resource.mediaType}</span>
                         {resource.addedDate && (
-                          <span className="bg-gray-100 px-2 py-1 rounded-md">
+                          <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded-md">
                             {new Date(resource.addedDate).toLocaleDateString('en-US', {
                               year: 'numeric',
                               month: 'short',
@@ -80,13 +80,13 @@ export default function ReadingList({ resources }: ReadingListProps) {
                           </span>
                         )}
                         {resource.tags && resource.tags.length > 0 && (
-                          <span className="bg-gray-100 px-2 py-1 rounded-md">
+                          <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded-md">
                             {resource.tags.slice(0, 2).join(', ')}
                           </span>
                         )}
                       </div>
                       {resource.summary && (
-                        <p className="text-base text-gray-600 leading-relaxed">
+                        <p className="text-base text-gray-800 leading-relaxed">
                           {resource.summary}
                         </p>
                       )}

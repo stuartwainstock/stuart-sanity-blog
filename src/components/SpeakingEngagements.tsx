@@ -67,7 +67,7 @@ export default function SpeakingEngagements({ engagements }: SpeakingEngagements
                     {engagement.description}
                   </p>
                 )}
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-500">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-700">
                   <span className="inline-flex items-center font-medium">
                     <span className="sr-only">Type: </span>
                     {getTypeLabel(engagement.type)}

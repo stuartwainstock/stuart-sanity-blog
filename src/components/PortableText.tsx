@@ -24,7 +24,7 @@ const components: PortableTextComponents = {
           </p>
         )}
         {value.credit && (
-          <p className="text-xs text-gray-500 text-center mt-1">
+          <p className="text-xs text-gray-700 text-center mt-1">
             Photo by {value.credit}
           </p>
         )}

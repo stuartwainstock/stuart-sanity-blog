@@ -25,7 +25,7 @@ export default function Footer({ siteSettings }: FooterProps) {
               {siteSettings?.description || 'A modern blog built with Next.js and Sanity.'}
             </p>
             {siteSettings?.social && (
-              <div className="flex space-x-6" aria-label="Social media links">
+              <nav className="flex space-x-6" aria-label="Social media links">
                 {siteSettings.social.twitter && (
                   <a
                     href={`https://twitter.com/${siteSettings.social.twitter}`}
@@ -68,7 +68,7 @@ export default function Footer({ siteSettings }: FooterProps) {
                     </svg>
                   </a>
                 )}
-              </div>
+              </nav>
             )}
           </div>
 
@@ -109,7 +109,7 @@ export default function Footer({ siteSettings }: FooterProps) {
         </div>
 
         <div className="mt-12 pt-8 border-t border-gray-200">
-          <p className="text-center text-gray-500 text-sm">
+          <p className="text-center text-gray-700 text-sm">
             {siteSettings?.footer?.copyright || `© ${currentYear} ${siteSettings?.title || 'Blog'}. All rights reserved.`}
           </p>
         </div>
