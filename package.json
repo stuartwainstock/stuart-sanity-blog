@@ -11,7 +11,9 @@
     "studio": "cd sanity && sanity dev",
     "studio:deploy": "cd sanity && sanity deploy",
     "typegen": "cd sanity && npm run typegen",
-    "typecheck": "cd sanity && npm run typecheck"
+    "typecheck": "cd sanity && npm run typecheck",
+    "audit:a11y": "npm run build && node scripts/a11y-audit.mjs",
+    "audit:a11y:run": "node scripts/a11y-audit.mjs"
   },
   "dependencies": {
     "@portabletext/react": "^4.0.3",
@@ -33,8 +35,11 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "axe-core": "^4.11.1",
     "eslint": "^9",
     "eslint-config-next": "^16.2.1",
+    "lighthouse": "^13.0.3",
+    "puppeteer": "^24.40.0",
     "tailwindcss": "^4.2.2",
     "typescript": "^5"
   },
