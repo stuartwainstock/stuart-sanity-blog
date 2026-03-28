@@ -85,14 +85,6 @@ export default async function PageComponent({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-[#e8e8e8]">
-      {/* Skip to main content link for keyboard users */}
-      <a 
-        href="#main-content" 
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-gray-900 text-white px-4 py-2 rounded-md z-50"
-      >
-        Skip to main content
-      </a>
-      
       {/* Hero Section */}
       <header 
         className="pt-24 pb-4 px-8" 
@@ -144,10 +136,7 @@ export default async function PageComponent({ params }: PageProps) {
       )}
 
       {/* Content */}
-      <main 
-        id="main-content"
-        className="max-w-5xl mx-auto px-8 pt-2 pb-16"
-      >
+      <div className="max-w-5xl mx-auto px-8 pt-2 pb-16" aria-labelledby="page-title">
         {page.body && (
           <div className="text-[30px] font-light tracking-[2px] leading-[1.6] text-gray-600">
             <PortableText value={page.body} />
@@ -163,7 +152,7 @@ export default async function PageComponent({ params }: PageProps) {
         {readingListResources.length > 0 && (
           <ReadingList resources={readingListResources} />
         )}
-      </main>
+      </div>
     </div>
   )
 }

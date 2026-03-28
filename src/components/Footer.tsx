@@ -32,7 +32,7 @@ export default function Footer({ siteSettings }: FooterProps) {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-gray-600 hover:text-gray-900 focus:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md p-1"
-                    aria-label={`Follow us on Twitter: @${siteSettings.social.twitter}`}
+                    aria-label={`Follow us on Twitter: @${siteSettings.social.twitter} (opens in new tab)`}
                   >
                     <span className="sr-only">Twitter</span>
                     <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -46,7 +46,7 @@ export default function Footer({ siteSettings }: FooterProps) {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-gray-600 hover:text-gray-900 focus:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md p-1"
-                    aria-label={`View our GitHub profile: ${siteSettings.social.github}`}
+                    aria-label={`View our GitHub profile: ${siteSettings.social.github} (opens in new tab)`}
                   >
                     <span className="sr-only">GitHub</span>
                     <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -60,7 +60,7 @@ export default function Footer({ siteSettings }: FooterProps) {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-gray-600 hover:text-gray-900 focus:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md p-1"
-                    aria-label={`Connect with us on LinkedIn: ${siteSettings.social.linkedin}`}
+                    aria-label={`Connect with us on LinkedIn: ${siteSettings.social.linkedin} (opens in new tab)`}
                   >
                     <span className="sr-only">LinkedIn</span>
                     <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -88,6 +88,7 @@ export default function Footer({ siteSettings }: FooterProps) {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-gray-600 hover:text-gray-900 focus:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md px-1 py-0.5"
+                          aria-label={`${link.title} (opens in new tab)`}
                         >
                           {link.title}
                         </a>

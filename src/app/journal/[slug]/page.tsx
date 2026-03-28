@@ -201,6 +201,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-blue-500 hover:text-blue-600"
+                          aria-label={`Twitter @${post.author.social.twitter} (opens in new tab)`}
                         >
                           Twitter
                         </a>
@@ -211,6 +212,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-blue-600 hover:text-blue-700"
+                          aria-label={`LinkedIn ${post.author.social.linkedin} (opens in new tab)`}
                         >
                           LinkedIn
                         </a>
@@ -221,6 +223,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-gray-700 hover:text-gray-900"
+                          aria-label={`GitHub ${post.author.social.github} (opens in new tab)`}
                         >
                           GitHub
                         </a>

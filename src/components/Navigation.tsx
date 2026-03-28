@@ -16,6 +16,7 @@ export default function Navigation({ siteSettings, navigationPages = [] }: Navig
   const menuRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const firstLinkRef = useRef<HTMLAnchorElement>(null)
+  const wasMenuOpenRef = useRef(false)
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
@@ -25,15 +26,14 @@ export default function Navigation({ siteSettings, navigationPages = [] }: Navig
     setIsMenuOpen(false)
   }
 
-  // Focus management for mobile menu
+  // Focus management for mobile menu (avoid focusing the toggle on initial mount)
   useEffect(() => {
     if (isMenuOpen && firstLinkRef.current) {
-      // Focus first link when menu opens
       firstLinkRef.current.focus()
-    } else if (!isMenuOpen && buttonRef.current) {
-      // Return focus to button when menu closes
+    } else if (wasMenuOpenRef.current && !isMenuOpen && buttonRef.current) {
       buttonRef.current.focus()
     }
+    wasMenuOpenRef.current = isMenuOpen
   }, [isMenuOpen])
 
   // Close menu on Escape key
@@ -133,43 +133,44 @@ export default function Navigation({ siteSettings, navigationPages = [] }: Navig
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div 
+          <div
             ref={menuRef}
             id="mobile-menu"
-            className="md:hidden"
-            aria-label="Mobile navigation menu"
-            role="menu"
+            className="md:hidden border-t border-gray-200 bg-[#e8e8e8]"
+            aria-label="Mobile navigation"
           >
-            <div className="px-6 pt-4 pb-6 space-y-2 bg-[#e8e8e8] border-t border-gray-200">
-              <Link
-                ref={firstLinkRef}
-                href="/"
-                className="block text-gray-600 hover:text-gray-900 focus:text-gray-900 px-3 py-2 text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md"
-                onClick={closeMenu}
-                role="menuitem"
-              >
-                Home
-              </Link>
-              <Link
-                href="/journal"
-                className="block text-gray-600 hover:text-gray-900 focus:text-gray-900 px-3 py-2 text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md"
-                onClick={closeMenu}
-                role="menuitem"
-              >
-                Journal
-              </Link>
-              {navigationPages.map((page) => (
+            <ul className="list-none px-6 pt-4 pb-6 space-y-2 m-0">
+              <li>
                 <Link
-                  key={page._id}
-                  href={`/${page.slug.current}`}
+                  ref={firstLinkRef}
+                  href="/"
                   className="block text-gray-600 hover:text-gray-900 focus:text-gray-900 px-3 py-2 text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md"
                   onClick={closeMenu}
-                  role="menuitem"
                 >
-                  {page.title}
+                  Home
                 </Link>
+              </li>
+              <li>
+                <Link
+                  href="/journal"
+                  className="block text-gray-600 hover:text-gray-900 focus:text-gray-900 px-3 py-2 text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md"
+                  onClick={closeMenu}
+                >
+                  Journal
+                </Link>
+              </li>
+              {navigationPages.map((page) => (
+                <li key={page._id}>
+                  <Link
+                    href={`/${page.slug.current}`}
+                    className="block text-gray-600 hover:text-gray-900 focus:text-gray-900 px-3 py-2 text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md"
+                    onClick={closeMenu}
+                  >
+                    {page.title}
+                  </Link>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         )}
       </div>

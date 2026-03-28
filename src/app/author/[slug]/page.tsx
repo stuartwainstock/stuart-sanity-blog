@@ -104,6 +104,7 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                    aria-label="Author website (opens in new tab)"
                   >
                     Website
                   </a>
@@ -114,6 +115,7 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                    aria-label={`Twitter @${author.social.twitter} (opens in new tab)`}
                   >
                     Twitter
                   </a>
@@ -124,6 +126,7 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                    aria-label={`LinkedIn ${author.social.linkedin} (opens in new tab)`}
                   >
                     LinkedIn
                   </a>
@@ -134,6 +137,7 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                    aria-label={`GitHub ${author.social.github} (opens in new tab)`}
                   >
                     GitHub
                   </a>

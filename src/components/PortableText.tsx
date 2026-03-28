@@ -105,16 +105,20 @@ const components: PortableTextComponents = {
         {children}
       </code>
     ),
-    link: ({ children, value }: any) => (
-      <a
-        href={value.href}
-        className="text-blue-600 hover:text-blue-800 underline"
-        target={value.href.startsWith('http') ? '_blank' : undefined}
-        rel={value.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-      >
-        {children}
-      </a>
-    ),
+    link: ({ children, value }: any) => {
+      const isExternal = typeof value.href === 'string' && value.href.startsWith('http')
+      return (
+        <a
+          href={value.href}
+          className="text-blue-600 hover:text-blue-800 underline"
+          target={isExternal ? '_blank' : undefined}
+          rel={isExternal ? 'noopener noreferrer' : undefined}
+        >
+          {children}
+          {isExternal ? <span className="sr-only"> (opens in new tab)</span> : null}
+        </a>
+      )
+    },
   },
 }
 

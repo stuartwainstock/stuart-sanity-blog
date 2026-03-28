@@ -30,12 +30,7 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-[#e8e8e8]">
       {/* Hero Section */}
-      <main 
-        id="main-content"
-        className="py-32 px-8" 
-        role="banner"
-        aria-labelledby="hero-title"
-      >
+      <header className="py-32 px-8" aria-labelledby="hero-title">
         <div className="max-w-5xl mx-auto">
           <div className="text-left">
             <h1 
@@ -76,7 +71,7 @@ export default async function Home() {
             </div>
           </div>
         </div>
-      </main>
+      </header>
     </div>
   )
 }
