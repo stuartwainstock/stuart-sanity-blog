@@ -43,11 +43,6 @@
     "tailwindcss": "^4.2.2",
     "typescript": "^5"
   },
-  "overrides": {
-    "@vercel/frameworks": {
-      "js-yaml": "^4.1.0"
-    }
-  },
   "browserslist": {
     "production": [
       ">0.2%",

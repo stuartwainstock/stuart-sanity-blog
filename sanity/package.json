@@ -4,11 +4,6 @@
   "version": "1.0.0",
   "main": "package.json",
   "license": "UNLICENSED",
-  "overrides": {
-    "@vercel/frameworks": {
-      "js-yaml": "^4.1.0"
-    }
-  },
   "scripts": {
     "dev": "sanity dev",
     "start": "sanity start",
