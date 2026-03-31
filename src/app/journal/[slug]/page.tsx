@@ -6,6 +6,7 @@ import { POST_QUERY, POSTS_QUERY } from '@/lib/queries'
 import { Post } from '@/lib/types'
 import { getImageUrl } from '@/lib/sanity'
 import PortableText from '@/components/PortableText'
+import ArticleScrollProgress from '@/components/ArticleScrollProgress'
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>
@@ -84,7 +85,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   })
 
   return (
-    <article className="min-h-screen">
+    <article id="journal-post" className="min-h-screen">
       {/* Hero Section */}
       <header className="bg-gray-50 py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -166,11 +167,20 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </div>
       )}
 
-      {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {post.body && (
-          <PortableText value={post.body} />
-        )}
+      {/* Body + sticky scroll progress (desktop) */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-8 lg:flex-row lg:gap-10">
+          <aside className="hidden shrink-0 justify-center lg:flex lg:w-12">
+            <div className="lg:sticky lg:top-28 lg:self-start lg:pt-2">
+              <ArticleScrollProgress articleId="journal-post" />
+            </div>
+          </aside>
+          <div className="min-w-0 flex-1 max-w-4xl py-12 lg:mx-auto">
+            {post.body && (
+              <PortableText value={post.body} />
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Author Bio */}
