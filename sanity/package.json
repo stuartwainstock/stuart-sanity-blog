@@ -5,7 +5,9 @@
   "main": "package.json",
   "license": "UNLICENSED",
   "overrides": {
-    "js-yaml": "^4.1.0"
+    "@vercel/frameworks": {
+      "js-yaml": "^4.1.0"
+    }
   },
   "scripts": {
     "dev": "sanity dev",
