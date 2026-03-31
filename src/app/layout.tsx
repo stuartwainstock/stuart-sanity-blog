@@ -74,7 +74,7 @@ export default async function RootLayout({
           <GoogleAnalytics />
         </Suspense>
         <Navigation siteSettings={siteSettings || undefined} navigationPages={navigationPages} />
-        <main className="grow" id="main-content">
+        <main className="w-full shrink-0" id="main-content">
           {children}
         </main>
         <Footer siteSettings={siteSettings || undefined} />

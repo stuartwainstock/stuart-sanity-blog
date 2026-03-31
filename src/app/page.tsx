@@ -28,9 +28,9 @@ export default async function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-[#e8e8e8]">
-      {/* Hero Section */}
-      <header className="py-32 px-8" aria-labelledby="hero-title">
+    <div className="bg-[#e8e8e8]">
+      {/* Hero Section — avoid min-h-screen + main grow so footer sits closer to copy */}
+      <header className="pt-24 pb-12 px-8 sm:pt-28 sm:pb-14" aria-labelledby="hero-title">
         <div className="max-w-5xl mx-auto">
           <div className="text-left">
             <h1 

@@ -14,7 +14,7 @@ export default function Footer({ siteSettings }: FooterProps) {
       role="contentinfo"
       aria-label="Site footer"
     >
-      <div className="max-w-6xl mx-auto px-6 py-16">
+      <div className="max-w-6xl mx-auto px-6 pt-10 pb-12 md:pt-12 md:pb-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {/* Site Info - Always first column */}
           <div>
