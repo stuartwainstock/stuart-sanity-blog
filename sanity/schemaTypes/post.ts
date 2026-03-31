@@ -1,4 +1,4 @@
-import {defineField, defineType, defineArrayMember} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export const post = defineType({
   name: 'post',
@@ -9,12 +9,14 @@ export const post = defineType({
       name: 'title',
       title: 'Title',
       type: 'string',
+      group: 'content',
       validation: (Rule) => Rule.required().error('Title is required'),
     }),
     defineField({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
+      group: 'content',
       options: {
         source: 'title',
         maxLength: 96,
@@ -25,13 +27,16 @@ export const post = defineType({
       name: 'author',
       title: 'Author',
       type: 'array',
-      of: [defineArrayMember({type: 'reference', to: {type: 'author'}})],
-      validation: (Rule) => Rule.required().error('At least one author is required'),
+      group: 'content',
+      of: [defineArrayMember({type: 'reference', to: [{type: 'author'}]})],
+      validation: (Rule) =>
+        Rule.min(1).error('At least one author is required').unique().error('Duplicate authors'),
     }),
     defineField({
       name: 'mainImage',
       title: 'Main image',
       type: 'image',
+      group: 'content',
       options: {
         hotspot: true,
       },
@@ -65,46 +70,49 @@ export const post = defineType({
       name: 'categories',
       title: 'Categories',
       type: 'array',
+      group: 'content',
       of: [defineArrayMember({type: 'reference', to: {type: 'category'}})],
+      validation: (Rule) => Rule.unique().error('Duplicate categories'),
     }),
     defineField({
       name: 'publishedAt',
       title: 'Published at',
       type: 'datetime',
+      group: 'content',
       validation: (Rule) => Rule.required().error('Publication date is required'),
     }),
     defineField({
       name: 'excerpt',
       title: 'Excerpt',
       type: 'text',
+      group: 'content',
       rows: 4,
       validation: (Rule) => [
         Rule.max(200).warning('Keep excerpts under 200 characters for better readability'),
+        Rule.min(50).warning('Consider at least 50 characters for better previews'),
         Rule.required().error('Excerpt is required for post previews'),
       ],
     }),
     defineField({
       name: 'featured',
       title: 'Featured',
-      type: 'string',
-      options: {
-        list: [
-          {title: 'Yes', value: 'true'},
-          {title: 'No', value: 'false'},
-        ],
-        layout: 'radio',
-      },
-      initialValue: 'false',
+      type: 'boolean',
+      group: 'content',
+      options: {layout: 'switch'},
+      initialValue: false,
     }),
     defineField({
       name: 'body',
       title: 'Body',
       type: 'blockContent',
+      group: 'content',
+      validation: (Rule) => Rule.required().error('Body is required'),
     }),
     defineField({
       name: 'seo',
       title: 'SEO',
       type: 'seo',
+      group: 'seo',
     }),
   ],
   groups: [
@@ -116,6 +124,23 @@ export const post = defineType({
     {
       name: 'seo',
       title: 'SEO',
+    },
+  ],
+  orderings: [
+    {
+      title: 'Published date (newest)',
+      name: 'publishedAtDesc',
+      by: [{field: 'publishedAt', direction: 'desc'}],
+    },
+    {
+      title: 'Published date (oldest)',
+      name: 'publishedAtAsc',
+      by: [{field: 'publishedAt', direction: 'asc'}],
+    },
+    {
+      title: 'Title',
+      name: 'titleAsc',
+      by: [{field: 'title', direction: 'asc'}],
     },
   ],
   preview: {
