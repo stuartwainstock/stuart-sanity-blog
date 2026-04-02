@@ -71,7 +71,7 @@ export const post = defineType({
       title: 'Categories',
       type: 'array',
       group: 'content',
-      of: [defineArrayMember({type: 'reference', to: {type: 'category'}})],
+      of: [defineArrayMember({type: 'reference', to: [{type: 'category'}]})],
       validation: (Rule) => Rule.unique().error('Duplicate categories'),
     }),
     defineField({

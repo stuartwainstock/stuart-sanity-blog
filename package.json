@@ -13,7 +13,8 @@
     "typegen": "cd sanity && npm run typegen",
     "typecheck": "cd sanity && npm run typecheck",
     "audit:a11y": "npm run build && node scripts/a11y-audit.mjs",
-    "audit:a11y:run": "node scripts/a11y-audit.mjs"
+    "audit:a11y:run": "node scripts/a11y-audit.mjs",
+    "migrate:featured": "node scripts/migrate-featured-to-boolean.mjs"
   },
   "dependencies": {
     "@portabletext/react": "^4.0.3",

@@ -88,11 +88,11 @@ export const POST_QUERY = groq`
   }
 `
 
-// Get featured posts
+// Get featured posts (featured is boolean in schema; migrate legacy string values in dataset)
 export const FEATURED_POSTS_QUERY = groq`
   *[
     _type == "post"
-    && featured == "true"
+    && featured == true
   ] | order(publishedAt desc) {
     _id,
     title,
