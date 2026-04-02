@@ -48,8 +48,21 @@ const client = createClient({
   useCdn: false,
 })
 
+async function fetchAllPosts() {
+  // Published posts (ids without drafts. prefix)
+  const published = await client.fetch(
+    `*[_type == "post" && !(_id in path("drafts.*"))]{_id, featured}`
+  )
+  // Draft-only and draft overlays (drafts.*)
+  const drafts = await client.fetch(
+    `*[_type == "post" && _id in path("drafts.*")]{_id, featured}`
+  )
+  return [...published, ...drafts]
+}
+
 async function main() {
-  const docs = await client.fetch(`*[_type == "post"]{_id, featured}`)
+  const docs = await fetchAllPosts()
+  console.log(`Found ${docs.length} post document(s) (published + drafts).`)
 
   let updated = 0
   let skipped = 0
