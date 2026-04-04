@@ -273,6 +273,33 @@ export type Link = {
   addedDate?: string
 }
 
+export type InaturalistBackyard = {
+  _id: string
+  _type: 'inaturalistBackyard'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  mapPageTitle?: string
+  mapPageIntroduction?: BlockContent
+  lifeListPageTitle?: string
+  lifeListIntroduction?: BlockContent
+  inatUserLogin?: string
+  iconicTaxaName?: string
+  placeId?: number
+  boundingBox?: {
+    nelat?: number
+    nelng?: number
+    swlat?: number
+    swlng?: number
+  }
+  maxObservationsToFetch?: number
+  defaultMapLatitude?: number
+  defaultMapLongitude?: number
+  defaultMapZoom?: number
+  seoMap?: Seo
+  seoLifeList?: Seo
+}
+
 export type Homepage = {
   _id: string
   _type: 'homepage'
@@ -462,6 +489,7 @@ export type AllSanitySchemaTypes =
   | Slug
   | Page
   | Link
+  | InaturalistBackyard
   | Homepage
   | Category
   | Author

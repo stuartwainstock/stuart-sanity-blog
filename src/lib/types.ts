@@ -145,3 +145,26 @@ export interface Homepage {
   }
   seo?: SEO
 }
+
+export interface InaturalistBackyard {
+  _id: string
+  mapPageTitle: string
+  mapPageIntroduction?: unknown[]
+  lifeListPageTitle: string
+  lifeListIntroduction?: unknown[]
+  inatUserLogin: string
+  iconicTaxaName: string
+  placeId?: number
+  boundingBox?: {
+    nelat?: number
+    nelng?: number
+    swlat?: number
+    swlng?: number
+  }
+  maxObservationsToFetch: number
+  defaultMapLatitude?: number
+  defaultMapLongitude?: number
+  defaultMapZoom?: number
+  seoMap?: SEO
+  seoLifeList?: SEO
+}

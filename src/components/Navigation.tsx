@@ -93,6 +93,12 @@ export default function Navigation({ siteSettings, navigationPages = [] }: Navig
             >
               Journal
             </Link>
+            <Link
+              href="/backyard-birds"
+              className="text-gray-600 hover:text-gray-900 focus:text-gray-900 px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md"
+            >
+              Backyard birds
+            </Link>
             {navigationPages.map((page) => (
               <Link
                 key={page._id}
@@ -157,6 +163,15 @@ export default function Navigation({ siteSettings, navigationPages = [] }: Navig
                   onClick={closeMenu}
                 >
                   Journal
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/backyard-birds"
+                  className="block text-gray-600 hover:text-gray-900 focus:text-gray-900 px-3 py-2 text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md"
+                  onClick={closeMenu}
+                >
+                  Backyard birds
                 </Link>
               </li>
               {navigationPages.map((page) => (

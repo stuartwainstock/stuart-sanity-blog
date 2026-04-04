@@ -385,6 +385,57 @@ export const HOMEPAGE_QUERY = groq`
   }
 `
 
+export const INATURALIST_BACKYARD_QUERY = groq`
+  *[_type == "inaturalistBackyard" && _id == "inaturalistBackyard"][0]{
+    _id,
+    mapPageTitle,
+    mapPageIntroduction,
+    lifeListPageTitle,
+    lifeListIntroduction,
+    inatUserLogin,
+    iconicTaxaName,
+    placeId,
+    boundingBox {
+      nelat,
+      nelng,
+      swlat,
+      swlng
+    },
+    maxObservationsToFetch,
+    defaultMapLatitude,
+    defaultMapLongitude,
+    defaultMapZoom,
+    seoMap {
+      metaTitle,
+      metaDescription,
+      openGraphImage {
+        asset->{
+          _id,
+          url
+        },
+        alt,
+        credit
+      },
+      keywords,
+      noIndex
+    },
+    seoLifeList {
+      metaTitle,
+      metaDescription,
+      openGraphImage {
+        asset->{
+          _id,
+          url
+        },
+        alt,
+        credit
+      },
+      keywords,
+      noIndex
+    }
+  }
+`
+
 export const PUBLISHED_RESOURCES_QUERY = groq`
   *[
     _type == "resource" &&

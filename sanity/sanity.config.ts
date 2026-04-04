@@ -2,7 +2,19 @@ import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
 import {unsplashImageAsset} from 'sanity-plugin-asset-source-unsplash'
-import {author, blockContent, category, homepage, link, page, post, resource, seo, siteSettings} from './schemaTypes'
+import {
+  author,
+  blockContent,
+  category,
+  homepage,
+  inaturalistBackyard,
+  link,
+  page,
+  post,
+  resource,
+  seo,
+  siteSettings,
+} from './schemaTypes'
 
 // Studio runs as static assets in production, so env vars may not be present
 // at runtime. Keep env override support, but fall back to this project's values.
@@ -36,6 +48,14 @@ export default defineConfig({
                 S.document()
                   .schemaType('siteSettings')
                   .documentId('siteSettings')
+              ),
+            S.listItem()
+              .title('Backyard birds (iNaturalist)')
+              .id('inaturalistBackyard')
+              .child(
+                S.document()
+                  .schemaType('inaturalistBackyard')
+                  .documentId('inaturalistBackyard')
               ),
             S.divider(),
             S.listItem()
@@ -117,6 +137,18 @@ export default defineConfig({
     unsplashImageAsset(),
   ],
   schema: {
-    types: [author, blockContent, category, homepage, link, page, post, resource, seo, siteSettings],
+    types: [
+      author,
+      blockContent,
+      category,
+      homepage,
+      inaturalistBackyard,
+      link,
+      page,
+      post,
+      resource,
+      seo,
+      siteSettings,
+    ],
   },
 })
