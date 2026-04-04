@@ -1,8 +1,6 @@
 import Link from 'next/link'
 import type {Metadata} from 'next'
-import {sanityClient} from '@/lib/sanity'
-import {getImageUrl} from '@/lib/sanity'
-import {EBIRD_BIRDING_QUERY} from '@/lib/queries'
+import {fetchEbirdBirdingConfig, getImageUrl} from '@/lib/sanity'
 import type {EbirdBirding} from '@/lib/types'
 import PortableText from '@/components/PortableText'
 import BackyardBirdMap from '@/components/backyard/BackyardBirdMap'
@@ -12,13 +10,8 @@ import {resolveEbirdBirding} from '@/lib/ebird/resolveConfig'
 
 export const revalidate = 300
 
-async function getConfig(): Promise<EbirdBirding | null> {
-  try {
-    return await sanityClient.fetch<EbirdBirding | null>(EBIRD_BIRDING_QUERY)
-  } catch (e) {
-    console.error('eBird birding config fetch failed:', e)
-    return null
-  }
+function getConfig(): Promise<EbirdBirding | null> {
+  return fetchEbirdBirdingConfig()
 }
 
 export async function generateMetadata(): Promise<Metadata> {

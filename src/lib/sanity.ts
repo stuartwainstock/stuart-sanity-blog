@@ -1,6 +1,7 @@
 import { createClient } from 'next-sanity'
 import imageUrlBuilder from '@sanity/image-url'
-import { SanityImage } from './types'
+import { EBIRD_BIRDING_QUERY } from './queries'
+import type { EbirdBirding, SanityImage } from './types'
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET
@@ -20,6 +21,26 @@ export const config = {
 
 export const sanityClient = createClient(config)
 const builder = imageUrlBuilder(sanityClient)
+
+/**
+ * Birding singleton: bypass Sanity CDN and Next fetch cache so Studio toggles
+ * (e.g. life list source) apply on the next request in production.
+ */
+export async function fetchEbirdBirdingConfig(): Promise<EbirdBirding | null> {
+  try {
+    return await sanityClient.fetch<EbirdBirding | null>(
+      EBIRD_BIRDING_QUERY,
+      {},
+      {
+        useCdn: false,
+        cache: 'no-store',
+      }
+    )
+  } catch (e) {
+    console.error('eBird birding config fetch failed:', e)
+    return null
+  }
+}
 
 export const urlFor = (source: SanityImage) => {
   return builder.image(source)
