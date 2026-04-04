@@ -55,17 +55,23 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function BirdingLifeListPage() {
   const raw = await getConfig()
-  const config = resolveEbirdBirding(raw)
+  const rawConfig = raw
+  const missingCms =
+    !rawConfig ||
+    !rawConfig.lifeListPageTitle?.trim() ||
+    !rawConfig.lifeListLocationId?.trim()
 
-  if (!config?.lifeListPageTitle || !config.lifeListLocationId) {
+  if (missingCms) {
     return (
       <div className="bg-[#e8e8e8] min-h-[50vh] px-6 py-16">
         <div className="max-w-2xl mx-auto prose prose-gray">
           <h1 className="text-2xl font-semibold text-gray-900">Life list</h1>
           <p className="text-gray-700">
-            Configure <strong>Birding (eBird)</strong> in Sanity Studio and set{' '}
-            <strong>Life list: region or hotspot ID</strong>. Add{' '}
-            <code className="text-sm">EBIRD_API_KEY</code> to your environment.
+            In <strong>Studio</strong> → <strong>Birding (eBird)</strong>, set{' '}
+            <strong>Life list page title</strong> and{' '}
+            <strong>Life list: region or hotspot ID</strong>, then{' '}
+            <strong>Publish</strong>. Unpublished drafts are not visible on the
+            public site.
           </p>
           <p>
             <Link href="/backyard-birds" className="text-emerald-900 underline">
@@ -77,6 +83,7 @@ export default async function BirdingLifeListPage() {
     )
   }
 
+  const config = resolveEbirdBirding(raw)!
   const result = await fetchLifeListSpecies(config, revalidate)
 
   return (

@@ -56,24 +56,38 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function BirdingMapPage() {
   const raw = await getConfig()
-  const config = resolveEbirdBirding(raw)
+  const rawConfig = raw
 
-  if (!config?.mapPageTitle || !config.lifeListLocationId) {
+  const missingCms =
+    !rawConfig ||
+    !rawConfig.mapPageTitle?.trim() ||
+    !rawConfig.lifeListLocationId?.trim()
+
+  if (missingCms) {
     return (
       <div className="bg-[#e8e8e8] min-h-[50vh] px-6 py-16">
         <div className="max-w-2xl mx-auto prose prose-gray">
           <h1 className="text-2xl font-semibold text-gray-900">Birding map</h1>
           <p className="text-gray-700">
-            Create the singleton <strong>Birding (eBird)</strong> in Sanity Studio.
-            Set page titles, map source (hotspots or region), life list location, and
-            add <code className="text-sm">EBIRD_API_KEY</code> to your deployment
-            environment (see <code className="text-sm">.env.local.example</code>).
+            Open <strong>Sanity Studio</strong> → <strong>Birding (eBird)</strong>{' '}
+            and fill in <strong>Map page title</strong> and{' '}
+            <strong>Life list: region or hotspot ID</strong>, then{' '}
+            <strong>Publish</strong>. Draft-only content does not appear on the live
+            site (the API uses the published dataset).
+          </p>
+          <p className="text-gray-700">
+            Also set map source (hotspots with L-codes, or region code) and other
+            fields as needed. The server needs{' '}
+            <code className="text-sm">EBIRD_API_KEY</code> only after this config is
+            published—add it in Vercel and in <code className="text-sm">.env.local</code>{' '}
+            for local dev.
           </p>
         </div>
       </div>
     )
   }
 
+  const config = resolveEbirdBirding(raw)!
   const obsResult = await fetchMapObservations(config, revalidate)
 
   return (
