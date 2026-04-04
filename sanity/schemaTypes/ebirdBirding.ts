@@ -105,6 +105,14 @@ export const ebirdBirding = defineType({
         'Caps rows after merging hotspots/region. Higher values mean more API payload.',
     }),
     defineField({
+      name: 'mapObserverDisplayNameFilter',
+      title: 'Map: only this observer (optional)',
+      type: 'string',
+      group: 'integration',
+      description:
+        'If set, only checklist rows from this eBird display name are shown (case-insensitive). Must match the name shown on your eBird profile / checklists. Uses API detail=full; leave empty to include all observers at the hotspot or region. Does not change the life list page (that API is location-wide, not per-observer).',
+    }),
+    defineField({
       name: 'defaultMapLatitude',
       title: 'Default map center (latitude)',
       type: 'number',

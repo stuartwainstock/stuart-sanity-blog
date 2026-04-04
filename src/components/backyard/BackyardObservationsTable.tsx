@@ -5,6 +5,8 @@ type Props = {
 }
 
 export default function BackyardObservationsTable({observations}: Props) {
+  const colCount = 7
+
   return (
     <section
       id="backyard-observations-table"
@@ -35,6 +37,9 @@ export default function BackyardObservationsTable({observations}: Props) {
                 Location
               </th>
               <th scope="col" className="px-4 py-3 font-medium">
+                Observer
+              </th>
+              <th scope="col" className="px-4 py-3 font-medium">
                 Latitude
               </th>
               <th scope="col" className="px-4 py-3 font-medium">
@@ -48,10 +53,11 @@ export default function BackyardObservationsTable({observations}: Props) {
           <tbody className="divide-y divide-gray-200 bg-white">
             {observations.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-gray-600">
+                <td colSpan={colCount} className="px-4 py-8 text-center text-gray-600">
                   No recent rows with coordinates in this window. Submit checklists
                   from eBird Mobile or the website, or widen days back in Studio (max
-                  30).
+                  30). If you use an observer name filter, confirm it matches your eBird
+                  display name exactly (Studio → Birding → only this observer).
                 </td>
               </tr>
             ) : (
@@ -69,6 +75,9 @@ export default function BackyardObservationsTable({observations}: Props) {
                   <td className="px-4 py-3 text-gray-900">{o.speciesName}</td>
                   <td className="px-4 py-3 text-gray-700 max-w-[12rem] truncate">
                     {o.locationLabel || '—'}
+                  </td>
+                  <td className="px-4 py-3 text-gray-700 max-w-[10rem] truncate">
+                    {o.observerDisplayName || '—'}
                   </td>
                   <td className="px-4 py-3 font-mono text-gray-700 tabular-nums">
                     {o.latitude.toFixed(5)}

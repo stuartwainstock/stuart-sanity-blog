@@ -289,6 +289,7 @@ export type EbirdBirding = {
   lifeListLocationId?: string
   recentDaysBack?: number
   maxObservationsToFetch?: number
+  mapObserverDisplayNameFilter?: string
   defaultMapLatitude?: number
   defaultMapLongitude?: number
   defaultMapZoom?: number

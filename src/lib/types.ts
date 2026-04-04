@@ -158,6 +158,8 @@ export interface EbirdBirding {
   lifeListLocationId: string
   recentDaysBack: number
   maxObservationsToFetch: number
+  /** Match eBird userDisplayName; map-only filter */
+  mapObserverDisplayNameFilter?: string
   defaultMapLatitude?: number
   defaultMapLongitude?: number
   defaultMapZoom?: number

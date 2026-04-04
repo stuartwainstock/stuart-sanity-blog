@@ -13,6 +13,8 @@ export type ResolvedEbirdBirding = EbirdBirding & {
   defaultMapLongitude: number
   defaultMapZoom: number
   lifeListLocationId: string
+  /** Trimmed; empty means no observer filter */
+  mapObserverDisplayNameFilter: string
 }
 
 export function resolveEbirdBirding(
@@ -28,5 +30,6 @@ export function resolveEbirdBirding(
     defaultMapLongitude: raw.defaultMapLongitude ?? MAP_FALLBACK.longitude,
     defaultMapZoom: raw.defaultMapZoom ?? MAP_FALLBACK.zoom,
     lifeListLocationId: raw.lifeListLocationId?.trim() || '',
+    mapObserverDisplayNameFilter: raw.mapObserverDisplayNameFilter?.trim() || '',
   }
 }

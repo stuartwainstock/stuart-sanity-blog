@@ -12,6 +12,8 @@ export interface BirdObservation {
   speciesCode: string
   checklistUri: string
   locationLabel: string | null
+  /** Present when API returns detail=full (used for observer filter) */
+  observerDisplayName: string | null
 }
 
 export interface LifeListSpecies {

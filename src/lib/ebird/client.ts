@@ -1,4 +1,3 @@
-import {unstable_cache} from 'next/cache'
 import type {ResolvedEbirdBirding} from '@/lib/ebird/resolveConfig'
 import type {
   BirdObservation,
@@ -35,6 +34,26 @@ async function ebirdFetch(
   })
 }
 
+function normalizeDisplayName(s: string): string {
+  return s.trim().replace(/\s+/g, ' ').toLowerCase()
+}
+
+function pickSubId(o: Record<string, unknown>): string | undefined {
+  const v = o.subId ?? o.subID
+  if (typeof v === 'string' && v.length > 0) return v
+  if (v != null && typeof v !== 'object') return String(v)
+  return undefined
+}
+
+function pickObserverDisplayName(o: Record<string, unknown>): string | null {
+  const full = o.userDisplayName
+  if (typeof full === 'string' && full.trim()) return full.trim()
+  const first = typeof o.firstName === 'string' ? o.firstName.trim() : ''
+  const last = typeof o.lastName === 'string' ? o.lastName.trim() : ''
+  const joined = [first, last].filter(Boolean).join(' ').trim()
+  return joined || null
+}
+
 export function parseHotspotCodes(raw: string | undefined): string[] {
   if (!raw?.trim()) return []
   return raw
@@ -55,11 +74,12 @@ function normalizeRecentObs(
   for (const o of rows) {
     const lat = Number(o.lat)
     const lng = Number(o.lng)
-    const subId = o.subId as string | undefined
+    const subId = pickSubId(o)
     const comName = (o.comName as string) || 'Unknown'
     const speciesCode = (o.speciesCode as string) || ''
     const obsDt = (o.obsDt as string) || null
     const locName = (o.locName as string) || null
+    const observerDisplayName = pickObserverDisplayName(o)
 
     if (
       subId == null ||
@@ -81,6 +101,7 @@ function normalizeRecentObs(
       speciesCode,
       checklistUri: `https://ebird.org/checklist/${subId}`,
       locationLabel: locName,
+      observerDisplayName,
     })
   }
   return out
@@ -106,6 +127,14 @@ export async function fetchMapObservations(
   }
 
   const max = Math.min(Math.max(1, config.maxObservationsToFetch), 10000)
+  const observerFilter = config.mapObserverDisplayNameFilter
+  const filterNorm = observerFilter
+    ? normalizeDisplayName(observerFilter)
+    : ''
+  /** Request more rows when filtering so we still have enough after dropping other observers */
+  const fetchBudget = filterNorm
+    ? Math.min(Math.max(max * 4, max), 10000)
+    : max
   const back = Math.min(Math.max(1, config.recentDaysBack), 30)
   const collected: BirdObservation[] = []
   const seen = new Set<string>()
@@ -121,18 +150,19 @@ export async function fetchMapObservations(
         }
       }
 
-      const perHotspot = Math.max(1, Math.ceil(max / codes.length))
+      const perHotspot = Math.max(1, Math.ceil(fetchBudget / codes.length))
 
       for (const hotspotCode of codes) {
-        if (collected.length >= max) break
+        if (collected.length >= fetchBudget) break
         const params = new URLSearchParams()
         params.set('fmt', 'json')
+        params.set('detail', 'full')
         // eBird uses loc ID query param `r` (same as legacy ws1.1 hotspot recent).
         params.set('r', hotspotCode)
         params.set('back', String(back))
         params.set(
           'maxResults',
-          String(Math.min(perHotspot, max - collected.length))
+          String(Math.min(perHotspot, fetchBudget - collected.length))
         )
 
         const res = await ebirdFetch(
@@ -152,7 +182,7 @@ export async function fetchMapObservations(
           if (seen.has(obs.id)) continue
           seen.add(obs.id)
           collected.push(obs)
-          if (collected.length >= max) break
+          if (collected.length >= fetchBudget) break
         }
       }
     } else {
@@ -167,8 +197,9 @@ export async function fetchMapObservations(
 
       const params = new URLSearchParams()
       params.set('fmt', 'json')
+      params.set('detail', 'full')
       params.set('back', String(back))
-      params.set('maxResults', String(max))
+      params.set('maxResults', String(fetchBudget))
 
       const res = await ebirdFetch(
         `/data/obs/${encodeURIComponent(region)}/recent`,
@@ -183,11 +214,20 @@ export async function fetchMapObservations(
       }
       const json = (await res.json()) as Record<string, unknown>[]
       const rows = Array.isArray(json) ? json : []
-      collected.push(...normalizeRecentObs(rows).slice(0, max))
+      collected.push(...normalizeRecentObs(rows).slice(0, fetchBudget))
     }
 
-    collected.sort(sortObsDesc)
-    return {ok: true, observations: collected.slice(0, max)}
+    let observations = collected
+    if (filterNorm) {
+      observations = observations.filter((obs) => {
+        const o = obs.observerDisplayName
+        if (!o) return false
+        return normalizeDisplayName(o) === filterNorm
+      })
+    }
+
+    observations.sort(sortObsDesc)
+    return {ok: true, observations: observations.slice(0, max)}
   } catch (e) {
     const message = e instanceof Error ? e.message : 'Unknown error'
     return {ok: false, message}
@@ -200,26 +240,22 @@ type TaxonomyRow = {
   sciName?: string
 }
 
-const loadTaxonomyRows = unstable_cache(
-  async (): Promise<TaxonomyRow[]> => {
-    const key = getApiKey()
-    if (!key) return []
-    const params = new URLSearchParams()
-    params.set('fmt', 'json')
-    const res = await fetch(`${EBIRD_BASE}/ref/taxonomy/ebird?${params}`, {
-      headers: ebirdHeaders(),
-      next: {revalidate: 86400},
-    })
-    if (!res.ok) return []
-    const json = (await res.json()) as unknown
-    return Array.isArray(json) ? (json as TaxonomyRow[]) : []
-  },
-  ['ebird-taxonomy-en'],
-  {revalidate: 86400}
-)
+async function fetchTaxonomyRows(): Promise<TaxonomyRow[]> {
+  const key = getApiKey()
+  if (!key) return []
+  const params = new URLSearchParams()
+  params.set('fmt', 'json')
+  const res = await fetch(`${EBIRD_BASE}/ref/taxonomy/ebird?${params}`, {
+    headers: ebirdHeaders(),
+    next: {revalidate: 86400},
+  })
+  if (!res.ok) return []
+  const json = (await res.json()) as unknown
+  return Array.isArray(json) ? (json as TaxonomyRow[]) : []
+}
 
 async function taxonomyCodeMap(): Promise<Map<string, TaxonomyRow>> {
-  const rows = await loadTaxonomyRows()
+  const rows = await fetchTaxonomyRows()
   const map = new Map<string, TaxonomyRow>()
   for (const row of rows) {
     const c = row.speciesCode?.toLowerCase()

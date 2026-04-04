@@ -196,7 +196,7 @@ This site can show **recent eBird checklist rows** on a map and a **species list
 
 1. You submit checklists with the eBird mobile app or website as usual.
 2. Set **`EBIRD_API_KEY`** in the environment (server-only; request a key at [ebird.org/api/keygen](https://ebird.org/api/keygen) and follow [eBird API terms](https://science.ebird.org/en/use-ebird-data/download-ebird-data-products/ebird-api/)).
-3. Sanity holds one configuration document: titles, intros, SEO, **map source** (hotspot ID(s) or region code), **life list location** (region or hotspot for `product/spplist`), **days back** for the map (1–30; eBird recent API limit), **max rows**, and default map center.
+3. Sanity holds one configuration document: titles, intros, SEO, **map source** (hotspot ID(s) or region code), optional **map observer filter** (your eBird display name → only your rows on the map), **life list location** (region or hotspot for `product/spplist`), **days back** for the map (1–30; eBird recent API limit), **max rows**, and default map center.
 4. Next.js calls the [eBird API 2.0](https://api.ebird.org/v2) on the server (`X-eBirdApiToken`), normalizes responses in `src/lib/ebird/`, and renders:
    - **`/backyard-birds`** — MapLibre map plus an **accessible table** (skip link, checklist links on eBird). Pins reflect **recent** checklists only (not your entire historical map).
    - **`/backyard-birds/life-list`** — Species from **`/product/spplist/{location}`** for your configured hotspot or region, with names joined from the cached **`/ref/taxonomy/ebird`** feed.
@@ -204,6 +204,7 @@ This site can show **recent eBird checklist rows** on a map and a **species list
 ### Important limitations
 
 - The **map** uses eBird’s **recent** observation endpoints (`/data/obs/hotspot/recent` or `/data/obs/{region}/recent`). There is a **maximum 30-day window**. Older sightings will not appear as pins; use the **life list** page for cumulative species at a location.
+- **Only my checklists on the map:** set **Map: only this observer** in Studio to your eBird **display name** (as shown on your profile/checklists). The app requests `detail=full` and filters rows; matching is case-insensitive. The **life list** API is still **every species at that location**, not per-observer—use a **personal** hotspot for a list that is effectively yours, or treat the life list as regional.
 - The **life list** does not include per-species observation counts from `spplist` alone; the table focuses on identity and links to eBird species pages.
 
 ### Configure in Sanity Studio
@@ -212,8 +213,9 @@ This site can show **recent eBird checklist rows** on a map and a **species list
 2. Add **`EBIRD_API_KEY`** to `.env.local` (local) and to your host (e.g. Vercel) — never prefix with `NEXT_PUBLIC_`.
 3. Choose **map source**: **Hotspots** (enter `L…` IDs, one per line or comma-separated) or **Region** (e.g. `US-NY-109`).
 4. Set **Life list: region or hotspot ID** — passed to `spplist` (can match your yard hotspot or a broader region).
-5. Tune **days back** (1–30) and **max observation rows**; set default map center if the recent window is empty.
-6. Publish the document.
+5. Optional: **Map: only this observer** — your name as eBird shows it, to hide other birders’ rows at shared hotspots or large regions.
+6. Tune **days back** (1–30) and **max observation rows**; set default map center if the recent window is empty.
+7. Publish the document.
 
 If you previously used the retired **Backyard birds (iNaturalist)** singleton, create this new document from scratch; old `inaturalistBackyard` documents are no longer in the schema.
 

@@ -398,6 +398,7 @@ export const EBIRD_BIRDING_QUERY = groq`
     lifeListLocationId,
     recentDaysBack,
     maxObservationsToFetch,
+    mapObserverDisplayNameFilter,
     defaultMapLatitude,
     defaultMapLongitude,
     defaultMapZoom,
