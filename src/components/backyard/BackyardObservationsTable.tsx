@@ -1,7 +1,7 @@
-import type {BackyardObservation} from '@/lib/inaturalist/types'
+import type {BirdObservation} from '@/lib/ebird/types'
 
 type Props = {
-  observations: BackyardObservation[]
+  observations: BirdObservation[]
 }
 
 export default function BackyardObservationsTable({observations}: Props) {
@@ -12,16 +12,16 @@ export default function BackyardObservationsTable({observations}: Props) {
       aria-labelledby="obs-table-heading"
     >
       <h2 id="obs-table-heading" className="text-xl font-semibold text-gray-900 mb-4">
-        Observation list
+        Recent checklist rows
       </h2>
       <p className="text-sm text-gray-600 mb-4 max-w-3xl">
-        Each row matches a point on the map. Open the observation on iNaturalist for
-        full details, photos, and research-grade status.
+        Each row is a species entry from a recent eBird checklist in your configured
+        window. Open the checklist for full protocol, counts, and media.
       </p>
       <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
         <table className="min-w-full text-left text-sm border-collapse">
           <caption className="sr-only">
-            Bird observations with date, species, coordinates, and link to iNaturalist
+            Recent eBird rows with date, species, coordinates, and checklist link
           </caption>
           <thead className="bg-gray-100 text-gray-800">
             <tr>
@@ -32,22 +32,26 @@ export default function BackyardObservationsTable({observations}: Props) {
                 Species
               </th>
               <th scope="col" className="px-4 py-3 font-medium">
+                Location
+              </th>
+              <th scope="col" className="px-4 py-3 font-medium">
                 Latitude
               </th>
               <th scope="col" className="px-4 py-3 font-medium">
                 Longitude
               </th>
               <th scope="col" className="px-4 py-3 font-medium">
-                iNaturalist
+                eBird
               </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 bg-white">
             {observations.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-gray-600">
-                  No georeferenced observations match your filters yet. Log a bird in
-                  iNaturalist with coordinates and check back after the page refreshes.
+                <td colSpan={6} className="px-4 py-8 text-center text-gray-600">
+                  No recent rows with coordinates in this window. Submit checklists
+                  from eBird Mobile or the website, or widen days back in Studio (max
+                  30).
                 </td>
               </tr>
             ) : (
@@ -63,6 +67,9 @@ export default function BackyardObservationsTable({observations}: Props) {
                       : '—'}
                   </td>
                   <td className="px-4 py-3 text-gray-900">{o.speciesName}</td>
+                  <td className="px-4 py-3 text-gray-700 max-w-[12rem] truncate">
+                    {o.locationLabel || '—'}
+                  </td>
                   <td className="px-4 py-3 font-mono text-gray-700 tabular-nums">
                     {o.latitude.toFixed(5)}
                   </td>
@@ -71,12 +78,13 @@ export default function BackyardObservationsTable({observations}: Props) {
                   </td>
                   <td className="px-4 py-3">
                     <a
-                      href={o.uri}
+                      href={o.checklistUri}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-emerald-800 underline underline-offset-2 hover:text-emerald-950 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 rounded-sm"
                     >
-                      View<span className="sr-only"> {o.speciesName} observation</span>
+                      Checklist
+                      <span className="sr-only"> for {o.speciesName}</span>
                     </a>
                   </td>
                 </tr>

@@ -2,29 +2,27 @@ import Link from 'next/link'
 import type {Metadata} from 'next'
 import {sanityClient} from '@/lib/sanity'
 import {getImageUrl} from '@/lib/sanity'
-import {INATURALIST_BACKYARD_QUERY} from '@/lib/queries'
-import type {InaturalistBackyard} from '@/lib/types'
+import {EBIRD_BIRDING_QUERY} from '@/lib/queries'
+import type {EbirdBirding} from '@/lib/types'
 import PortableText from '@/components/PortableText'
 import LifeListTable from '@/components/backyard/LifeListTable'
-import {fetchLifeListSpecies} from '@/lib/inaturalist/client'
-import {resolveInaturalistBackyard} from '@/lib/inaturalist/resolveConfig'
+import {fetchLifeListSpecies} from '@/lib/ebird/client'
+import {resolveEbirdBirding} from '@/lib/ebird/resolveConfig'
 
 export const revalidate = 300
 
-async function getConfig(): Promise<InaturalistBackyard | null> {
+async function getConfig(): Promise<EbirdBirding | null> {
   try {
-    return await sanityClient.fetch<InaturalistBackyard | null>(
-      INATURALIST_BACKYARD_QUERY
-    )
+    return await sanityClient.fetch<EbirdBirding | null>(EBIRD_BIRDING_QUERY)
   } catch (e) {
-    console.error('Backyard birds config fetch failed:', e)
+    console.error('eBird birding config fetch failed:', e)
     return null
   }
 }
 
 export async function generateMetadata(): Promise<Metadata> {
   const raw = await getConfig()
-  const config = resolveInaturalistBackyard(raw)
+  const config = resolveEbirdBirding(raw)
   if (!config) {
     return {title: 'Life list'}
   }
@@ -55,18 +53,19 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-export default async function BackyardLifeListPage() {
+export default async function BirdingLifeListPage() {
   const raw = await getConfig()
-  const config = resolveInaturalistBackyard(raw)
+  const config = resolveEbirdBirding(raw)
 
-  if (!config?.inatUserLogin) {
+  if (!config?.lifeListPageTitle || !config.lifeListLocationId) {
     return (
       <div className="bg-[#e8e8e8] min-h-[50vh] px-6 py-16">
         <div className="max-w-2xl mx-auto prose prose-gray">
           <h1 className="text-2xl font-semibold text-gray-900">Life list</h1>
           <p className="text-gray-700">
-            Configure <strong>Backyard birds (iNaturalist)</strong> in Sanity Studio
-            first, including your iNaturalist username.
+            Configure <strong>Birding (eBird)</strong> in Sanity Studio and set{' '}
+            <strong>Life list: region or hotspot ID</strong>. Add{' '}
+            <code className="text-sm">EBIRD_API_KEY</code> to your environment.
           </p>
           <p>
             <Link href="/backyard-birds" className="text-emerald-900 underline">
@@ -94,12 +93,12 @@ export default async function BackyardLifeListPage() {
             <span aria-hidden="true"> · </span>
             Data from{' '}
             <a
-              href="https://www.inaturalist.org/"
+              href="https://ebird.org/home"
               target="_blank"
               rel="noopener noreferrer"
               className="text-emerald-900 underline underline-offset-2 hover:text-emerald-950 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 rounded-sm"
             >
-              iNaturalist
+              eBird
             </a>
           </p>
           <h1 className="text-3xl sm:text-4xl font-semibold text-gray-900 mb-6">

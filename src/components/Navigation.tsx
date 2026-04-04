@@ -97,7 +97,7 @@ export default function Navigation({ siteSettings, navigationPages = [] }: Navig
               href="/backyard-birds"
               className="text-gray-600 hover:text-gray-900 focus:text-gray-900 px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md"
             >
-              Backyard birds
+              Birding
             </Link>
             {navigationPages.map((page) => (
               <Link
@@ -171,7 +171,7 @@ export default function Navigation({ siteSettings, navigationPages = [] }: Navig
                   className="block text-gray-600 hover:text-gray-900 focus:text-gray-900 px-3 py-2 text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md"
                   onClick={closeMenu}
                 >
-                  Backyard birds
+                  Birding
                 </Link>
               </li>
               {navigationPages.map((page) => (

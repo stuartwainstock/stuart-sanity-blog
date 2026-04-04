@@ -1659,7 +1659,7 @@
     }
   },
   {
-    "name": "inaturalistBackyard",
+    "name": "ebirdBirding",
     "type": "document",
     "attributes": {
       "_id": {
@@ -1672,7 +1672,7 @@
         "type": "objectAttribute",
         "value": {
           "type": "string",
-          "value": "inaturalistBackyard"
+          "value": "ebirdBirding"
         }
       },
       "_createdAt": {
@@ -1723,61 +1723,48 @@
         },
         "optional": true
       },
-      "inatUserLogin": {
+      "mapDataSource": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "hotspots"
+            },
+            {
+              "type": "string",
+              "value": "region"
+            }
+          ]
+        },
+        "optional": true
+      },
+      "hotspotCodes": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
         },
         "optional": true
       },
-      "iconicTaxaName": {
+      "regionCode": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
         },
         "optional": true
       },
-      "placeId": {
+      "lifeListLocationId": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "recentDaysBack": {
         "type": "objectAttribute",
         "value": {
           "type": "number"
-        },
-        "optional": true
-      },
-      "boundingBox": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "object",
-          "attributes": {
-            "nelat": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "number"
-              },
-              "optional": true
-            },
-            "nelng": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "number"
-              },
-              "optional": true
-            },
-            "swlat": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "number"
-              },
-              "optional": true
-            },
-            "swlng": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "number"
-              },
-              "optional": true
-            }
-          }
         },
         "optional": true
       },

@@ -24,7 +24,7 @@ A modern, full-featured blog built with Next.js 16 and Sanity CMS. This project 
 - ⚙️ Site settings configuration
 - 🖼️ Image management with alt text
 - 🔧 SEO fields for all content types
-- 🦅 Backyard birds: map + life list powered by the [iNaturalist API](https://api.inaturalist.org/v1/docs/) (see below)
+- 🦅 Birding: map + life list powered by the [eBird API 2.0](https://science.ebird.org/en/use-ebird-data/download-ebird-data-products/ebird-api/) (see below)
 
 ## Quick Start
 
@@ -83,7 +83,7 @@ sanity-blog/
 │   │   ├── author/                   # Author pages
 │   │   ├── category/                 # Category pages
 │   │   ├── journal/                  # Journal pages
-│   │   ├── backyard-birds/          # iNaturalist map + life list
+│   │   ├── backyard-birds/          # eBird map + life list
 │   │   ├── studio/                   # Embedded Sanity Studio route
 │   │   ├── [slug]/                   # Dynamic page route
 │   │   ├── layout.tsx                # Root layout
@@ -99,7 +99,7 @@ sanity-blog/
 │       ├── sanity.ts                 # Sanity client setup
 │       ├── queries.ts                # GROQ queries
 │       ├── types.ts                  # TypeScript types
-│       └── inaturalist/              # iNaturalist API client + normalized types
+│       └── ebird/                    # eBird API client + normalized types
 ├── sanity/                           # Sanity Studio source
 │   ├── schemaTypes/
 │   │   ├── resource.ts               # Unified resource model
@@ -183,46 +183,49 @@ sanity-blog/
 - Media type support: article, book, video, podcast, tool, other
 - `published` resources render on `/reading-list`
 
-#### Backyard birds (iNaturalist)
-- Singleton document: **Backyard birds (iNaturalist)** in Studio (`inaturalistBackyard`)
-- Stores page copy, SEO, and **filter settings** (not a copy of every observation)
-- Observations and species counts are loaded from iNaturalist at runtime (cached, see below)
+#### Birding (eBird)
+- Singleton document: **Birding (eBird)** in Studio (`ebirdBirding`, document id `ebirdBirding`)
+- Stores page copy, SEO, and **which eBird endpoints to call** (not a mirror of the whole database)
+- Map rows come from **recent observations**; the life list comes from **historical species for a location** (see below)
 
-## Backyard birds & iNaturalist
+## Birding & eBird
 
-This site can show **your public bird observations** on a map and a **species life list**, using [iNaturalist](https://www.inaturalist.org/) as the system of record and Sanity for presentation settings.
+This site can show **recent eBird checklist rows** on a map and a **species list** for a chosen region or hotspot, using [eBird](https://ebird.org/home) as the data source and Sanity for copy and filters.
 
 ### How it works
 
-1. You log birds in the iNaturalist app or website as usual (with coordinates when you want them on the map).
-2. Sanity holds a single configuration document: titles, intro text, SEO, your **iNaturalist username**, optional **place** or **bounding box**, taxon filter (default **Aves**), map defaults, and a **max observations** cap to keep API usage predictable.
-3. Next.js calls the public [iNaturalist API](https://api.inaturalist.org/v1/) on the server, normalizes the JSON in `src/lib/inaturalist/`, and renders:
-   - **`/backyard-birds`** — interactive map (MapLibre) plus an **accessible table** of the same observations (skip link, captions, links to each observation on iNaturalist).
-   - **`/backyard-birds/life-list`** — species aggregated via the API’s species-counts endpoint, with links to taxon pages (and Wikipedia when available).
+1. You submit checklists with the eBird mobile app or website as usual.
+2. Set **`EBIRD_API_KEY`** in the environment (server-only; request a key at [ebird.org/api/keygen](https://ebird.org/api/keygen) and follow [eBird API terms](https://science.ebird.org/en/use-ebird-data/download-ebird-data-products/ebird-api/)).
+3. Sanity holds one configuration document: titles, intros, SEO, **map source** (hotspot ID(s) or region code), **life list location** (region or hotspot for `product/spplist`), **days back** for the map (1–30; eBird recent API limit), **max rows**, and default map center.
+4. Next.js calls the [eBird API 2.0](https://api.ebird.org/v2) on the server (`X-eBirdApiToken`), normalizes responses in `src/lib/ebird/`, and renders:
+   - **`/backyard-birds`** — MapLibre map plus an **accessible table** (skip link, checklist links on eBird). Pins reflect **recent** checklists only (not your entire historical map).
+   - **`/backyard-birds/life-list`** — Species from **`/product/spplist/{location}`** for your configured hotspot or region, with names joined from the cached **`/ref/taxonomy/ebird`** feed.
 
-No iNaturalist API key is required for these read-only queries. The integration uses a descriptive `User-Agent` header, as [recommended by iNaturalist](https://www.inaturalist.org/pages/api+recommended+practices).
+### Important limitations
+
+- The **map** uses eBird’s **recent** observation endpoints (`/data/obs/hotspot/recent` or `/data/obs/{region}/recent`). There is a **maximum 30-day window**. Older sightings will not appear as pins; use the **life list** page for cumulative species at a location.
+- The **life list** does not include per-species observation counts from `spplist` alone; the table focuses on identity and links to eBird species pages.
 
 ### Configure in Sanity Studio
 
-1. Open **Backyard birds (iNaturalist)** (under Content).
-2. Set **iNaturalist username** to your public login (observations must be **public** to appear).
-3. Fill **map** and **life list** page titles; add optional Portable Text intros and SEO.
-4. Optional: set **Place ID** (from iNaturalist) or a **bounding box** (`nelat`, `nelng`, `swlat`, `swlng`) to limit results to a backyard or local area.
-5. Adjust **Max observations to load** if you need a lower cap (default 500; schema allows up to 5000).
-6. Set **default map center / zoom** for empty or sparse data (fallbacks exist if you leave them blank).
-7. Publish the document.
+1. Open **Birding (eBird)** under Content.
+2. Add **`EBIRD_API_KEY`** to `.env.local` (local) and to your host (e.g. Vercel) — never prefix with `NEXT_PUBLIC_`.
+3. Choose **map source**: **Hotspots** (enter `L…` IDs, one per line or comma-separated) or **Region** (e.g. `US-NY-109`).
+4. Set **Life list: region or hotspot ID** — passed to `spplist` (can match your yard hotspot or a broader region).
+5. Tune **days back** (1–30) and **max observation rows**; set default map center if the recent window is empty.
+6. Publish the document.
 
-Until this singleton exists and includes a username, the routes show short setup instructions instead of map data.
+If you previously used the retired **Backyard birds (iNaturalist)** singleton, create this new document from scratch; old `inaturalistBackyard` documents are no longer in the schema.
 
 ### Caching and updates
 
-- Map and life list pages use **incremental static regeneration** (`revalidate` ≈ 5 minutes). New observations appear after the cache window, or immediately in local dev depending on how you run the app.
-- After schema or code changes, **redeploy the Next.js app** so embedded Studio at `/studio` and the frontend stay in sync.
+- Pages use **ISR** (`revalidate` ≈ 5 minutes). Taxonomy for names is cached longer (24h) to reduce load on `ref/taxonomy/ebird`.
+- **Redeploy** the Next.js app after schema or code changes so `/studio` stays aligned.
 
 ### Production notes
 
-- **Content Security Policy** in `next.config.ts` allows connections to `api.inaturalist.org` and Carto basemap tiles, and images from common iNaturalist photo hosts. If the API returns photo URLs from another host, you may need to extend `img-src` / `connect-src`.
-- Map tiles rely on a free Carto basemap style (no Mapbox token). For heavy traffic or custom styling, consider switching the map style in `src/components/backyard/BackyardBirdMap.tsx`.
+- **CSP** in `next.config.ts` allows `api.ebird.org` and Carto basemap tiles.
+- Map style: Carto Positron in `BackyardBirdMap.tsx` (no Mapbox token).
 
 ## Deployment
 
@@ -256,9 +259,11 @@ NEXT_PUBLIC_SANITY_DATASET=production
 SANITY_API_WRITE_TOKEN=your-write-token
 QUICK_ADD_API_KEY=your-bookmarklet-secret
 NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+EBIRD_API_KEY=your-ebird-api-key
 ```
 
 - `NEXT_PUBLIC_GA_MEASUREMENT_ID` enables baseline GA4 pageview tracking.
+- `EBIRD_API_KEY` powers `/backyard-birds` (server-only; get a key at [ebird.org/api/keygen](https://ebird.org/api/keygen)).
 
 ### Quick-Add Link Bookmarklet
 

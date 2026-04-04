@@ -146,21 +146,17 @@ export interface Homepage {
   seo?: SEO
 }
 
-export interface InaturalistBackyard {
+export interface EbirdBirding {
   _id: string
   mapPageTitle: string
   mapPageIntroduction?: unknown[]
   lifeListPageTitle: string
   lifeListIntroduction?: unknown[]
-  inatUserLogin: string
-  iconicTaxaName: string
-  placeId?: number
-  boundingBox?: {
-    nelat?: number
-    nelng?: number
-    swlat?: number
-    swlng?: number
-  }
+  mapDataSource: 'hotspots' | 'region'
+  hotspotCodes?: string
+  regionCode?: string
+  lifeListLocationId: string
+  recentDaysBack: number
   maxObservationsToFetch: number
   defaultMapLatitude?: number
   defaultMapLongitude?: number

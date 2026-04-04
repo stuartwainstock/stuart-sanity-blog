@@ -7,7 +7,7 @@ import {
   blockContent,
   category,
   homepage,
-  inaturalistBackyard,
+  ebirdBirding,
   link,
   page,
   post,
@@ -50,12 +50,12 @@ export default defineConfig({
                   .documentId('siteSettings')
               ),
             S.listItem()
-              .title('Backyard birds (iNaturalist)')
-              .id('inaturalistBackyard')
+              .title('Birding (eBird)')
+              .id('ebirdBirding')
               .child(
                 S.document()
-                  .schemaType('inaturalistBackyard')
-                  .documentId('inaturalistBackyard')
+                  .schemaType('ebirdBirding')
+                  .documentId('ebirdBirding')
               ),
             S.divider(),
             S.listItem()
@@ -142,7 +142,7 @@ export default defineConfig({
       blockContent,
       category,
       homepage,
-      inaturalistBackyard,
+      ebirdBirding,
       link,
       page,
       post,

@@ -4,14 +4,14 @@ import {useCallback, useEffect, useId, useRef, useState} from 'react'
 import Map, {Marker, NavigationControl, type MapRef} from 'react-map-gl/maplibre'
 import {LngLatBounds} from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
-import type {BackyardObservation} from '@/lib/inaturalist/types'
+import type {BirdObservation} from '@/lib/ebird/types'
 
 /** Carto Positron (no API key). */
 const MAP_STYLE =
   'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'
 
 type Props = {
-  observations: BackyardObservation[]
+  observations: BirdObservation[]
   defaultLatitude: number
   defaultLongitude: number
   defaultZoom: number
@@ -58,13 +58,14 @@ export default function BackyardBirdMap({
   return (
     <div className="space-y-3">
       <p id={descriptionId} className="text-sm text-gray-600 max-w-3xl">
-        Locations come from your public iNaturalist observations. The same
-        records appear in the table below for keyboard and screen-reader access.
+        Pins use eBird checklist locations from the recent window you configured in
+        Studio. The same rows appear in the table below for keyboard and
+        screen-reader access.
       </p>
       <div
         className="relative w-full h-[min(70vh,520px)] rounded-lg overflow-hidden border border-gray-200 shadow-sm bg-gray-100"
         role="region"
-        aria-label="Map of bird observation locations"
+        aria-label="Map of recent eBird checklist locations"
         aria-describedby={descriptionId}
       >
         <Map
@@ -85,12 +86,12 @@ export default function BackyardBirdMap({
               anchor="bottom"
             >
               <a
-                href={o.uri}
+                href={o.checklistUri}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block w-3 h-3 rounded-full bg-emerald-700 border-2 border-white shadow-md hover:scale-125 focus:scale-125 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 transition-transform"
-                title={`${o.speciesName} — open on iNaturalist`}
-                aria-label={`${o.speciesName}, observation ${o.id}, opens in new tab`}
+                title={`${o.speciesName} — open checklist on eBird`}
+                aria-label={`${o.speciesName}, eBird checklist, opens in new tab`}
               />
             </Marker>
           ))}

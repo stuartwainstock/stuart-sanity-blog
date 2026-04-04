@@ -385,22 +385,18 @@ export const HOMEPAGE_QUERY = groq`
   }
 `
 
-export const INATURALIST_BACKYARD_QUERY = groq`
-  *[_type == "inaturalistBackyard" && _id == "inaturalistBackyard"][0]{
+export const EBIRD_BIRDING_QUERY = groq`
+  *[_type == "ebirdBirding" && _id == "ebirdBirding"][0]{
     _id,
     mapPageTitle,
     mapPageIntroduction,
     lifeListPageTitle,
     lifeListIntroduction,
-    inatUserLogin,
-    iconicTaxaName,
-    placeId,
-    boundingBox {
-      nelat,
-      nelng,
-      swlat,
-      swlng
-    },
+    mapDataSource,
+    hotspotCodes,
+    regionCode,
+    lifeListLocationId,
+    recentDaysBack,
     maxObservationsToFetch,
     defaultMapLatitude,
     defaultMapLongitude,

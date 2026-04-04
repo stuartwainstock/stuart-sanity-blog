@@ -1,4 +1,4 @@
-import type {LifeListSpecies} from '@/lib/inaturalist/types'
+import type {LifeListSpecies} from '@/lib/ebird/types'
 
 type Props = {
   species: LifeListSpecies[]
@@ -17,84 +17,49 @@ export default function LifeListTable({species}: Props) {
           </caption>
           <thead className="bg-gray-100 text-gray-800">
             <tr>
-              <th scope="col" className="px-4 py-3 font-medium w-16">
-                Photo
-              </th>
               <th scope="col" className="px-4 py-3 font-medium">
-                Name
+                Common name
               </th>
               <th scope="col" className="px-4 py-3 font-medium">
                 Scientific name
               </th>
               <th scope="col" className="px-4 py-3 font-medium">
-                Observations
+                Species code
               </th>
               <th scope="col" className="px-4 py-3 font-medium">
-                More
+                eBird
               </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 bg-white">
             {species.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-gray-600">
-                  No species yet for this filter. Add observations on iNaturalist to
-                  grow your life list.
+                <td colSpan={4} className="px-4 py-8 text-center text-gray-600">
+                  No species returned for this location. Confirm your life list region
+                  or hotspot ID matches eBird.
                 </td>
               </tr>
             ) : (
               species.map((s) => {
-                const taxonUrl = `https://www.inaturalist.org/taxa/${s.taxonId}`
                 const label = s.commonName || s.name
+                const speciesUrl = `https://ebird.org/species/${encodeURIComponent(s.speciesCode)}`
                 return (
-                  <tr key={s.taxonId} className="hover:bg-gray-50">
-                    <td className="px-4 py-2">
-                      {s.defaultPhotoUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element -- iNat photo URLs vary by host; native img avoids brittle remotePatterns.
-                        <img
-                          src={s.defaultPhotoUrl}
-                          alt=""
-                          width={48}
-                          height={48}
-                          className="rounded object-cover w-12 h-12 bg-gray-100"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      ) : (
-                        <span className="inline-flex w-12 h-12 items-center justify-center rounded bg-gray-100 text-gray-400 text-xs">
-                          —
-                        </span>
-                      )}
-                    </td>
+                  <tr key={s.speciesCode} className="hover:bg-gray-50">
                     <td className="px-4 py-3 text-gray-900 font-medium">{label}</td>
                     <td className="px-4 py-3 text-gray-600 italic">{s.name}</td>
-                    <td className="px-4 py-3 tabular-nums text-gray-800">
-                      {s.observationCount}
+                    <td className="px-4 py-3 font-mono text-gray-700 text-xs">
+                      {s.speciesCode}
                     </td>
                     <td className="px-4 py-3">
                       <a
-                        href={taxonUrl}
+                        href={speciesUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-emerald-800 underline underline-offset-2 hover:text-emerald-950 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 rounded-sm"
                       >
-                        iNaturalist
-                        <span className="sr-only"> taxon page for {label}</span>
+                        Species page
+                        <span className="sr-only"> for {label}</span>
                       </a>
-                      {s.wikiUrl ? (
-                        <>
-                          {' · '}
-                          <a
-                            href={s.wikiUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-emerald-800 underline underline-offset-2 hover:text-emerald-950 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 rounded-sm"
-                          >
-                            Wikipedia
-                            <span className="sr-only"> article for {label}</span>
-                          </a>
-                        </>
-                      ) : null}
                     </td>
                   </tr>
                 )

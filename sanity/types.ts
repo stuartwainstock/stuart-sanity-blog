@@ -273,9 +273,9 @@ export type Link = {
   addedDate?: string
 }
 
-export type InaturalistBackyard = {
+export type EbirdBirding = {
   _id: string
-  _type: 'inaturalistBackyard'
+  _type: 'ebirdBirding'
   _createdAt: string
   _updatedAt: string
   _rev: string
@@ -283,15 +283,11 @@ export type InaturalistBackyard = {
   mapPageIntroduction?: BlockContent
   lifeListPageTitle?: string
   lifeListIntroduction?: BlockContent
-  inatUserLogin?: string
-  iconicTaxaName?: string
-  placeId?: number
-  boundingBox?: {
-    nelat?: number
-    nelng?: number
-    swlat?: number
-    swlng?: number
-  }
+  mapDataSource?: 'hotspots' | 'region'
+  hotspotCodes?: string
+  regionCode?: string
+  lifeListLocationId?: string
+  recentDaysBack?: number
   maxObservationsToFetch?: number
   defaultMapLatitude?: number
   defaultMapLongitude?: number
@@ -489,7 +485,7 @@ export type AllSanitySchemaTypes =
   | Slug
   | Page
   | Link
-  | InaturalistBackyard
+  | EbirdBirding
   | Homepage
   | Category
   | Author
