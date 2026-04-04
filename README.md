@@ -24,6 +24,7 @@ A modern, full-featured blog built with Next.js 16 and Sanity CMS. This project 
 - ⚙️ Site settings configuration
 - 🖼️ Image management with alt text
 - 🔧 SEO fields for all content types
+- 🦅 Backyard birds: map + life list powered by the [iNaturalist API](https://api.inaturalist.org/v1/docs/) (see below)
 
 ## Quick Start
 
@@ -82,11 +83,13 @@ sanity-blog/
 │   │   ├── author/                   # Author pages
 │   │   ├── category/                 # Category pages
 │   │   ├── journal/                  # Journal pages
+│   │   ├── backyard-birds/          # iNaturalist map + life list
 │   │   ├── studio/                   # Embedded Sanity Studio route
 │   │   ├── [slug]/                   # Dynamic page route
 │   │   ├── layout.tsx                # Root layout
 │   │   └── page.tsx                  # Homepage
 │   ├── components/                   # React components
+│   │   ├── backyard/                 # Map + observation / life list UI
 │   │   ├── GoogleAnalytics.tsx       # GA4 baseline tracking
 │   │   ├── Navigation.tsx            # Site navigation
 │   │   ├── ReadingList.tsx           # Unified resource list UI
@@ -95,7 +98,8 @@ sanity-blog/
 │   └── lib/                          # Utilities and configs
 │       ├── sanity.ts                 # Sanity client setup
 │       ├── queries.ts                # GROQ queries
-│       └── types.ts                  # TypeScript types
+│       ├── types.ts                  # TypeScript types
+│       └── inaturalist/              # iNaturalist API client + normalized types
 ├── sanity/                           # Sanity Studio source
 │   ├── schemaTypes/
 │   │   ├── resource.ts               # Unified resource model
@@ -178,6 +182,47 @@ sanity-blog/
 - Workflow status: `inbox`, `reviewed`, `published`, `rejected`
 - Media type support: article, book, video, podcast, tool, other
 - `published` resources render on `/reading-list`
+
+#### Backyard birds (iNaturalist)
+- Singleton document: **Backyard birds (iNaturalist)** in Studio (`inaturalistBackyard`)
+- Stores page copy, SEO, and **filter settings** (not a copy of every observation)
+- Observations and species counts are loaded from iNaturalist at runtime (cached, see below)
+
+## Backyard birds & iNaturalist
+
+This site can show **your public bird observations** on a map and a **species life list**, using [iNaturalist](https://www.inaturalist.org/) as the system of record and Sanity for presentation settings.
+
+### How it works
+
+1. You log birds in the iNaturalist app or website as usual (with coordinates when you want them on the map).
+2. Sanity holds a single configuration document: titles, intro text, SEO, your **iNaturalist username**, optional **place** or **bounding box**, taxon filter (default **Aves**), map defaults, and a **max observations** cap to keep API usage predictable.
+3. Next.js calls the public [iNaturalist API](https://api.inaturalist.org/v1/) on the server, normalizes the JSON in `src/lib/inaturalist/`, and renders:
+   - **`/backyard-birds`** — interactive map (MapLibre) plus an **accessible table** of the same observations (skip link, captions, links to each observation on iNaturalist).
+   - **`/backyard-birds/life-list`** — species aggregated via the API’s species-counts endpoint, with links to taxon pages (and Wikipedia when available).
+
+No iNaturalist API key is required for these read-only queries. The integration uses a descriptive `User-Agent` header, as [recommended by iNaturalist](https://www.inaturalist.org/pages/api+recommended+practices).
+
+### Configure in Sanity Studio
+
+1. Open **Backyard birds (iNaturalist)** (under Content).
+2. Set **iNaturalist username** to your public login (observations must be **public** to appear).
+3. Fill **map** and **life list** page titles; add optional Portable Text intros and SEO.
+4. Optional: set **Place ID** (from iNaturalist) or a **bounding box** (`nelat`, `nelng`, `swlat`, `swlng`) to limit results to a backyard or local area.
+5. Adjust **Max observations to load** if you need a lower cap (default 500; schema allows up to 5000).
+6. Set **default map center / zoom** for empty or sparse data (fallbacks exist if you leave them blank).
+7. Publish the document.
+
+Until this singleton exists and includes a username, the routes show short setup instructions instead of map data.
+
+### Caching and updates
+
+- Map and life list pages use **incremental static regeneration** (`revalidate` ≈ 5 minutes). New observations appear after the cache window, or immediately in local dev depending on how you run the app.
+- After schema or code changes, **redeploy the Next.js app** so embedded Studio at `/studio` and the frontend stay in sync.
+
+### Production notes
+
+- **Content Security Policy** in `next.config.ts` allows connections to `api.inaturalist.org` and Carto basemap tiles, and images from common iNaturalist photo hosts. If the API returns photo URLs from another host, you may need to extend `img-src` / `connect-src`.
+- Map tiles rely on a free Carto basemap style (no Mapbox token). For heavy traffic or custom styling, consider switching the map style in `src/components/backyard/BackyardBirdMap.tsx`.
 
 ## Deployment
 
