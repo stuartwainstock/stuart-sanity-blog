@@ -34,5 +34,11 @@ export type EbirdObservationsResult =
   | EbirdFetchError
 
 export type EbirdLifeListResult =
-  | {ok: true; species: LifeListSpecies[]}
+  | {
+      ok: true
+      species: LifeListSpecies[]
+      source: 'location' | 'personal'
+      /** Personal mode: window length in days */
+      historicDaysBack?: number
+    }
   | EbirdFetchError

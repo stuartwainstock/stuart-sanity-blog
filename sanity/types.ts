@@ -283,6 +283,9 @@ export type EbirdBirding = {
   mapPageIntroduction?: BlockContent
   lifeListPageTitle?: string
   lifeListIntroduction?: BlockContent
+  lifeListSource?: 'location' | 'personal'
+  lifeListObserverDisplayName?: string
+  lifeListHistoricDaysBack?: number
   mapDataSource?: 'hotspots' | 'region'
   hotspotCodes?: string
   regionCode?: string

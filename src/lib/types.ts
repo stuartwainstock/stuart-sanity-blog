@@ -156,6 +156,9 @@ export interface EbirdBirding {
   hotspotCodes?: string
   regionCode?: string
   lifeListLocationId: string
+  lifeListSource?: 'location' | 'personal'
+  lifeListObserverDisplayName?: string
+  lifeListHistoricDaysBack?: number
   recentDaysBack: number
   maxObservationsToFetch: number
   /** Match eBird userDisplayName; map-only filter */

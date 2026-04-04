@@ -2,9 +2,15 @@ import type {LifeListSpecies} from '@/lib/ebird/types'
 
 type Props = {
   species: LifeListSpecies[]
+  source?: 'location' | 'personal'
+  historicDaysBack?: number
 }
 
-export default function LifeListTable({species}: Props) {
+export default function LifeListTable({
+  species,
+  source = 'location',
+  historicDaysBack,
+}: Props) {
   return (
     <section aria-labelledby="life-list-heading">
       <h2 id="life-list-heading" className="sr-only">
@@ -14,6 +20,11 @@ export default function LifeListTable({species}: Props) {
         <table className="min-w-full text-left text-sm border-collapse">
           <caption className="px-4 py-3 text-left text-base font-semibold text-gray-900 caption-top">
             Species ({species.length})
+            {source === 'personal' && historicDaysBack ? (
+              <span className="block text-sm font-normal text-gray-600 mt-1">
+                Your checklists only · last {historicDaysBack} days (see note above)
+              </span>
+            ) : null}
           </caption>
           <thead className="bg-gray-100 text-gray-800">
             <tr>
@@ -35,8 +46,9 @@ export default function LifeListTable({species}: Props) {
             {species.length === 0 ? (
               <tr>
                 <td colSpan={4} className="px-4 py-8 text-center text-gray-600">
-                  No species returned for this location. Confirm your life list region
-                  or hotspot ID matches eBird.
+                  {source === 'personal'
+                    ? 'No species matched your display name in this window. Check the life list place ID, your eBird name (Studio), and try a larger “days of history” value.'
+                    : 'No species returned for this location. Confirm your life list region or hotspot ID matches eBird.'}
                 </td>
               </tr>
             ) : (

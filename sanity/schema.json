@@ -1723,6 +1723,37 @@
         },
         "optional": true
       },
+      "lifeListSource": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "location"
+            },
+            {
+              "type": "string",
+              "value": "personal"
+            }
+          ]
+        },
+        "optional": true
+      },
+      "lifeListObserverDisplayName": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "lifeListHistoricDaysBack": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "number"
+        },
+        "optional": true
+      },
       "mapDataSource": {
         "type": "objectAttribute",
         "value": {

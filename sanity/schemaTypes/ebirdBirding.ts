@@ -44,6 +44,66 @@ export const ebirdBirding = defineType({
       group: 'content',
     }),
     defineField({
+      name: 'lifeListSource',
+      title: 'Life list: data source',
+      type: 'string',
+      group: 'integration',
+      initialValue: 'location',
+      options: {
+        list: [
+          {
+            title: 'Everyone at this place (eBird species list)',
+            value: 'location',
+          },
+          {
+            title: 'My checklists only (historic day-by-day)',
+            value: 'personal',
+          },
+        ],
+        layout: 'radio',
+      },
+      validation: (Rule) =>
+        Rule.required().custom((value, context) => {
+          const parent = context.parent as {
+            lifeListObserverDisplayName?: string
+            mapObserverDisplayNameFilter?: string
+          }
+          if (value === 'personal') {
+            const name = (
+              parent.lifeListObserverDisplayName ||
+              parent.mapObserverDisplayNameFilter ||
+              ''
+            ).trim()
+            if (!name) {
+              return 'Personal life list needs your eBird display name (Life list observer below, or Map: only this observer).'
+            }
+          }
+          return true
+        }),
+      description:
+        'Location = all-time species reported at the life list hotspot/region (fast). Personal = only species you submitted there, built from eBird historic data (one API call per day in the window below).',
+    }),
+    defineField({
+      name: 'lifeListObserverDisplayName',
+      title: 'Life list: your eBird display name (personal mode)',
+      type: 'string',
+      group: 'integration',
+      description:
+        'When life list is Personal, rows are kept only when the observer matches this name (case-insensitive). If empty, the map observer filter is used. Must match eBird profile / checklists.',
+      hidden: ({parent}) => parent?.lifeListSource !== 'personal',
+    }),
+    defineField({
+      name: 'lifeListHistoricDaysBack',
+      title: 'Life list: days of history (personal mode)',
+      type: 'number',
+      group: 'integration',
+      initialValue: 180,
+      validation: (Rule) => Rule.required().min(1).max(366),
+      hidden: ({parent}) => parent?.lifeListSource !== 'personal',
+      description:
+        'How many calendar days to scan (today backward). Each day is one eBird request; keep this smaller on slow hosts. First load can take a while; responses are cached ~24h.',
+    }),
+    defineField({
       name: 'mapDataSource',
       title: 'Map: recent observations source',
       type: 'string',
@@ -82,7 +142,7 @@ export const ebirdBirding = defineType({
       group: 'integration',
       validation: (Rule) => Rule.required(),
       description:
-        'Passed to eBird product/spplist — your yard hotspot (L…) or a broader region (e.g. US-NY) for the species list page.',
+        'Hotspot (L…) or region (e.g. US-NY). Location life list: passed to product/spplist. Personal life list: passed to historic observations (same place scope).',
     }),
     defineField({
       name: 'recentDaysBack',
@@ -92,7 +152,7 @@ export const ebirdBirding = defineType({
       initialValue: 30,
       validation: (Rule) => Rule.required().min(1).max(30),
       description:
-        'eBird recent-observation endpoints use a sliding window (max 30 days). Older sightings won’t appear as pins; the life list uses full history for the chosen location.',
+        'eBird recent-observation endpoints use a sliding window (max 30 days). Older sightings won’t appear as pins. A location-sourced life list uses full history at that place; a personal life list uses the separate “days of history” setting.',
     }),
     defineField({
       name: 'maxObservationsToFetch',
@@ -110,7 +170,7 @@ export const ebirdBirding = defineType({
       type: 'string',
       group: 'integration',
       description:
-        'If set, only checklist rows from this eBird display name are shown (case-insensitive). Must match the name shown on your eBird profile / checklists. Uses API detail=full; leave empty to include all observers at the hotspot or region. Does not change the life list page (that API is location-wide, not per-observer).',
+        'If set, only checklist rows from this eBird display name are shown on the map (case-insensitive). Uses detail=full. For a personal life list, this name is used when “Life list: your eBird display name” is empty.',
     }),
     defineField({
       name: 'defaultMapLatitude',

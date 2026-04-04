@@ -9,6 +9,9 @@ import LifeListTable from '@/components/backyard/LifeListTable'
 import {fetchLifeListSpecies} from '@/lib/ebird/client'
 import {resolveEbirdBirding} from '@/lib/ebird/resolveConfig'
 
+/** Avoid build-time eBird fan-out when life list is “personal” (many historic calls). */
+export const dynamic = 'force-dynamic'
+
 export const revalidate = 300
 
 async function getConfig(): Promise<EbirdBirding | null> {
@@ -123,7 +126,23 @@ export default async function BirdingLifeListPage() {
             {result.message}
           </p>
         ) : (
-          <LifeListTable species={result.species} />
+          <>
+            {result.source === 'personal' && result.historicDaysBack ? (
+              <p className="text-sm text-gray-600 max-w-3xl mb-6">
+                This list includes only species from <strong>your</strong> eBird
+                checklists at the configured place, built from historic data for
+                the last <strong>{result.historicDaysBack}</strong> calendar days
+                (UTC). Older sightings are not included; widen the window in Studio
+                if you need more (up to 366 days; more days mean slower builds and
+                more API calls).
+              </p>
+            ) : null}
+            <LifeListTable
+              species={result.species}
+              source={result.source}
+              historicDaysBack={result.historicDaysBack}
+            />
+          </>
         )}
       </div>
     </div>
