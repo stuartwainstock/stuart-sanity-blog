@@ -1,8 +1,8 @@
-import Link from 'next/link'
 import type {Metadata} from 'next'
 import {fetchEbirdBirdingConfig, getImageUrl} from '@/lib/sanity'
 import type {EbirdBirding} from '@/lib/types'
 import PortableText from '@/components/PortableText'
+import BackyardBirdMap from '@/components/backyard/BackyardBirdMap'
 import BackyardObservationsTable from '@/components/backyard/BackyardObservationsTable'
 import {ebirdHasMapArea, fetchMapObservations} from '@/lib/ebird/client'
 import {resolveEbirdBirding} from '@/lib/ebird/resolveConfig'
@@ -17,10 +17,10 @@ export async function generateMetadata(): Promise<Metadata> {
   const raw = await getConfig()
   const config = resolveEbirdBirding(raw)
   if (!config) {
-    return {title: 'Sightings'}
+    return {title: 'Pileated Watch'}
   }
-  const seo = config.seoLifeList
-  const title = seo?.metaTitle || config.lifeListPageTitle
+  const seo = config.seoMap
+  const title = seo?.metaTitle || config.mapPageTitle
   const description = seo?.metaDescription
   return {
     title,
@@ -46,12 +46,12 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-export default async function BirdingSightingsListPage() {
+export default async function PileatedWatchPage() {
   const raw = await getConfig()
   const rawConfig = raw
+
   const missingCms =
     !rawConfig ||
-    !rawConfig.lifeListPageTitle?.trim() ||
     !rawConfig.mapPageTitle?.trim() ||
     !ebirdHasMapArea(rawConfig)
 
@@ -59,17 +59,19 @@ export default async function BirdingSightingsListPage() {
     return (
       <div className="bg-[#e8e8e8] min-h-[50vh] px-6 py-16">
         <div className="max-w-2xl mx-auto prose prose-gray">
-          <h1 className="text-2xl font-semibold text-gray-900">Sightings</h1>
+          <h1 className="text-2xl font-semibold text-gray-900">Pileated Watch</h1>
           <p className="text-gray-700">
-            In <strong>Studio</strong> → <strong>Birding (eBird)</strong>, set{' '}
-            <strong>Map page title</strong>, <strong>Sightings list page title</strong>
-            , and your geographic area (hotspots or region), then{' '}
-            <strong>Publish</strong>.
+            Open <strong>Sanity Studio</strong> →{' '}
+            <strong>Pileated Watch (eBird)</strong> and fill in{' '}
+            <strong>Page title</strong>, your geographic area (hotspot L-codes or
+            region code), and <strong>Publish</strong>. Draft content does not
+            appear on the live site.
           </p>
-          <p>
-            <Link href="/backyard-birds" className="text-emerald-900 underline">
-              Back to map
-            </Link>
+          <p className="text-gray-700">
+            The server needs{' '}
+            <code className="text-sm">EBIRD_API_KEY</code> in{' '}
+            <code className="text-sm">.env.local</code> and on your host (e.g.
+            Vercel).
           </p>
         </div>
       </div>
@@ -82,15 +84,15 @@ export default async function BirdingSightingsListPage() {
   return (
     <div className="bg-[#e8e8e8]">
       <div className="max-w-5xl mx-auto px-6 py-12 sm:py-16">
+        <a
+          href="#pileated-watch-sightings"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 bg-gray-900 text-white px-4 py-2 rounded-md text-sm"
+        >
+          Skip to sightings table
+        </a>
+
         <header className="mb-10">
           <p className="text-sm text-gray-600 mb-2">
-            <Link
-              href="/backyard-birds"
-              className="text-emerald-900 underline underline-offset-2 hover:text-emerald-950 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 rounded-sm"
-            >
-              Map
-            </Link>
-            <span aria-hidden="true"> · </span>
             Data from{' '}
             <a
               href="https://ebird.org/home"
@@ -102,34 +104,42 @@ export default async function BirdingSightingsListPage() {
             </a>
           </p>
           <h1 className="text-3xl sm:text-4xl font-semibold text-gray-900 mb-6">
-            {config.lifeListPageTitle}
+            {config.mapPageTitle}
           </h1>
-          {config.lifeListIntroduction?.length ? (
-            <div className="prose prose-gray max-w-3xl text-gray-700 mb-8">
-              <PortableText value={config.lifeListIntroduction} />
+          {config.mapPageIntroduction?.length ? (
+            <div className="prose prose-gray max-w-3xl text-gray-700">
+              <PortableText value={config.mapPageIntroduction} />
             </div>
           ) : null}
-          <p className="text-sm text-gray-600 max-w-3xl mb-8">
-            Same recent {config.focusSpeciesCommonName} sightings as the map—all
-            observers in your configured area (crowdsourced). Each row links to the
-            eBird checklist (up to {config.recentDaysBack} days back).
-          </p>
         </header>
 
         {!obsResult.ok ? (
-          <p className="text-red-800 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+          <p className="text-red-800 bg-red-50 border border-red-200 rounded-lg px-4 py-3 mb-10">
             {obsResult.message}
           </p>
         ) : (
-          <BackyardObservationsTable
-            observations={obsResult.observations}
-            focusSpeciesLabel={config.focusSpeciesCommonName}
-            heading="Sightings"
-            headingId="sightings-table-heading"
-            sectionId="sightings-list-table"
-            intro="Recent checklist rows for the focus species. Open a checklist for counts, protocol, and photos."
-            emptyMessage={`No recent ${config.focusSpeciesCommonName} sightings with coordinates in this window. Try a larger region, more hotspots, or a longer days-back setting (max 30).`}
-          />
+          <>
+            <section className="mb-14" aria-labelledby="map-section-title">
+              <h2
+                id="map-section-title"
+                className="text-xl font-semibold text-gray-900 mb-4"
+              >
+                Map
+              </h2>
+              <BackyardBirdMap
+                observations={obsResult.observations}
+                defaultLatitude={config.defaultMapLatitude}
+                defaultLongitude={config.defaultMapLongitude}
+                defaultZoom={config.defaultMapZoom}
+                focusSpeciesLabel={config.focusSpeciesCommonName}
+              />
+            </section>
+
+            <BackyardObservationsTable
+              observations={obsResult.observations}
+              focusSpeciesLabel={config.focusSpeciesCommonName}
+            />
+          </>
         )}
       </div>
     </div>

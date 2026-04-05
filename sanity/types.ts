@@ -281,8 +281,6 @@ export type EbirdBirding = {
   _rev: string
   mapPageTitle?: string
   mapPageIntroduction?: BlockContent
-  lifeListPageTitle?: string
-  lifeListIntroduction?: BlockContent
   mapDataSource?: 'hotspots' | 'region'
   hotspotCodes?: string
   regionCode?: string
@@ -294,7 +292,6 @@ export type EbirdBirding = {
   defaultMapLongitude?: number
   defaultMapZoom?: number
   seoMap?: Seo
-  seoLifeList?: Seo
 }
 
 export type Homepage = {

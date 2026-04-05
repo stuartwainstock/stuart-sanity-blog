@@ -142,7 +142,7 @@ export async function fetchMapObservations(
     return {
       ok: false,
       message:
-        'Focus species code is not set. Configure it in Studio (Birding → eBird).',
+        'Focus species code is not set. Configure it in Studio (Pileated Watch → eBird).',
     }
   }
 

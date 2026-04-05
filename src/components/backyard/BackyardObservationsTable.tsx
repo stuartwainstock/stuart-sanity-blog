@@ -16,7 +16,7 @@ export default function BackyardObservationsTable({
   focusSpeciesLabel = 'this species',
   heading = 'Sightings table',
   headingId = 'obs-table-heading',
-  sectionId = 'backyard-observations-table',
+  sectionId = 'pileated-watch-sightings',
   intro = `Recent eBird rows for ${focusSpeciesLabel} in your configured area. Observers are credited on each checklist. Open the checklist link for full details.`,
   emptyMessage = `No recent ${focusSpeciesLabel} sightings with coordinates in this window. Widen the geographic area or increase days back in Studio (max 30), or confirm your eBird species code.`,
 }: Props) {

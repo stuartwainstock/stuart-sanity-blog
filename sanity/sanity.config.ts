@@ -50,7 +50,7 @@ export default defineConfig({
                   .documentId('siteSettings')
               ),
             S.listItem()
-              .title('Birding (eBird)')
+              .title('Pileated Watch (eBird)')
               .id('ebirdBirding')
               .child(
                 S.document()

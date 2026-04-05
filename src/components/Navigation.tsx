@@ -94,10 +94,10 @@ export default function Navigation({ siteSettings, navigationPages = [] }: Navig
               Journal
             </Link>
             <Link
-              href="/backyard-birds"
+              href="/pileated-watch"
               className="text-gray-600 hover:text-gray-900 focus:text-gray-900 px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md"
             >
-              Birding
+              Pileated Watch
             </Link>
             {navigationPages.map((page) => (
               <Link
@@ -167,11 +167,11 @@ export default function Navigation({ siteSettings, navigationPages = [] }: Navig
               </li>
               <li>
                 <Link
-                  href="/backyard-birds"
+                  href="/pileated-watch"
                   className="block text-gray-600 hover:text-gray-900 focus:text-gray-900 px-3 py-2 text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md"
                   onClick={closeMenu}
                 >
-                  Birding
+                  Pileated Watch
                 </Link>
               </li>
               {navigationPages.map((page) => (

@@ -390,8 +390,6 @@ export const EBIRD_BIRDING_QUERY = groq`
     _id,
     mapPageTitle,
     mapPageIntroduction,
-    lifeListPageTitle,
-    lifeListIntroduction,
     mapDataSource,
     hotspotCodes,
     regionCode,
@@ -416,20 +414,6 @@ export const EBIRD_BIRDING_QUERY = groq`
       keywords,
       noIndex
     },
-    seoLifeList {
-      metaTitle,
-      metaDescription,
-      openGraphImage {
-        asset->{
-          _id,
-          url
-        },
-        alt,
-        credit
-      },
-      keywords,
-      noIndex
-    }
   }
 `
 

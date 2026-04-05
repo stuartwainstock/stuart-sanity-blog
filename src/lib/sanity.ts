@@ -23,8 +23,8 @@ export const sanityClient = createClient(config)
 const builder = imageUrlBuilder(sanityClient)
 
 /**
- * Birding singleton: bypass Sanity CDN and Next fetch cache so Studio toggles
- * (e.g. life list source) apply on the next request in production.
+ * Pileated Watch singleton: useCdn false + short Next revalidate so Studio
+ * edits reach the site without waiting on the Sanity CDN.
  */
 export async function fetchEbirdBirdingConfig(): Promise<EbirdBirding | null> {
   try {

@@ -150,8 +150,6 @@ export interface EbirdBirding {
   _id: string
   mapPageTitle: string
   mapPageIntroduction?: unknown[]
-  lifeListPageTitle: string
-  lifeListIntroduction?: unknown[]
   mapDataSource: 'hotspots' | 'region'
   hotspotCodes?: string
   regionCode?: string
@@ -163,5 +161,4 @@ export interface EbirdBirding {
   defaultMapLongitude?: number
   defaultMapZoom?: number
   seoMap?: SEO
-  seoLifeList?: SEO
 }

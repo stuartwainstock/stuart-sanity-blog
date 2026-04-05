@@ -1,6 +1,20 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/backyard-birds',
+        destination: '/pileated-watch',
+        permanent: true,
+      },
+      {
+        source: '/backyard-birds/life-list',
+        destination: '/pileated-watch',
+        permanent: true,
+      },
+    ]
+  },
   compiler: {
     // Target modern browsers to reduce transpilation and polyfills
     // This reduces bundle size and improves performance

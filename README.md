@@ -24,7 +24,7 @@ A modern, full-featured blog built with Next.js 16 and Sanity CMS. This project 
 - ⚙️ Site settings configuration
 - 🖼️ Image management with alt text
 - 🔧 SEO fields for all content types
-- 🦅 Birding: map + life list powered by the [eBird API 2.0](https://science.ebird.org/en/use-ebird-data/download-ebird-data-products/ebird-api/) (see below)
+- 🦅 Pileated Watch: map + sightings table on one page via the [eBird API 2.0](https://science.ebird.org/en/use-ebird-data/download-ebird-data-products/ebird-api/) (see below)
 
 ## Quick Start
 
@@ -83,13 +83,13 @@ sanity-blog/
 │   │   ├── author/                   # Author pages
 │   │   ├── category/                 # Category pages
 │   │   ├── journal/                  # Journal pages
-│   │   ├── backyard-birds/          # eBird map + life list
+│   │   ├── pileated-watch/          # eBird map + sightings table
 │   │   ├── studio/                   # Embedded Sanity Studio route
 │   │   ├── [slug]/                   # Dynamic page route
 │   │   ├── layout.tsx                # Root layout
 │   │   └── page.tsx                  # Homepage
 │   ├── components/                   # React components
-│   │   ├── backyard/                 # Map + observation / life list UI
+│   │   ├── backyard/                 # Map + sightings table UI
 │   │   ├── GoogleAnalytics.tsx       # GA4 baseline tracking
 │   │   ├── Navigation.tsx            # Site navigation
 │   │   ├── ReadingList.tsx           # Unified resource list UI
@@ -183,45 +183,42 @@ sanity-blog/
 - Media type support: article, book, video, podcast, tool, other
 - `published` resources render on `/reading-list`
 
-#### Birding (eBird)
-- Singleton document: **Birding (eBird)** in Studio (`ebirdBirding`, document id `ebirdBirding`)
-- **One geographic area** (hotspots or region) and **one focus species** (default: Pileated Woodpecker, code `pilwoo`) drive both the map and the sightings table
-- **`/backyard-birds`** — map + table; **`/backyard-birds/life-list`** — same API rows, table-focused page (URL unchanged for bookmarks)
+#### Pileated Watch (eBird)
+- Singleton document: **Pileated Watch (eBird)** in Studio (`ebirdBirding`, document id `ebirdBirding`)
+- **One geographic area** (hotspots or region) and **one focus species** (default: Pileated Woodpecker, code `pilwoo`) drive the map and the sightings table on the **same page**
+- Public URL: **`/pileated-watch`**. Legacy **`/backyard-birds`** and **`/backyard-birds/life-list`** permanently redirect there (`next.config` redirects).
 
-## Birding & eBird
+## Pileated Watch & eBird
 
-The backyard pages show **recent sightings of a single species** (default **Pileated Woodpecker**) in **your chosen hotspots or region**, using [eBird](https://ebird.org/home). All observers’ checklists in that area are included—crowdsourced pins and rows, not filtered to one user.
+**Pileated Watch** is a single page showing **recent sightings of one species** (default **Pileated Woodpecker**) in **your chosen hotspots or region**, using [eBird](https://ebird.org/home). All observers’ checklists in that area are included.
 
 ### How it works
 
 1. Birders submit checklists to eBird as usual; your site does not write to eBird.
 2. Set **`EBIRD_API_KEY`** in the environment (server-only; [ebird.org/api/keygen](https://ebird.org/api/keygen); follow [eBird API terms](https://science.ebird.org/en/use-ebird-data/download-ebird-data-products/ebird-api/)).
-3. Sanity stores titles, intros, SEO, **geographic area** (hotspot `L…` list or region code), **focus species** (eBird species code + display name), **days back** (1–30), **max rows**, and default map center.
-4. Next.js calls **`GET /v2/data/obs/{loc}/recent/{species}`** (`loc` = each hotspot or your region, `species` = focus code) with `detail=full` for observer names, then renders:
-   - **`/backyard-birds`** — MapLibre map + accessible sightings table (skip link, checklist links).
-   - **`/backyard-birds/life-list`** — Same fetch as the map; table-only layout with its own title/intro.
+3. Sanity stores **page title**, intro, SEO, **geographic area**, **focus species** (code + display name), **days back** (1–30), **max rows**, and default map center.
+4. Next.js calls **`GET /v2/data/obs/{loc}/recent/{species}`** with `detail=full`, then renders **`/pileated-watch`**: MapLibre map plus an accessible sightings table (skip link, checklist links).
 
 ### Important limitations
 
-- **Recent window only:** eBird caps the lookback at **30 days**. Older Pileated (or other focus species) reports will not appear.
-- **Coordinates required:** Rows without lat/lng are dropped (same as before).
-- Change **focus species** in Studio (code + label) to highlight another taxon; the code must match [eBird taxonomy](https://ebird.org/science/use-ebird-data/the-ebird-taxonomy/) (e.g. `pilwoo`).
+- **Recent window only:** eBird caps the lookback at **30 days**.
+- **Coordinates required:** Rows without lat/lng are dropped.
+- Change **focus species** in Studio; the code must match [eBird taxonomy](https://ebird.org/science/use-ebird-data/the-ebird-taxonomy/) (e.g. `pilwoo`).
 
 ### Configure in Sanity Studio
 
-1. Open **Birding (eBird)** under Content.
+1. Open **Pileated Watch (eBird)** under Content.
 2. Add **`EBIRD_API_KEY`** to `.env.local` and production — never `NEXT_PUBLIC_`.
-3. Set **Map page title** and **Sightings list page title** (both required on the live site).
-4. Choose **Geographic area**: **Hotspots** (`L…` IDs) or **Region** (e.g. `US-NY-109`).
-5. Set **Focus species (eBird code)** (default `pilwoo`) and **Focus species (display name)** (default “Pileated Woodpecker”).
-6. Tune **days of recent sightings** (1–30), **max sighting rows**, and optional default map center.
-7. **Publish**.
+3. Set **Page title** (required), optional intro, and **Geographic area** (hotspots or region).
+4. Set **Focus species** code (default `pilwoo`) and display name.
+5. Tune **days of recent sightings** (1–30), **max sighting rows**, optional default map center.
+6. **Publish**.
 
 If you previously used the retired **Backyard birds (iNaturalist)** singleton, create this document from scratch; old `inaturalistBackyard` documents are no longer in the schema.
 
 ### Caching and updates
 
-- Backyard routes use **ISR** (`revalidate` ≈ 5 minutes). Birding config uses **`fetchEbirdBirdingConfig`** (`useCdn: false`, Next **`revalidate` 60s** on the query) so published Studio edits reach the API quickly without relying on the Sanity CDN alone.
+- **`/pileated-watch`** uses **ISR** (`revalidate` ≈ 5 minutes). Config uses **`fetchEbirdBirdingConfig`** (`useCdn: false`, Next **`revalidate` 60s** on the query).
 - **Redeploy** after schema or code changes so hosted Studio stays aligned.
 
 ### Production notes
@@ -265,7 +262,7 @@ EBIRD_API_KEY=your-ebird-api-key
 ```
 
 - `NEXT_PUBLIC_GA_MEASUREMENT_ID` enables baseline GA4 pageview tracking.
-- `EBIRD_API_KEY` powers `/backyard-birds` (server-only; get a key at [ebird.org/api/keygen](https://ebird.org/api/keygen)).
+- `EBIRD_API_KEY` powers `/pileated-watch` (server-only; get a key at [ebird.org/api/keygen](https://ebird.org/api/keygen)).
 
 ### Quick-Add Link Bookmarklet
 

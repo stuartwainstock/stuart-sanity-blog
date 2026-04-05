@@ -1708,21 +1708,6 @@
         },
         "optional": true
       },
-      "lifeListPageTitle": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
-      "lifeListIntroduction": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "inline",
-          "name": "blockContent"
-        },
-        "optional": true
-      },
       "mapDataSource": {
         "type": "objectAttribute",
         "value": {
@@ -1804,14 +1789,6 @@
         "optional": true
       },
       "seoMap": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "inline",
-          "name": "seo"
-        },
-        "optional": true
-      },
-      "seoLifeList": {
         "type": "objectAttribute",
         "value": {
           "type": "inline",

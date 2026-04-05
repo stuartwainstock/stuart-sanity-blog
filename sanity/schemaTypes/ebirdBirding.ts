@@ -1,12 +1,12 @@
 import {defineField, defineType} from 'sanity'
 
 /**
- * Singleton: copy + eBird API settings. Map and sightings list use the same
- * region/hotspots and focus species. Requires EBIRD_API_KEY on the server.
+ * Singleton: Pileated Watch page copy + eBird API settings.
+ * Map and sightings table share one fetch. Requires EBIRD_API_KEY on the server.
  */
 export const ebirdBirding = defineType({
   name: 'ebirdBirding',
-  title: 'Birding (eBird)',
+  title: 'Pileated Watch (eBird)',
   type: 'document',
   groups: [
     {name: 'content', title: 'Page content', default: true},
@@ -17,33 +17,19 @@ export const ebirdBirding = defineType({
   fields: [
     defineField({
       name: 'mapPageTitle',
-      title: 'Map page title',
+      title: 'Page title',
       type: 'string',
       group: 'content',
       validation: (Rule) => Rule.required(),
+      description: 'Main heading on /pileated-watch (e.g. Pileated Watch).',
     }),
     defineField({
       name: 'mapPageIntroduction',
-      title: 'Map page introduction',
+      title: 'Page introduction',
       type: 'blockContent',
       group: 'content',
       description:
-        'Shown above the map. Mention the focus species, your region or hotspots, and the recent window.',
-    }),
-    defineField({
-      name: 'lifeListPageTitle',
-      title: 'Sightings list page title',
-      type: 'string',
-      group: 'content',
-      validation: (Rule) => Rule.required(),
-      description:
-        'Heading for /backyard-birds/life-list — same eBird rows as the map, table only.',
-    }),
-    defineField({
-      name: 'lifeListIntroduction',
-      title: 'Sightings list introduction',
-      type: 'blockContent',
-      group: 'content',
+        'Shown under the title, above the map. Mention the focus species, area, and recent window.',
     }),
     defineField({
       name: 'mapDataSource',
@@ -60,7 +46,7 @@ export const ebirdBirding = defineType({
       initialValue: 'hotspots',
       validation: (Rule) => Rule.required(),
       description:
-        'Map and sightings list both use this area. Hotspots: L-codes. Region: e.g. US-NY-109.',
+        'Hotspots: L-codes. Region: e.g. US-NY-109. Used for map and sightings table.',
     }),
     defineField({
       name: 'hotspotCodes',
@@ -87,7 +73,7 @@ export const ebirdBirding = defineType({
       initialValue: 'pilwoo',
       validation: (Rule) => Rule.required(),
       description:
-        'eBird species code, e.g. pilwoo (Pileated Woodpecker). Map and list show recent sightings of this species only. See eBird taxonomy.',
+        'eBird species code, e.g. pilwoo (Pileated Woodpecker). See eBird taxonomy.',
     }),
     defineField({
       name: 'focusSpeciesCommonName',
@@ -105,8 +91,7 @@ export const ebirdBirding = defineType({
       group: 'integration',
       initialValue: 30,
       validation: (Rule) => Rule.required().min(1).max(30),
-      description:
-        'eBird recent window (max 30 days). Same window for map and list.',
+      description: 'eBird recent window (max 30 days).',
     }),
     defineField({
       name: 'maxObservationsToFetch',
@@ -141,13 +126,7 @@ export const ebirdBirding = defineType({
     }),
     defineField({
       name: 'seoMap',
-      title: 'SEO (map page)',
-      type: 'seo',
-      group: 'seo',
-    }),
-    defineField({
-      name: 'seoLifeList',
-      title: 'SEO (sightings list page)',
+      title: 'SEO',
       type: 'seo',
       group: 'seo',
     }),
@@ -155,7 +134,7 @@ export const ebirdBirding = defineType({
   preview: {
     select: {title: 'mapPageTitle'},
     prepare({title}) {
-      return {title: title || 'Birding (eBird)'}
+      return {title: title || 'Pileated Watch (eBird)'}
     },
   },
 })
