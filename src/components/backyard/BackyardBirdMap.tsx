@@ -5,6 +5,7 @@ import Map, {Marker, NavigationControl, type MapRef} from 'react-map-gl/maplibre
 import {LngLatBounds} from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import type {BirdObservation} from '@/lib/ebird/types'
+import {pageBodyParagraph} from '@/lib/pageTypography'
 
 /** Carto Positron (no API key). */
 const MAP_STYLE =
@@ -58,8 +59,8 @@ export default function BackyardBirdMap({
   }
 
   return (
-    <div className="space-y-3">
-      <p id={descriptionId} className="text-sm text-gray-600 max-w-3xl">
+    <div className="space-y-6">
+      <p id={descriptionId} className={pageBodyParagraph}>
         Pins show where {focusSpeciesLabel} was reported on eBird checklists in your
         configured area and time window. All observers’ sightings are included. The
         same rows appear in the table below for keyboard and screen-reader access.

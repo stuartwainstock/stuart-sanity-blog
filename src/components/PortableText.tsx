@@ -5,9 +5,28 @@ import { getImageUrl } from '@/lib/sanity'
 interface PortableTextProps {
   value: any[]
   className?: string
+  /**
+   * Omit Tailwind Typography `prose`; use `text-inherit` on blocks so a parent
+   * with `pageBodyTypography` classes (see `@/lib/pageTypography`) controls size/weight.
+   */
+  pageBodyTypography?: boolean
 }
 
-const components: PortableTextComponents = {
+function buildComponents(pageBody: boolean): PortableTextComponents {
+  const normalClass = pageBody
+    ? 'mb-6 text-inherit'
+    : 'text-gray-700 mb-6 leading-relaxed'
+  const listClass = pageBody
+    ? 'list-disc list-inside mb-6 space-y-2 text-inherit'
+    : 'list-disc list-inside mb-6 space-y-2 text-gray-700'
+  const olClass = pageBody
+    ? 'list-decimal list-inside mb-6 space-y-2 text-inherit'
+    : 'list-decimal list-inside mb-6 space-y-2 text-gray-700'
+  const blockquoteClass = pageBody
+    ? 'border-l-4 border-blue-500 pl-6 my-8 italic text-inherit bg-gray-50 py-4'
+    : 'border-l-4 border-blue-500 pl-6 my-8 italic text-gray-600 bg-gray-50 py-4'
+
+  return {
   types: {
     image: ({ value }: any) => (
       <div className="my-8">
@@ -67,24 +86,24 @@ const components: PortableTextComponents = {
       </h4>
     ),
     normal: ({ children }: any) => (
-      <p className="text-gray-700 mb-6 leading-relaxed">
+      <p className={normalClass}>
         {children}
       </p>
     ),
     blockquote: ({ children }: any) => (
-      <blockquote className="border-l-4 border-blue-500 pl-6 my-8 italic text-gray-600 bg-gray-50 py-4">
+      <blockquote className={blockquoteClass}>
         {children}
       </blockquote>
     ),
   },
   list: {
     bullet: ({ children }: any) => (
-      <ul className="list-disc list-inside mb-6 space-y-2 text-gray-700">
+      <ul className={listClass}>
         {children}
       </ul>
     ),
     number: ({ children }: any) => (
-      <ol className="list-decimal list-inside mb-6 space-y-2 text-gray-700">
+      <ol className={olClass}>
         {children}
       </ol>
     ),
@@ -121,10 +140,22 @@ const components: PortableTextComponents = {
     },
   },
 }
+}
 
-export default function PortableText({ value, className = '' }: PortableTextProps) {
+const defaultComponents = buildComponents(false)
+const pageBodyComponents = buildComponents(true)
+
+export default function PortableText({
+  value,
+  className = '',
+  pageBodyTypography: pageBody = false,
+}: PortableTextProps) {
+  const components = pageBody ? pageBodyComponents : defaultComponents
+  const wrapper = pageBody
+    ? `max-w-none ${className}`.trim()
+    : `prose prose-lg max-w-none ${className}`.trim()
   return (
-    <div className={`prose prose-lg max-w-none ${className}`}>
+    <div className={wrapper}>
       <BasePortableText value={value} components={components} />
     </div>
   )

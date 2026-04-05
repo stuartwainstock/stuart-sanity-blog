@@ -1,4 +1,5 @@
 import type {BirdObservation} from '@/lib/ebird/types'
+import {pageBodyParagraph, pageSectionHeading} from '@/lib/pageTypography'
 
 type Props = {
   observations: BirdObservation[]
@@ -28,13 +29,10 @@ export default function BackyardObservationsTable({
       className="scroll-mt-24"
       aria-labelledby={headingId}
     >
-      <h2
-        id={headingId}
-        className="text-xl font-semibold text-gray-900 mb-4"
-      >
+      <h2 id={headingId} className={pageSectionHeading}>
         {heading}
       </h2>
-      <p className="text-sm text-gray-600 mb-4 max-w-3xl">{intro}</p>
+      <p className={`${pageBodyParagraph} mb-6`}>{intro}</p>
       <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
         <table className="min-w-full text-left text-sm border-collapse">
           <caption className="sr-only">
