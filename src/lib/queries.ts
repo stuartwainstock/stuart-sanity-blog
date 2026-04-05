@@ -221,6 +221,14 @@ export const SITE_SETTINGS_QUERY = groq`
     },
     url,
     social,
+    projectsMenu {
+      label,
+      items[] {
+        _key,
+        title,
+        href
+      }
+    },
     footer {
       copyright,
       sections[] {

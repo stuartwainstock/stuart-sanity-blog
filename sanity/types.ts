@@ -69,6 +69,15 @@ export type SiteSettings = {
       _key: string
     }>
   }
+  projectsMenu?: {
+    label?: string
+    items?: Array<{
+      title?: string
+      href?: string
+      _type: 'projectsMenuItem'
+      _key: string
+    }>
+  }
   seo?: Seo
 }
 

@@ -1,4 +1,4 @@
-import {defineField, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export const siteSettings = defineType({
   name: 'siteSettings',
@@ -170,6 +170,67 @@ export const siteSettings = defineType({
             },
           ],
         },
+      ],
+    }),
+    defineField({
+      name: 'projectsMenu',
+      title: 'Projects menu',
+      type: 'object',
+      description:
+        'Optional “Projects” dropdown in the main header. Each item is a link to a route on this site; APIs (eBird, Strava, etc.) are implemented in code for that route—not here.',
+      fields: [
+        defineField({
+          name: 'label',
+          title: 'Top-level label',
+          type: 'string',
+          initialValue: 'Projects',
+          description: 'Shown in the nav bar (e.g. Projects)',
+        }),
+        defineField({
+          name: 'items',
+          title: 'Project links',
+          type: 'array',
+          validation: (Rule) => Rule.max(12).warning('Keep the list short for navigation usability'),
+          of: [
+            defineArrayMember({
+              type: 'object',
+              name: 'projectsMenuItem',
+              title: 'Project',
+              fields: [
+                defineField({
+                  name: 'title',
+                  title: 'Label',
+                  type: 'string',
+                  validation: (Rule) => Rule.required(),
+                }),
+                defineField({
+                  name: 'href',
+                  title: 'Path',
+                  type: 'string',
+                  description:
+                    'Internal URL path starting with / (e.g. /pileated-watch). Use your Next.js app route.',
+                  validation: (Rule) =>
+                    Rule.required().custom((val) => {
+                      if (typeof val !== 'string' || !val) return true
+                      const t = val.trim()
+                      if (!t.startsWith('/')) return 'Path must start with /'
+                      if (t.startsWith('//')) return 'Use a site path like /my-project, not a protocol URL'
+                      return true
+                    }),
+                }),
+              ],
+              preview: {
+                select: {title: 'title', href: 'href'},
+                prepare({title, href}) {
+                  return {
+                    title: title || 'Untitled',
+                    subtitle: href,
+                  }
+                },
+              },
+            }),
+          ],
+        }),
       ],
     }),
     defineField({

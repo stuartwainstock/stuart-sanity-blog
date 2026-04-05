@@ -174,6 +174,7 @@ sanity-blog/
 - Site title and description
 - Logo and favicon
 - Social media links
+- **Projects menu** (optional): top-level label (e.g. “Projects”) and links to **internal paths** like `/pileated-watch`. Each route implements its own data layer (eBird, Strava, etc.) in the Next.js app—not in this menu.
 - Footer configuration
 - Default SEO settings
 

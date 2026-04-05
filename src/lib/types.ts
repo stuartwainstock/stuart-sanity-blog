@@ -114,6 +114,15 @@ export interface SiteSettings {
     linkedin?: string
     github?: string
   }
+  /** Header “Projects” dropdown; each href is an app route; data sources live in route code. */
+  projectsMenu?: {
+    label?: string
+    items?: Array<{
+      _key: string
+      title: string
+      href: string
+    }>
+  }
   footer?: {
     copyright?: string
     sections?: Array<{
