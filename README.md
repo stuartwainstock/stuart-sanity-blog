@@ -186,7 +186,7 @@ sanity-blog/
 #### Pileated Watch (eBird)
 - Singleton document: **Pileated Watch (eBird)** in Studio (`ebirdBirding`, document id `ebirdBirding`)
 - **One geographic area** (hotspots or region) and **one focus species** (default: Pileated Woodpecker, code `pilwoo`) drive the map and the sightings table on the **same page**
-- Public URL: **`/pileated-watch`**. Legacy **`/backyard-birds`** and **`/backyard-birds/life-list`** permanently redirect there (`next.config` redirects).
+- Public URL: **`/pileated-watch`**.
 
 ## Pileated Watch & eBird
 
@@ -225,6 +225,11 @@ If you previously used the retired **Backyard birds (iNaturalist)** singleton, c
 
 - **CSP** in `next.config.ts` allows `api.ebird.org` and Carto basemap tiles.
 - Map style: Carto Positron in `BackyardBirdMap.tsx` (no Mapbox token).
+- **Pileated Watch** loads MapLibre through a small client wrapper (`BackyardBirdMapDynamic`) using `next/dynamic` (`ssr: false`) so map code is split into its own chunk. `experimental.optimizePackageImports` trims `@portabletext/react` imports.
+
+### Repository hygiene
+
+- Root `.gitignore` lists `.gitdata/` and `.ssh/` so accidental local copies of git metadata or keys are not committed.
 
 ## Deployment
 

@@ -25,6 +25,10 @@
 .DS_Store
 *.pem
 
+# Never commit local git copies or SSH material (accidental workspace clutter)
+.gitdata/
+.ssh/
+
 # debug
 npm-debug.log*
 yarn-debug.log*

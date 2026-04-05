@@ -2,7 +2,7 @@ import type {Metadata} from 'next'
 import {fetchEbirdBirdingConfig, getImageUrl} from '@/lib/sanity'
 import type {EbirdBirding} from '@/lib/types'
 import PortableText from '@/components/PortableText'
-import BackyardBirdMap from '@/components/backyard/BackyardBirdMap'
+import BackyardBirdMapDynamic from '@/components/backyard/BackyardBirdMapDynamic'
 import BackyardObservationsTable from '@/components/backyard/BackyardObservationsTable'
 import {ebirdHasMapArea, fetchMapObservations} from '@/lib/ebird/client'
 import {resolveEbirdBirding} from '@/lib/ebird/resolveConfig'
@@ -126,7 +126,7 @@ export default async function PileatedWatchPage() {
               >
                 Map
               </h2>
-              <BackyardBirdMap
+              <BackyardBirdMapDynamic
                 observations={obsResult.observations}
                 defaultLatitude={config.defaultMapLatitude}
                 defaultLongitude={config.defaultMapLongitude}
