@@ -2,28 +2,44 @@ import type {BirdObservation} from '@/lib/ebird/types'
 
 type Props = {
   observations: BirdObservation[]
+  /** e.g. "Pileated Woodpecker" — used in helper copy */
+  focusSpeciesLabel?: string
+  heading?: string
+  headingId?: string
+  sectionId?: string
+  intro?: string
+  emptyMessage?: string
 }
 
-export default function BackyardObservationsTable({observations}: Props) {
+export default function BackyardObservationsTable({
+  observations,
+  focusSpeciesLabel = 'this species',
+  heading = 'Sightings table',
+  headingId = 'obs-table-heading',
+  sectionId = 'backyard-observations-table',
+  intro = `Recent eBird rows for ${focusSpeciesLabel} in your configured area. Observers are credited on each checklist. Open the checklist link for full details.`,
+  emptyMessage = `No recent ${focusSpeciesLabel} sightings with coordinates in this window. Widen the geographic area or increase days back in Studio (max 30), or confirm your eBird species code.`,
+}: Props) {
   const colCount = 7
 
   return (
     <section
-      id="backyard-observations-table"
+      id={sectionId}
       className="scroll-mt-24"
-      aria-labelledby="obs-table-heading"
+      aria-labelledby={headingId}
     >
-      <h2 id="obs-table-heading" className="text-xl font-semibold text-gray-900 mb-4">
-        Recent checklist rows
+      <h2
+        id={headingId}
+        className="text-xl font-semibold text-gray-900 mb-4"
+      >
+        {heading}
       </h2>
-      <p className="text-sm text-gray-600 mb-4 max-w-3xl">
-        Each row is a species entry from a recent eBird checklist in your configured
-        window. Open the checklist for full protocol, counts, and media.
-      </p>
+      <p className="text-sm text-gray-600 mb-4 max-w-3xl">{intro}</p>
       <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
         <table className="min-w-full text-left text-sm border-collapse">
           <caption className="sr-only">
-            Recent eBird rows with date, species, coordinates, and checklist link
+            Recent eBird sightings: date, species, location, observer, coordinates,
+            checklist link
           </caption>
           <thead className="bg-gray-100 text-gray-800">
             <tr>
@@ -54,10 +70,7 @@ export default function BackyardObservationsTable({observations}: Props) {
             {observations.length === 0 ? (
               <tr>
                 <td colSpan={colCount} className="px-4 py-8 text-center text-gray-600">
-                  No recent rows with coordinates in this window. Submit checklists
-                  from eBird Mobile or the website, or widen days back in Studio (max
-                  30). If you use an observer name filter, confirm it matches your eBird
-                  display name exactly (Studio → Birding → only this observer).
+                  {emptyMessage}
                 </td>
               </tr>
             ) : (

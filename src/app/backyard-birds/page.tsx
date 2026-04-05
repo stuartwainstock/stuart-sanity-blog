@@ -5,7 +5,7 @@ import type {EbirdBirding} from '@/lib/types'
 import PortableText from '@/components/PortableText'
 import BackyardBirdMap from '@/components/backyard/BackyardBirdMap'
 import BackyardObservationsTable from '@/components/backyard/BackyardObservationsTable'
-import {fetchMapObservations} from '@/lib/ebird/client'
+import {ebirdHasMapArea, fetchMapObservations} from '@/lib/ebird/client'
 import {resolveEbirdBirding} from '@/lib/ebird/resolveConfig'
 
 export const revalidate = 300
@@ -54,7 +54,8 @@ export default async function BirdingMapPage() {
   const missingCms =
     !rawConfig ||
     !rawConfig.mapPageTitle?.trim() ||
-    !rawConfig.lifeListLocationId?.trim()
+    !rawConfig.lifeListPageTitle?.trim() ||
+    !ebirdHasMapArea(rawConfig)
 
   if (missingCms) {
     return (
@@ -63,17 +64,16 @@ export default async function BirdingMapPage() {
           <h1 className="text-2xl font-semibold text-gray-900">Birding map</h1>
           <p className="text-gray-700">
             Open <strong>Sanity Studio</strong> → <strong>Birding (eBird)</strong>{' '}
-            and fill in <strong>Map page title</strong> and{' '}
-            <strong>Life list: region or hotspot ID</strong>, then{' '}
-            <strong>Publish</strong>. Draft-only content does not appear on the live
-            site (the API uses the published dataset).
+            and fill in <strong>Map page title</strong>,{' '}
+            <strong>Sightings list page title</strong>, your geographic area
+            (hotspot L-codes or region code), and <strong>Publish</strong>. Draft
+            content does not appear on the live site.
           </p>
           <p className="text-gray-700">
-            Also set map source (hotspots with L-codes, or region code) and other
-            fields as needed. The server needs{' '}
-            <code className="text-sm">EBIRD_API_KEY</code> only after this config is
-            published—add it in Vercel and in <code className="text-sm">.env.local</code>{' '}
-            for local dev.
+            The server needs{' '}
+            <code className="text-sm">EBIRD_API_KEY</code> in{' '}
+            <code className="text-sm">.env.local</code> and on your host (e.g.
+            Vercel).
           </p>
         </div>
       </div>
@@ -90,7 +90,7 @@ export default async function BirdingMapPage() {
           href="#backyard-observations-table"
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 bg-gray-900 text-white px-4 py-2 rounded-md text-sm"
         >
-          Skip to observation list
+          Skip to sightings table
         </a>
 
         <header className="mb-10">
@@ -99,7 +99,7 @@ export default async function BirdingMapPage() {
               href="/backyard-birds/life-list"
               className="text-emerald-900 underline underline-offset-2 hover:text-emerald-950 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 rounded-sm"
             >
-              Life list
+              Sightings list
             </Link>
             <span aria-hidden="true"> · </span>
             Data from{' '}
@@ -140,10 +140,14 @@ export default async function BirdingMapPage() {
                 defaultLatitude={config.defaultMapLatitude}
                 defaultLongitude={config.defaultMapLongitude}
                 defaultZoom={config.defaultMapZoom}
+                focusSpeciesLabel={config.focusSpeciesCommonName}
               />
             </section>
 
-            <BackyardObservationsTable observations={obsResult.observations} />
+            <BackyardObservationsTable
+              observations={obsResult.observations}
+              focusSpeciesLabel={config.focusSpeciesCommonName}
+            />
           </>
         )}
       </div>

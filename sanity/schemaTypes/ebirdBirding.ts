@@ -1,8 +1,8 @@
 import {defineField, defineType} from 'sanity'
 
 /**
- * Singleton: copy + eBird API settings. Observation rows and species list are
- * fetched from eBird at request time (cached). Requires EBIRD_API_KEY on the server.
+ * Singleton: copy + eBird API settings. Map and sightings list use the same
+ * region/hotspots and focus species. Requires EBIRD_API_KEY on the server.
  */
 export const ebirdBirding = defineType({
   name: 'ebirdBirding',
@@ -28,84 +28,26 @@ export const ebirdBirding = defineType({
       type: 'blockContent',
       group: 'content',
       description:
-        'Shown above the map. Mention eBird, your hotspots/region, and the recent window for pins.',
+        'Shown above the map. Mention the focus species, your region or hotspots, and the recent window.',
     }),
     defineField({
       name: 'lifeListPageTitle',
-      title: 'Life list page title',
+      title: 'Sightings list page title',
       type: 'string',
       group: 'content',
       validation: (Rule) => Rule.required(),
+      description:
+        'Heading for /backyard-birds/life-list — same eBird rows as the map, table only.',
     }),
     defineField({
       name: 'lifeListIntroduction',
-      title: 'Life list introduction',
+      title: 'Sightings list introduction',
       type: 'blockContent',
       group: 'content',
     }),
     defineField({
-      name: 'lifeListSource',
-      title: 'Life list: data source',
-      type: 'string',
-      group: 'integration',
-      initialValue: 'location',
-      options: {
-        list: [
-          {
-            title: 'Everyone at this place (eBird species list)',
-            value: 'location',
-          },
-          {
-            title: 'My checklists only (historic day-by-day)',
-            value: 'personal',
-          },
-        ],
-        layout: 'radio',
-      },
-      validation: (Rule) =>
-        Rule.required().custom((value, context) => {
-          const parent = context.parent as {
-            lifeListObserverDisplayName?: string
-            mapObserverDisplayNameFilter?: string
-          }
-          if (value === 'personal') {
-            const name = (
-              parent.lifeListObserverDisplayName ||
-              parent.mapObserverDisplayNameFilter ||
-              ''
-            ).trim()
-            if (!name) {
-              return 'Personal life list needs your eBird display name (Life list observer below, or Map: only this observer).'
-            }
-          }
-          return true
-        }),
-      description:
-        'Location = all-time species reported at the life list hotspot/region (fast). Personal = only species you submitted there, built from eBird historic data (one API call per day in the window below).',
-    }),
-    defineField({
-      name: 'lifeListObserverDisplayName',
-      title: 'Life list: your eBird display name (personal mode)',
-      type: 'string',
-      group: 'integration',
-      description:
-        'When life list is Personal, rows are kept only when the observer matches this name (case-insensitive). If empty, the map observer filter is used. Must match eBird profile / checklists.',
-      hidden: ({parent}) => parent?.lifeListSource !== 'personal',
-    }),
-    defineField({
-      name: 'lifeListHistoricDaysBack',
-      title: 'Life list: days of history (personal mode)',
-      type: 'number',
-      group: 'integration',
-      initialValue: 180,
-      validation: (Rule) => Rule.required().min(1).max(366),
-      hidden: ({parent}) => parent?.lifeListSource !== 'personal',
-      description:
-        'How many calendar days to scan (today backward). Each day is one eBird request; keep this smaller on slow hosts. First load can take a while; responses are cached ~24h.',
-    }),
-    defineField({
       name: 'mapDataSource',
-      title: 'Map: recent observations source',
+      title: 'Geographic area',
       type: 'string',
       group: 'integration',
       options: {
@@ -117,6 +59,8 @@ export const ebirdBirding = defineType({
       },
       initialValue: 'hotspots',
       validation: (Rule) => Rule.required(),
+      description:
+        'Map and sightings list both use this area. Hotspots: L-codes. Region: e.g. US-NY-109.',
     }),
     defineField({
       name: 'hotspotCodes',
@@ -125,7 +69,7 @@ export const ebirdBirding = defineType({
       rows: 4,
       group: 'integration',
       description:
-        'One eBird hotspot ID per line or comma-separated (e.g. L1234567). Used when map source is Hotspots. Find IDs on the hotspot’s eBird page URL.',
+        'One eBird hotspot ID per line or comma-separated (e.g. L1234567). Used when geographic area is Hotspots.',
     }),
     defineField({
       name: 'regionCode',
@@ -133,44 +77,46 @@ export const ebirdBirding = defineType({
       type: 'string',
       group: 'integration',
       description:
-        'Used when map source is Region. eBird region codes: country (US), subnational (US-NY), or county (US-NY-109). See eBird region finder.',
+        'When geographic area is Region: country (US), subnational (US-NY), or county (US-NY-109).',
     }),
     defineField({
-      name: 'lifeListLocationId',
-      title: 'Life list: region or hotspot ID',
+      name: 'focusSpeciesCode',
+      title: 'Focus species (eBird code)',
       type: 'string',
       group: 'integration',
+      initialValue: 'pilwoo',
       validation: (Rule) => Rule.required(),
       description:
-        'Hotspot (L…) or region (e.g. US-NY). Location life list: passed to product/spplist. Personal life list: passed to historic observations (same place scope).',
+        'eBird species code, e.g. pilwoo (Pileated Woodpecker). Map and list show recent sightings of this species only. See eBird taxonomy.',
+    }),
+    defineField({
+      name: 'focusSpeciesCommonName',
+      title: 'Focus species (display name)',
+      type: 'string',
+      group: 'integration',
+      initialValue: 'Pileated Woodpecker',
+      description:
+        'Shown in UI copy; does not affect the API (the code above does).',
     }),
     defineField({
       name: 'recentDaysBack',
-      title: 'Map: days of recent checklists',
+      title: 'Days of recent sightings',
       type: 'number',
       group: 'integration',
       initialValue: 30,
       validation: (Rule) => Rule.required().min(1).max(30),
       description:
-        'eBird recent-observation endpoints use a sliding window (max 30 days). Older sightings won’t appear as pins. A location-sourced life list uses full history at that place; a personal life list uses the separate “days of history” setting.',
+        'eBird recent window (max 30 days). Same window for map and list.',
     }),
     defineField({
       name: 'maxObservationsToFetch',
-      title: 'Max observation rows to load (map)',
+      title: 'Max sighting rows to load',
       type: 'number',
       group: 'integration',
       initialValue: 500,
       validation: (Rule) => Rule.required().min(1).max(10000),
       description:
-        'Caps rows after merging hotspots/region. Higher values mean more API payload.',
-    }),
-    defineField({
-      name: 'mapObserverDisplayNameFilter',
-      title: 'Map: only this observer (optional)',
-      type: 'string',
-      group: 'integration',
-      description:
-        'If set, only checklist rows from this eBird display name are shown on the map (case-insensitive). Uses detail=full. For a personal life list, this name is used when “Life list: your eBird display name” is empty.',
+        'Caps rows after merging hotspots. Higher values mean more API payload.',
     }),
     defineField({
       name: 'defaultMapLatitude',
@@ -201,7 +147,7 @@ export const ebirdBirding = defineType({
     }),
     defineField({
       name: 'seoLifeList',
-      title: 'SEO (life list page)',
+      title: 'SEO (sightings list page)',
       type: 'seo',
       group: 'seo',
     }),

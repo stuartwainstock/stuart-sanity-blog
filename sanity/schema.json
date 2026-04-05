@@ -1723,37 +1723,6 @@
         },
         "optional": true
       },
-      "lifeListSource": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "union",
-          "of": [
-            {
-              "type": "string",
-              "value": "location"
-            },
-            {
-              "type": "string",
-              "value": "personal"
-            }
-          ]
-        },
-        "optional": true
-      },
-      "lifeListObserverDisplayName": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
-      "lifeListHistoricDaysBack": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "number"
-        },
-        "optional": true
-      },
       "mapDataSource": {
         "type": "objectAttribute",
         "value": {
@@ -1785,7 +1754,14 @@
         },
         "optional": true
       },
-      "lifeListLocationId": {
+      "focusSpeciesCode": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "focusSpeciesCommonName": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
@@ -1803,13 +1779,6 @@
         "type": "objectAttribute",
         "value": {
           "type": "number"
-        },
-        "optional": true
-      },
-      "mapObserverDisplayNameFilter": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
         },
         "optional": true
       },

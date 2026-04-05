@@ -283,16 +283,13 @@ export type EbirdBirding = {
   mapPageIntroduction?: BlockContent
   lifeListPageTitle?: string
   lifeListIntroduction?: BlockContent
-  lifeListSource?: 'location' | 'personal'
-  lifeListObserverDisplayName?: string
-  lifeListHistoricDaysBack?: number
   mapDataSource?: 'hotspots' | 'region'
   hotspotCodes?: string
   regionCode?: string
-  lifeListLocationId?: string
+  focusSpeciesCode?: string
+  focusSpeciesCommonName?: string
   recentDaysBack?: number
   maxObservationsToFetch?: number
-  mapObserverDisplayNameFilter?: string
   defaultMapLatitude?: number
   defaultMapLongitude?: number
   defaultMapZoom?: number

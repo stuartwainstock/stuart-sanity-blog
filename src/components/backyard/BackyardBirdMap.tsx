@@ -15,6 +15,7 @@ type Props = {
   defaultLatitude: number
   defaultLongitude: number
   defaultZoom: number
+  focusSpeciesLabel: string
 }
 
 export default function BackyardBirdMap({
@@ -22,6 +23,7 @@ export default function BackyardBirdMap({
   defaultLatitude,
   defaultLongitude,
   defaultZoom,
+  focusSpeciesLabel,
 }: Props) {
   const mapRef = useRef<MapRef>(null)
   const descriptionId = useId()
@@ -58,14 +60,14 @@ export default function BackyardBirdMap({
   return (
     <div className="space-y-3">
       <p id={descriptionId} className="text-sm text-gray-600 max-w-3xl">
-        Pins use eBird checklist locations from the recent window you configured in
-        Studio. The same rows appear in the table below for keyboard and
-        screen-reader access.
+        Pins show where {focusSpeciesLabel} was reported on eBird checklists in your
+        configured area and time window. All observers’ sightings are included. The
+        same rows appear in the table below for keyboard and screen-reader access.
       </p>
       <div
         className="relative w-full h-[min(70vh,520px)] rounded-lg overflow-hidden border border-gray-200 shadow-sm bg-gray-100"
         role="region"
-        aria-label="Map of recent eBird checklist locations"
+        aria-label={`Map of recent ${focusSpeciesLabel} sightings from eBird`}
         aria-describedby={descriptionId}
       >
         <Map

@@ -3,12 +3,9 @@ import type {Metadata} from 'next'
 import {fetchEbirdBirdingConfig, getImageUrl} from '@/lib/sanity'
 import type {EbirdBirding} from '@/lib/types'
 import PortableText from '@/components/PortableText'
-import LifeListTable from '@/components/backyard/LifeListTable'
-import {fetchLifeListSpecies} from '@/lib/ebird/client'
+import BackyardObservationsTable from '@/components/backyard/BackyardObservationsTable'
+import {ebirdHasMapArea, fetchMapObservations} from '@/lib/ebird/client'
 import {resolveEbirdBirding} from '@/lib/ebird/resolveConfig'
-
-/** Avoid build-time eBird fan-out when life list is “personal” (many historic calls). */
-export const dynamic = 'force-dynamic'
 
 export const revalidate = 300
 
@@ -20,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const raw = await getConfig()
   const config = resolveEbirdBirding(raw)
   if (!config) {
-    return {title: 'Life list'}
+    return {title: 'Sightings'}
   }
   const seo = config.seoLifeList
   const title = seo?.metaTitle || config.lifeListPageTitle
@@ -49,25 +46,25 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-export default async function BirdingLifeListPage() {
+export default async function BirdingSightingsListPage() {
   const raw = await getConfig()
   const rawConfig = raw
   const missingCms =
     !rawConfig ||
     !rawConfig.lifeListPageTitle?.trim() ||
-    !rawConfig.lifeListLocationId?.trim()
+    !rawConfig.mapPageTitle?.trim() ||
+    !ebirdHasMapArea(rawConfig)
 
   if (missingCms) {
     return (
       <div className="bg-[#e8e8e8] min-h-[50vh] px-6 py-16">
         <div className="max-w-2xl mx-auto prose prose-gray">
-          <h1 className="text-2xl font-semibold text-gray-900">Life list</h1>
+          <h1 className="text-2xl font-semibold text-gray-900">Sightings</h1>
           <p className="text-gray-700">
             In <strong>Studio</strong> → <strong>Birding (eBird)</strong>, set{' '}
-            <strong>Life list page title</strong> and{' '}
-            <strong>Life list: region or hotspot ID</strong>, then{' '}
-            <strong>Publish</strong>. Unpublished drafts are not visible on the
-            public site.
+            <strong>Map page title</strong>, <strong>Sightings list page title</strong>
+            , and your geographic area (hotspots or region), then{' '}
+            <strong>Publish</strong>.
           </p>
           <p>
             <Link href="/backyard-birds" className="text-emerald-900 underline">
@@ -80,7 +77,7 @@ export default async function BirdingLifeListPage() {
   }
 
   const config = resolveEbirdBirding(raw)!
-  const result = await fetchLifeListSpecies(config, revalidate)
+  const obsResult = await fetchMapObservations(config, revalidate)
 
   return (
     <div className="bg-[#e8e8e8]">
@@ -112,30 +109,27 @@ export default async function BirdingLifeListPage() {
               <PortableText value={config.lifeListIntroduction} />
             </div>
           ) : null}
+          <p className="text-sm text-gray-600 max-w-3xl mb-8">
+            Same recent {config.focusSpeciesCommonName} sightings as the map—all
+            observers in your configured area (crowdsourced). Each row links to the
+            eBird checklist (up to {config.recentDaysBack} days back).
+          </p>
         </header>
 
-        {!result.ok ? (
+        {!obsResult.ok ? (
           <p className="text-red-800 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
-            {result.message}
+            {obsResult.message}
           </p>
         ) : (
-          <>
-            {result.source === 'personal' && result.historicDaysBack ? (
-              <p className="text-sm text-gray-600 max-w-3xl mb-6">
-                This list includes only species from <strong>your</strong> eBird
-                checklists at the configured place, built from historic data for
-                the last <strong>{result.historicDaysBack}</strong> calendar days
-                (UTC). Older sightings are not included; widen the window in Studio
-                if you need more (up to 366 days; more days mean slower builds and
-                more API calls).
-              </p>
-            ) : null}
-            <LifeListTable
-              species={result.species}
-              source={result.source}
-              historicDaysBack={result.historicDaysBack}
-            />
-          </>
+          <BackyardObservationsTable
+            observations={obsResult.observations}
+            focusSpeciesLabel={config.focusSpeciesCommonName}
+            heading="Sightings"
+            headingId="sightings-table-heading"
+            sectionId="sightings-list-table"
+            intro="Recent checklist rows for the focus species. Open a checklist for counts, protocol, and photos."
+            emptyMessage={`No recent ${config.focusSpeciesCommonName} sightings with coordinates in this window. Try a larger region, more hotspots, or a longer days-back setting (max 30).`}
+          />
         )}
       </div>
     </div>

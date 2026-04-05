@@ -33,7 +33,7 @@ export async function fetchEbirdBirdingConfig(): Promise<EbirdBirding | null> {
       {},
       {
         useCdn: false,
-        cache: 'no-store',
+        next: {revalidate: 60},
       }
     )
   } catch (e) {

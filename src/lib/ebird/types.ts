@@ -12,16 +12,8 @@ export interface BirdObservation {
   speciesCode: string
   checklistUri: string
   locationLabel: string | null
-  /** Present when API returns detail=full (used for observer filter) */
+  /** Present when API returns detail=full */
   observerDisplayName: string | null
-}
-
-export interface LifeListSpecies {
-  speciesCode: string
-  name: string
-  commonName: string | null
-  /** eBird spplist does not include per-species counts; null in that path */
-  observationCount: number | null
 }
 
 export interface EbirdFetchError {
@@ -31,14 +23,4 @@ export interface EbirdFetchError {
 
 export type EbirdObservationsResult =
   | {ok: true; observations: BirdObservation[]}
-  | EbirdFetchError
-
-export type EbirdLifeListResult =
-  | {
-      ok: true
-      species: LifeListSpecies[]
-      source: 'location' | 'personal'
-      /** Personal mode: window length in days */
-      historicDaysBack?: number
-    }
   | EbirdFetchError

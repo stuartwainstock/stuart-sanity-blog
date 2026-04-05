@@ -185,46 +185,44 @@ sanity-blog/
 
 #### Birding (eBird)
 - Singleton document: **Birding (eBird)** in Studio (`ebirdBirding`, document id `ebirdBirding`)
-- Stores page copy, SEO, and **which eBird endpoints to call** (not a mirror of the whole database)
-- Map rows come from **recent observations**; the life list is either **all species at a place** (`spplist`) or **your checklists only** (historic day-by-day scan; see below)
+- **One geographic area** (hotspots or region) and **one focus species** (default: Pileated Woodpecker, code `pilwoo`) drive both the map and the sightings table
+- **`/backyard-birds`** — map + table; **`/backyard-birds/life-list`** — same API rows, table-focused page (URL unchanged for bookmarks)
 
 ## Birding & eBird
 
-This site can show **recent eBird checklist rows** on a map and a **species list** for a chosen region or hotspot, using [eBird](https://ebird.org/home) as the data source and Sanity for copy and filters.
+The backyard pages show **recent sightings of a single species** (default **Pileated Woodpecker**) in **your chosen hotspots or region**, using [eBird](https://ebird.org/home). All observers’ checklists in that area are included—crowdsourced pins and rows, not filtered to one user.
 
 ### How it works
 
-1. You submit checklists with the eBird mobile app or website as usual.
-2. Set **`EBIRD_API_KEY`** in the environment (server-only; request a key at [ebird.org/api/keygen](https://ebird.org/api/keygen) and follow [eBird API terms](https://science.ebird.org/en/use-ebird-data/download-ebird-data-products/ebird-api/)).
-3. Sanity holds one configuration document: titles, intros, SEO, **map source** (hotspot ID(s) or region code), optional **map observer filter**, **life list source** (everyone at the place vs. **personal** historic scan), **life list location**, optional **life list observer name** (personal mode), **days of history** for personal lists (1–366; one API call per day), **days back** for the map (1–30), **max rows**, and default map center.
-4. Next.js calls the [eBird API 2.0](https://api.ebird.org/v2) on the server (`X-eBirdApiToken`), normalizes responses in `src/lib/ebird/`, and renders:
-   - **`/backyard-birds`** — MapLibre map plus an **accessible table** (skip link, checklist links on eBird). Pins reflect **recent** checklists only (not your entire historical map).
-   - **`/backyard-birds/life-list`** — Either **`/product/spplist/{location}`** (all-time species at that place) or, in **personal** mode, species from **`/data/obs/{location}/historic/{y}/{m}/{d}`** aggregated over your chosen day window, filtered to your eBird display name, with names from **`/ref/taxonomy/ebird`**.
+1. Birders submit checklists to eBird as usual; your site does not write to eBird.
+2. Set **`EBIRD_API_KEY`** in the environment (server-only; [ebird.org/api/keygen](https://ebird.org/api/keygen); follow [eBird API terms](https://science.ebird.org/en/use-ebird-data/download-ebird-data-products/ebird-api/)).
+3. Sanity stores titles, intros, SEO, **geographic area** (hotspot `L…` list or region code), **focus species** (eBird species code + display name), **days back** (1–30), **max rows**, and default map center.
+4. Next.js calls **`GET /v2/data/obs/{loc}/recent/{species}`** (`loc` = each hotspot or your region, `species` = focus code) with `detail=full` for observer names, then renders:
+   - **`/backyard-birds`** — MapLibre map + accessible sightings table (skip link, checklist links).
+   - **`/backyard-birds/life-list`** — Same fetch as the map; table-only layout with its own title/intro.
 
 ### Important limitations
 
-- The **map** uses eBird’s **recent** observation endpoints (`/data/obs/hotspot/recent` or `/data/obs/{region}/recent`). There is a **maximum 30-day window**. Older sightings will not appear as pins; use the **life list** for a wider species view (all-time at a place, or **your** species over a configurable historic window in personal mode).
-- **Only my checklists on the map:** set **Map: only this observer** to your eBird **display name**; the app uses `detail=full` and case-insensitive matching.
-- **Personal life list:** set **Life list: data source** to **My checklists only**. You must use your display name (dedicated field or the map observer filter). The list is **not** your full eBird life history—only species from checklists at the configured **life list place** within the **days of history** window (max 366). Each day triggers one historic API call; day requests are cached ~24h to reduce load.
-- The **life list** does not include per-species observation counts from `spplist` alone; the table focuses on identity and links to eBird species pages.
+- **Recent window only:** eBird caps the lookback at **30 days**. Older Pileated (or other focus species) reports will not appear.
+- **Coordinates required:** Rows without lat/lng are dropped (same as before).
+- Change **focus species** in Studio (code + label) to highlight another taxon; the code must match [eBird taxonomy](https://ebird.org/science/use-ebird-data/the-ebird-taxonomy/) (e.g. `pilwoo`).
 
 ### Configure in Sanity Studio
 
 1. Open **Birding (eBird)** under Content.
-2. Add **`EBIRD_API_KEY`** to `.env.local` (local) and to your host (e.g. Vercel) — never prefix with `NEXT_PUBLIC_`.
-3. Choose **map source**: **Hotspots** (enter `L…` IDs, one per line or comma-separated) or **Region** (e.g. `US-NY-109`).
-4. Set **Life list: region or hotspot ID** — same ID is used for `spplist` (location mode) or historic scans (personal mode).
-5. Choose **Life list: data source** — **Everyone at this place** (default) or **My checklists only** (historic). For personal, set **Life list: your eBird display name** or rely on **Map: only this observer**, and tune **days of history** (1–366).
-6. Optional: **Map: only this observer** — limits recent map/table rows to you; also used as the personal life list name when the life list field is empty.
-7. Tune **days back** (1–30) and **max observation rows**; set default map center if the recent window is empty.
-8. Publish the document.
+2. Add **`EBIRD_API_KEY`** to `.env.local` and production — never `NEXT_PUBLIC_`.
+3. Set **Map page title** and **Sightings list page title** (both required on the live site).
+4. Choose **Geographic area**: **Hotspots** (`L…` IDs) or **Region** (e.g. `US-NY-109`).
+5. Set **Focus species (eBird code)** (default `pilwoo`) and **Focus species (display name)** (default “Pileated Woodpecker”).
+6. Tune **days of recent sightings** (1–30), **max sighting rows**, and optional default map center.
+7. **Publish**.
 
-If you previously used the retired **Backyard birds (iNaturalist)** singleton, create this new document from scratch; old `inaturalistBackyard` documents are no longer in the schema.
+If you previously used the retired **Backyard birds (iNaturalist)** singleton, create this document from scratch; old `inaturalistBackyard` documents are no longer in the schema.
 
 ### Caching and updates
 
-- Most pages use **ISR** (`revalidate` ≈ 5 minutes). The **life list** route is **server-rendered** so a personal list (many historic API calls) does not run during `next build`. Taxonomy and per-day historic responses are still cached (historic days ~24h) to reduce load on `ref/taxonomy/ebird` and `data/obs/.../historic`.
-- **Redeploy** the Next.js app after schema or code changes so `/studio` stays aligned.
+- Backyard routes use **ISR** (`revalidate` ≈ 5 minutes). Birding config uses **`fetchEbirdBirdingConfig`** (`useCdn: false`, Next **`revalidate` 60s** on the query) so published Studio edits reach the API quickly without relying on the Sanity CDN alone.
+- **Redeploy** after schema or code changes so hosted Studio stays aligned.
 
 ### Production notes
 

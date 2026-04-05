@@ -155,14 +155,10 @@ export interface EbirdBirding {
   mapDataSource: 'hotspots' | 'region'
   hotspotCodes?: string
   regionCode?: string
-  lifeListLocationId: string
-  lifeListSource?: 'location' | 'personal'
-  lifeListObserverDisplayName?: string
-  lifeListHistoricDaysBack?: number
+  focusSpeciesCode?: string
+  focusSpeciesCommonName?: string
   recentDaysBack: number
   maxObservationsToFetch: number
-  /** Match eBird userDisplayName; map-only filter */
-  mapObserverDisplayNameFilter?: string
   defaultMapLatitude?: number
   defaultMapLongitude?: number
   defaultMapZoom?: number
