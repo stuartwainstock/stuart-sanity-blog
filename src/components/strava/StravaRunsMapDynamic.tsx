@@ -11,6 +11,7 @@ const Map = dynamic(() => import('@/components/strava/StravaRunsMap'), {
 
 type Props = {
   runs: StravaRunMapInput[]
+  mapIntroduction?: unknown[]
 }
 
 export default function StravaRunsMapDynamic(props: Props) {

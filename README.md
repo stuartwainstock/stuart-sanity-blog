@@ -251,6 +251,10 @@ If you previously used the retired **Backyard birds (iNaturalist)** singleton, c
 4. **Data**: First successful sync performs a **full backfill** of activity history; later syncs are **incremental** (with a short lookback for edits). Only activities with **`sport_type` Run** are stored.
 5. **Map & table**: **`/runs`** shows a **MapLibre** map of run routes (**last 365 days**, full polylines) and a **recent runs** table with links to Strava—same page layout and typography pattern as Pileated Watch. **Location** uses city/state/country when Strava provides them; otherwise **start coordinates** from the activity, or a **per-activity detail** fetch (`GET /activities/:id`) for the newest rows still missing a label (Strava’s list endpoint often omits place names). When the only usable data is **lat/lng**, the server resolves a **city / metro–level** label (e.g. “Nürnberg, Germany”) via **OpenStreetMap Nominatim** reverse geocoding (deduped and rate-limited). Set **`STRAVA_REVERSE_GEOCODE=0`** to show coordinates only.
 
+### Page copy (Sanity)
+
+The **`/runs`** hero, map/table intros, section headings, and SEO are driven by the **`toolProjectPage`** singleton **Runs (Strava)** in Studio (document id **`toolProjectPage-runs`**). If the document is missing or fields are empty, the app falls back to built-in defaults. After adding or changing the schema, run **`sanity schema deploy`** (or deploy Studio) so the dataset has the new type. The pattern is reusable: add another **`projectKey`**, a matching singleton id, a GROQ query, and wire a route (same idea as **Pileated Watch** + `ebirdBirding`).
+
 ### Navigation
 
 Add **`/runs`** under **Site settings → Projects menu** if you want it in the header **Projects** dropdown.

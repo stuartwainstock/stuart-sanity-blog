@@ -1,10 +1,12 @@
 import Link from 'next/link'
 import type {Metadata} from 'next'
+import PortableText from '@/components/PortableText'
 import {createServerSupabase} from '@/lib/supabase/server'
 import {syncRunsAction} from '@/app/runs/actions'
 import PageHeroWithDataSource from '@/components/PageHeroWithDataSource'
 import StravaRunsMapDynamic from '@/components/strava/StravaRunsMapDynamic'
 import StravaRunsTable from '@/components/strava/StravaRunsTable'
+import {fetchToolProjectPageRuns, getImageUrl} from '@/lib/sanity'
 import {
   pageBodyTypography,
   pageContent,
@@ -27,20 +29,65 @@ import {
 import {getValidStravaAccessToken} from '@/lib/strava/tokens'
 import type {StravaRunMapInput, StravaRunRow, StravaRunTableRow} from '@/lib/strava/types'
 
-export const metadata: Metadata = {
-  title: 'Runs',
-  description: 'Personal Strava runs synced to this site.',
-}
-
 export const dynamic = 'force-dynamic'
+
+export async function generateMetadata(): Promise<Metadata> {
+  const pageCopy = await fetchToolProjectPageRuns()
+  const seo = pageCopy?.seo
+  const title = seo?.metaTitle || pageCopy?.pageTitle?.trim() || 'Runs'
+  const description = seo?.metaDescription || 'Personal Strava runs synced to this site.'
+  return {
+    title,
+    description,
+    keywords: seo?.keywords,
+    openGraph: {
+      title,
+      description,
+      images: seo?.openGraphImage?.asset ? [getImageUrl(seo.openGraphImage, 1200, 630)] : [],
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: seo?.openGraphImage?.asset ? [getImageUrl(seo.openGraphImage, 1200, 630)] : [],
+    },
+    robots: seo?.noIndex ? 'noindex, nofollow' : 'index, follow',
+  }
+}
 
 export default async function RunsPage({
   searchParams,
 }: {
   searchParams: Promise<{strava?: string; reason?: string; synced?: string; sync_error?: string}>
 }) {
-  const params = await searchParams
+  const [params, pageCopy] = await Promise.all([searchParams, fetchToolProjectPageRuns()])
   const supabase = createServerSupabase()
+
+  const pageTitle = pageCopy?.pageTitle?.trim() || 'Runs'
+  const mapSectionTitle = pageCopy?.mapSectionTitle?.trim() || 'Map'
+  const tableSectionTitle = pageCopy?.tableSectionTitle?.trim() || 'Recent runs'
+
+  const heroIntroduction =
+    pageCopy?.heroIntroduction && pageCopy.heroIntroduction.length > 0 ? (
+      <div className={pageBodyTypography}>
+        <PortableText value={pageCopy.heroIntroduction} pageBodyTypography />
+      </div>
+    ) : (
+      <div className={pageBodyTypography}>
+        <p className="mb-6 text-inherit">
+          Personal Strava runs stored in Supabase. Connect once, then sync to pull activity history (runs
+          only). The map and table highlight the last {RUNS_MAP_WINDOW_DAYS} days.
+        </p>
+      </div>
+    )
+
+  const tableIntro =
+    pageCopy?.tableSectionIntroduction && pageCopy.tableSectionIntroduction.length > 0 ? (
+      <div className={`${pageBodyTypography} mb-6`}>
+        <PortableText value={pageCopy.tableSectionIntroduction} pageBodyTypography />
+      </div>
+    ) : undefined
 
   const {data: oauth} = await supabase
     .from('strava_oauth')
@@ -110,7 +157,7 @@ export default async function RunsPage({
 
       <PageHeroWithDataSource
         titleId="runs-title"
-        title="Runs"
+        title={pageTitle}
         dataSource={
           <>
             <p>
@@ -149,12 +196,7 @@ export default async function RunsPage({
           </>
         }
       >
-        <div className={pageBodyTypography}>
-          <p className="mb-6 text-inherit">
-            Personal Strava runs stored in Supabase. Connect once, then sync to pull activity history (runs
-            only). The map and table highlight the last {RUNS_MAP_WINDOW_DAYS} days.
-          </p>
-        </div>
+        {heroIntroduction}
       </PageHeroWithDataSource>
 
       <div className={pageContent} aria-labelledby="runs-title">
@@ -246,14 +288,19 @@ export default async function RunsPage({
           <>
             <section className="mb-14" aria-labelledby="map-section-title">
               <h2 id="map-section-title" className={pageSectionHeading}>
-                Map
+                {mapSectionTitle}
               </h2>
-              <div id="runs-map">
-                <StravaRunsMapDynamic runs={mapRuns} />
-              </div>
+              <StravaRunsMapDynamic
+                runs={mapRuns}
+                mapIntroduction={pageCopy?.mapSectionIntroduction ?? undefined}
+              />
             </section>
 
-            <StravaRunsTable runs={tableRows} />
+            <StravaRunsTable
+              runs={tableRows}
+              sectionTitle={tableSectionTitle}
+              intro={tableIntro}
+            />
           </>
         ) : null}
       </div>

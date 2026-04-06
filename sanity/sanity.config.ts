@@ -14,6 +14,7 @@ import {
   resource,
   seo,
   siteSettings,
+  toolProjectPage,
 } from './schemaTypes'
 
 // Studio runs as static assets in production, so env vars may not be present
@@ -56,6 +57,14 @@ export default defineConfig({
                 S.document()
                   .schemaType('ebirdBirding')
                   .documentId('ebirdBirding')
+              ),
+            S.listItem()
+              .title('Runs (Strava)')
+              .id('toolProjectPage-runs')
+              .child(
+                S.document()
+                  .schemaType('toolProjectPage')
+                  .documentId('toolProjectPage-runs')
               ),
             S.divider(),
             S.listItem()
@@ -149,6 +158,7 @@ export default defineConfig({
       resource,
       seo,
       siteSettings,
+      toolProjectPage,
     ],
   },
 })

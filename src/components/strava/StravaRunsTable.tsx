@@ -1,3 +1,4 @@
+import type {ReactNode} from 'react'
 import Link from 'next/link'
 import {pageBodyParagraph, pageSectionHeading} from '@/lib/pageTypography'
 import type {StravaRunTableRow} from '@/lib/strava/types'
@@ -7,6 +8,10 @@ type Props = {
   runs: StravaRunTableRow[]
   /** Max rows to show (most recent first). */
   limit?: number
+  /** H2 heading; default “Recent runs”. */
+  sectionTitle?: string
+  /** Intro above the table; default copy when omitted. */
+  intro?: ReactNode
 }
 
 function formatKm(distanceM: number | null): string {
@@ -20,19 +25,30 @@ function formatEffort(n: number | null): string {
   return String(n)
 }
 
-export default function StravaRunsTable({runs, limit = 25}: Props) {
+function defaultTableIntro(limit: number) {
+  return (
+    <p className={`${pageBodyParagraph} mb-6`}>
+      Most recent {RUNS_MAP_WINDOW_DAYS}-day window (up to {limit} rows). Location, shoe, and relative effort
+      come from Strava when available. When Strava only has GPS start points, place names are resolved from
+      coordinates (city-level, via OpenStreetMap). Open Strava for full activity details.
+    </p>
+  )
+}
+
+export default function StravaRunsTable({
+  runs,
+  limit = 25,
+  sectionTitle = 'Recent runs',
+  intro,
+}: Props) {
   const rows = runs.slice(0, limit)
 
   return (
     <section className="mb-14 scroll-mt-24" aria-labelledby="runs-table-title" id="runs-recent">
       <h2 id="runs-table-title" className={pageSectionHeading}>
-        Recent runs
+        {sectionTitle}
       </h2>
-      <p className={`${pageBodyParagraph} mb-6`}>
-        Most recent {RUNS_MAP_WINDOW_DAYS}-day window (up to {limit} rows). Location, shoe, and relative
-        effort come from Strava when available. When Strava only has GPS start points, place names are
-        resolved from coordinates (city-level, via OpenStreetMap). Open Strava for full activity details.
-      </p>
+      {intro !== undefined ? intro : defaultTableIntro(limit)}
       <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm bg-white">
         <table className="min-w-full text-left text-sm border-collapse">
           <caption className="sr-only">

@@ -393,6 +393,34 @@ export const HOMEPAGE_QUERY = groq`
   }
 `
 
+/** Strava /runs singleton — document ID fixed in Studio structure. */
+export const TOOL_PROJECT_PAGE_RUNS_QUERY = groq`
+  *[_type == "toolProjectPage" && _id == "toolProjectPage-runs"][0]{
+    _id,
+    projectKey,
+    pageTitle,
+    heroIntroduction,
+    mapSectionTitle,
+    mapSectionIntroduction,
+    tableSectionTitle,
+    tableSectionIntroduction,
+    seo {
+      metaTitle,
+      metaDescription,
+      openGraphImage {
+        asset->{
+          _id,
+          url
+        },
+        alt,
+        credit
+      },
+      keywords,
+      noIndex
+    },
+  }
+`
+
 export const EBIRD_BIRDING_QUERY = groq`
   *[_type == "ebirdBirding" && _id == "ebirdBirding"][0]{
     _id,

@@ -6,7 +6,8 @@ import {LngLatBounds} from 'maplibre-gl'
 import polyline from '@mapbox/polyline'
 import type {FeatureCollection} from 'geojson'
 import 'maplibre-gl/dist/maplibre-gl.css'
-import {pageBodyParagraph} from '@/lib/pageTypography'
+import PortableText from '@/components/PortableText'
+import {pageBodyParagraph, pageBodyTypography} from '@/lib/pageTypography'
 import {
   RUNS_MAP_HOME_BOUNDS,
   RUNS_MAP_HOME_CENTER,
@@ -64,6 +65,8 @@ function buildFitBounds(
 
 type Props = {
   runs: StravaRunMapInput[]
+  /** CMS copy above the map; when absent, default blurb is shown. */
+  mapIntroduction?: unknown[]
 }
 
 function buildGeoJson(runs: StravaRunMapInput[]): FeatureCollection {
@@ -95,7 +98,11 @@ function buildGeoJson(runs: StravaRunMapInput[]): FeatureCollection {
   }
 }
 
-export default function StravaRunsMap({runs}: Props) {
+function defaultMapIntroDescription(): string {
+  return `Routes from the last ${RUNS_MAP_WINDOW_DAYS} days with GPS polylines from Strava. The map defaults to the Minneapolis–Saint Paul area when you have runs there; zoom and pan to explore everywhere. Lines are your full recorded paths.`
+}
+
+export default function StravaRunsMap({runs, mapIntroduction}: Props) {
   const mapRef = useRef<MapRef>(null)
   const descriptionId = useId()
   const [mapReady, setMapReady] = useState(false)
@@ -123,13 +130,17 @@ export default function StravaRunsMap({runs}: Props) {
     fitToRoutes()
   }, [mapReady, fitToRoutes])
 
+  const hasCmsIntro = Array.isArray(mapIntroduction) && mapIntroduction.length > 0
+
   return (
     <div className="space-y-6">
-      <p id={descriptionId} className={pageBodyParagraph}>
-        Routes from the last {RUNS_MAP_WINDOW_DAYS} days with GPS polylines from Strava. The map defaults to
-        the Minneapolis–Saint Paul area when you have runs there; zoom and pan to explore everywhere.
-        Lines are your full recorded paths.
-      </p>
+      <div id={descriptionId} className={hasCmsIntro ? pageBodyTypography : pageBodyParagraph}>
+        {hasCmsIntro ? (
+          <PortableText value={mapIntroduction as never[]} pageBodyTypography />
+        ) : (
+          <p className="mb-0 text-inherit">{defaultMapIntroDescription()}</p>
+        )}
+      </div>
       {!hasRoutes ? (
         <p className={pageBodyParagraph}>
           No runs with map data in this window. Sync again after activities include GPS, or widen your
