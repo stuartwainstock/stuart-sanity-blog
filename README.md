@@ -249,6 +249,7 @@ If you previously used the retired **Backyard birds (iNaturalist)** singleton, c
 2. **OAuth**: Open **`/runs`** → **Connect Strava** → approve. Tokens are stored in **`strava_oauth`**.
 3. **Sync**: **Sync from Strava** on `/runs`, or **`POST /api/strava/sync`**. If **`STRAVA_SYNC_SECRET`** is set, the POST route requires `Authorization: Bearer <secret>` (useful for cron).
 4. **Data**: First successful sync performs a **full backfill** of activity history; later syncs are **incremental** (with a short lookback for edits). Only activities with **`sport_type` Run** are stored.
+5. **Map & table**: **`/runs`** shows a **MapLibre** map of run routes (**last 365 days**, full polylines) and a **recent runs** table with links to Strava—same page layout and typography pattern as Pileated Watch.
 
 ### Navigation
 

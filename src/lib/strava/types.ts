@@ -10,6 +10,15 @@ export type StravaTokenResponse = {
   }
 }
 
+/** Row from Supabase `strava_activities` for map + table. */
+export type StravaRunRow = {
+  id: number
+  name: string | null
+  start_date: string
+  distance_m: number | null
+  map_polyline: string | null
+}
+
 /** Activity summary from GET /athlete/activities (subset). */
 export type StravaActivitySummary = {
   id: number

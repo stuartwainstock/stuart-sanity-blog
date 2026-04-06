@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   experimental: {
-    optimizePackageImports: ['@portabletext/react'],
+    optimizePackageImports: ['@portabletext/react', '@mapbox/polyline'],
   },
   compiler: {
     // Target modern browsers to reduce transpilation and polyfills

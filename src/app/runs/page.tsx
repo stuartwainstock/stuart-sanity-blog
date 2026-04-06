@@ -2,6 +2,25 @@ import Link from 'next/link'
 import type {Metadata} from 'next'
 import {createServerSupabase} from '@/lib/supabase/server'
 import {syncRunsAction} from '@/app/runs/actions'
+import StravaRunsMapDynamic from '@/components/strava/StravaRunsMapDynamic'
+import StravaRunsTable from '@/components/strava/StravaRunsTable'
+import {
+  pageBanner,
+  pageBodyTypography,
+  pageContent,
+  pageInner,
+  pageKicker,
+  pageSectionHeading,
+  pageShellBg,
+  pageTitleH1,
+} from '@/lib/pageTypography'
+import {RUNS_MAP_WINDOW_DAYS} from '@/lib/strava/constants'
+import {
+  countRunsInWindow,
+  countRunsWithPolylineInWindow,
+  fetchRunsInWindow,
+} from '@/lib/strava/runsQuery'
+import type {StravaRunRow} from '@/lib/strava/types'
 
 export const metadata: Metadata = {
   title: 'Runs',
@@ -10,14 +29,20 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic'
 
-async function getStats() {
+export default async function RunsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{strava?: string; reason?: string; synced?: string; sync_error?: string}>
+}) {
+  const params = await searchParams
   const supabase = createServerSupabase()
-  const {data: oauth} = await supabase.from('strava_oauth').select('athlete_id').eq('id', 'singleton').maybeSingle()
-  const connected = Boolean(oauth)
 
-  const {count} = await supabase
-    .from('strava_activities')
-    .select('*', {count: 'exact', head: true})
+  const {data: oauth} = await supabase
+    .from('strava_oauth')
+    .select('athlete_id')
+    .eq('id', 'singleton')
+    .maybeSingle()
+  const connected = Boolean(oauth)
 
   const {data: syncState} = await supabase
     .from('strava_sync_state')
@@ -25,75 +50,124 @@ async function getStats() {
     .eq('id', 'singleton')
     .maybeSingle()
 
-  return {
-    connected,
-    runCount: count ?? 0,
-    fullBackfillComplete: syncState?.full_backfill_complete === true,
-    lastSync: syncState?.last_incremental_sync_at ?? null,
-  }
-}
+  const {count: totalCount} = await supabase
+    .from('strava_activities')
+    .select('*', {count: 'exact', head: true})
 
-export default async function RunsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{strava?: string; reason?: string; synced?: string; sync_error?: string}>
-}) {
-  const params = await searchParams
-  const stats = await getStats()
+  let windowRuns: StravaRunRow[] = []
+  let runsInWindow = 0
+  let routesInWindow = 0
+
+  if (connected) {
+    ;[windowRuns, runsInWindow, routesInWindow] = await Promise.all([
+      fetchRunsInWindow(),
+      countRunsInWindow(),
+      countRunsWithPolylineInWindow(),
+    ])
+  }
+
+  const runCount = totalCount ?? 0
 
   return (
-    <div className="min-h-screen bg-[#e8e8e8]">
-      <div className="max-w-3xl mx-auto px-6 py-16">
-        <h1 className="text-3xl font-semibold text-gray-900 mb-6">Runs</h1>
-        <p className="text-gray-600 mb-8">
-          Personal Strava runs stored in Supabase. Connect once, then sync to pull activity history (runs
-          only).
-        </p>
+    <div className={pageShellBg}>
+      <a
+        href="#runs-map"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 bg-gray-900 text-white px-4 py-2 rounded-md text-sm"
+      >
+        Skip to map
+      </a>
+      <a
+        href="#runs-recent"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-16 focus:left-4 focus:z-50 bg-gray-900 text-white px-4 py-2 rounded-md text-sm"
+      >
+        Skip to recent runs
+      </a>
 
+      <header className={pageBanner} role="banner" aria-labelledby="runs-title">
+        <div className={pageInner}>
+          <p className={pageKicker}>
+            Data from{' '}
+            <a
+              href="https://www.strava.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-800 underline"
+            >
+              Strava
+            </a>
+          </p>
+          <h1 id="runs-title" className={pageTitleH1}>
+            Runs
+          </h1>
+          <div className={pageBodyTypography}>
+            <p className="mb-6 text-inherit">
+              Personal Strava runs stored in Supabase. Connect once, then sync to pull activity history (runs
+              only). The map and table highlight the last {RUNS_MAP_WINDOW_DAYS} days.
+            </p>
+          </div>
+        </div>
+      </header>
+
+      <div className={pageContent} aria-labelledby="runs-title">
         {params.strava === 'connected' ? (
-          <p className="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-900 text-sm">
-            Strava connected. Use <strong>Sync from Strava</strong> below to import runs.
+          <p className="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-900 text-base">
+            Strava connected. Use <strong className="font-semibold">Sync from Strava</strong> below to import
+            runs.
           </p>
         ) : null}
         {params.strava === 'error' ? (
-          <p className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-900 text-sm">
+          <p className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-900 text-base">
             Connection issue{params.reason ? `: ${params.reason}` : ''}.
           </p>
         ) : null}
         {params.synced === '1' ? (
-          <p className="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-900 text-sm">
-            Sync finished. Run count below should update.
+          <p className="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-900 text-base">
+            Sync finished. Counts below should update.
           </p>
         ) : null}
         {params.sync_error ? (
-          <p className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-900 text-sm">
+          <p className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-900 text-base">
             Sync failed: {params.sync_error}
           </p>
         ) : null}
 
-        <section className="rounded-lg border border-gray-200 bg-white/80 p-6 shadow-sm space-y-4">
-          <div className="text-sm text-gray-700">
+        <section
+          className="rounded-lg border border-gray-200 bg-white/80 p-6 shadow-sm space-y-4 mb-14"
+          aria-label="Connection and sync status"
+        >
+          <div className="text-base text-gray-700 space-y-2">
             <p>
               <span className="font-medium text-gray-900">Status:</span>{' '}
-              {stats.connected ? 'Connected to Strava' : 'Not connected'}
+              {connected ? 'Connected to Strava' : 'Not connected'}
             </p>
             <p>
-              <span className="font-medium text-gray-900">Runs in database:</span> {stats.runCount}
+              <span className="font-medium text-gray-900">Runs in database (all time):</span> {runCount}
             </p>
-            {stats.lastSync ? (
+            {connected ? (
+              <>
+                <p>
+                  <span className="font-medium text-gray-900">Runs in last {RUNS_MAP_WINDOW_DAYS} days:</span>{' '}
+                  {runsInWindow}
+                </p>
+                <p>
+                  <span className="font-medium text-gray-900">Runs with GPS in window:</span> {routesInWindow}
+                </p>
+              </>
+            ) : null}
+            {syncState?.last_incremental_sync_at ? (
               <p>
                 <span className="font-medium text-gray-900">Last sync:</span>{' '}
-                {new Date(stats.lastSync).toLocaleString()}
+                {new Date(syncState.last_incremental_sync_at).toLocaleString()}
               </p>
             ) : null}
             <p>
               <span className="font-medium text-gray-900">Full history imported:</span>{' '}
-              {stats.fullBackfillComplete ? 'Yes' : 'Not yet'}
+              {syncState?.full_backfill_complete === true ? 'Yes' : 'Not yet'}
             </p>
           </div>
 
           <div className="flex flex-wrap gap-3 pt-2">
-            {!stats.connected ? (
+            {!connected ? (
               <a
                 href="/api/strava/connect"
                 className="inline-flex items-center rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
@@ -119,7 +193,22 @@ export default async function RunsPage({
           </div>
         </section>
 
-        <p className="mt-10 text-xs text-gray-500">
+        {connected && runCount > 0 ? (
+          <>
+            <section className="mb-14" aria-labelledby="map-section-title">
+              <h2 id="map-section-title" className={pageSectionHeading}>
+                Map
+              </h2>
+              <div id="runs-map">
+                <StravaRunsMapDynamic runs={windowRuns} />
+              </div>
+            </section>
+
+            <StravaRunsTable runs={windowRuns} />
+          </>
+        ) : null}
+
+        <p className="mt-10 text-sm text-gray-500">
           Activity data provided by{' '}
           <a
             href="https://www.strava.com"

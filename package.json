@@ -17,6 +17,7 @@
     "migrate:featured": "node scripts/migrate-featured-to-boolean.mjs"
   },
   "dependencies": {
+    "@mapbox/polyline": "^1.2.1",
     "@portabletext/react": "^4.0.3",
     "@sanity/client": "^7.20.0",
     "@sanity/image-url": "^1.2.0",
@@ -36,6 +37,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4.2.2",
+    "@types/mapbox__polyline": "^1.0.5",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
