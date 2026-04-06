@@ -1,33 +1,21 @@
 import Link from 'next/link'
 import type {Metadata} from 'next'
+import {Suspense} from 'react'
 import PortableText from '@/components/PortableText'
 import {createServerSupabase} from '@/lib/supabase/server'
 import {syncRunsAction} from '@/app/runs/actions'
 import PageHeroWithDataSource from '@/components/PageHeroWithDataSource'
-import StravaRunsMapDynamic from '@/components/strava/StravaRunsMapDynamic'
-import StravaRunsTable from '@/components/strava/StravaRunsTable'
+import RunsMapTableSkeleton from '@/components/strava/RunsMapTableSkeleton'
 import {fetchToolProjectPageRuns, getImageUrl} from '@/lib/sanity'
 import {
   pageBodyTypography,
   pageContent,
   pageDataSourceLink,
-  pageSectionHeading,
   pageShellBg,
 } from '@/lib/pageTypography'
 import {RUNS_MAP_WINDOW_DAYS} from '@/lib/strava/constants'
-import {
-  countRunsInWindow,
-  countRunsWithPolylineInWindow,
-  fetchRunsInWindow,
-} from '@/lib/strava/runsQuery'
-import {buildGearNameMap, gearIdFromRaw} from '@/lib/strava/gear'
-import {
-  enrichRunsForTable,
-  enrichRunsWithActivityDetailsForLocation,
-  enrichTableRowsWithReverseGeocodePlaceLabels,
-} from '@/lib/strava/runDisplay'
-import {getValidStravaAccessToken} from '@/lib/strava/tokens'
-import type {StravaRunMapInput, StravaRunRow, StravaRunTableRow} from '@/lib/strava/types'
+import {countRunsInWindow, countRunsWithPolylineInWindow} from '@/lib/strava/runsQuery'
+import RunsMapAndTable from './RunsMapAndTable'
 
 export const dynamic = 'force-dynamic'
 
@@ -61,8 +49,32 @@ export default async function RunsPage({
 }: {
   searchParams: Promise<{strava?: string; reason?: string; synced?: string; sync_error?: string}>
 }) {
-  const [params, pageCopy] = await Promise.all([searchParams, fetchToolProjectPageRuns()])
   const supabase = createServerSupabase()
+
+  const [params, pageCopy, oauthRes, syncRes, countRes] = await Promise.all([
+    searchParams,
+    fetchToolProjectPageRuns(),
+    supabase.from('strava_oauth').select('athlete_id').eq('id', 'singleton').maybeSingle(),
+    supabase
+      .from('strava_sync_state')
+      .select('full_backfill_complete, last_incremental_sync_at')
+      .eq('id', 'singleton')
+      .maybeSingle(),
+    supabase.from('strava_activities').select('*', {count: 'exact', head: true}),
+  ])
+
+  const connected = Boolean(oauthRes.data)
+  const syncState = syncRes.data
+  const runCount = countRes.count ?? 0
+
+  let runsInWindow = 0
+  let routesInWindow = 0
+  if (connected) {
+    ;[runsInWindow, routesInWindow] = await Promise.all([
+      countRunsInWindow(),
+      countRunsWithPolylineInWindow(),
+    ])
+  }
 
   const pageTitle = pageCopy?.pageTitle?.trim() || 'Runs'
   const mapSectionTitle = pageCopy?.mapSectionTitle?.trim() || 'Map'
@@ -81,64 +93,6 @@ export default async function RunsPage({
         </p>
       </div>
     )
-
-  const tableIntro =
-    pageCopy?.tableSectionIntroduction && pageCopy.tableSectionIntroduction.length > 0 ? (
-      <div className={`${pageBodyTypography} mb-6`}>
-        <PortableText value={pageCopy.tableSectionIntroduction} pageBodyTypography />
-      </div>
-    ) : undefined
-
-  const {data: oauth} = await supabase
-    .from('strava_oauth')
-    .select('athlete_id')
-    .eq('id', 'singleton')
-    .maybeSingle()
-  const connected = Boolean(oauth)
-
-  const {data: syncState} = await supabase
-    .from('strava_sync_state')
-    .select('full_backfill_complete, last_incremental_sync_at')
-    .eq('id', 'singleton')
-    .maybeSingle()
-
-  const {count: totalCount} = await supabase
-    .from('strava_activities')
-    .select('*', {count: 'exact', head: true})
-
-  const runCount = totalCount ?? 0
-
-  let windowRuns: StravaRunRow[] = []
-  let runsInWindow = 0
-  let routesInWindow = 0
-  let tableRows: StravaRunTableRow[] = []
-  let mapRuns: StravaRunMapInput[] = []
-
-  if (connected) {
-    const [wr, rw, rwP, accessToken] = await Promise.all([
-      fetchRunsInWindow(),
-      countRunsInWindow(),
-      countRunsWithPolylineInWindow(),
-      getValidStravaAccessToken(),
-    ])
-    windowRuns = wr
-    runsInWindow = rw
-    routesInWindow = rwP
-
-    if (runCount > 0) {
-      windowRuns = await enrichRunsWithActivityDetailsForLocation(windowRuns, accessToken)
-      const gearIds = windowRuns.map((r) => gearIdFromRaw(r.raw)).filter((x): x is string => Boolean(x))
-      const gearById = await buildGearNameMap(accessToken, gearIds)
-      const runsById = new Map(windowRuns.map((r) => [r.id, r]))
-      tableRows = enrichRunsForTable(windowRuns, gearById)
-      tableRows = await enrichTableRowsWithReverseGeocodePlaceLabels(tableRows, runsById)
-      mapRuns = windowRuns.map((r) => ({
-        id: r.id,
-        map_polyline: r.map_polyline,
-        start_date: r.start_date,
-      }))
-    }
-  }
 
   return (
     <div className={pageShellBg}>
@@ -285,23 +239,14 @@ export default async function RunsPage({
         </section>
 
         {connected && runCount > 0 ? (
-          <>
-            <section className="mb-14" aria-labelledby="map-section-title">
-              <h2 id="map-section-title" className={pageSectionHeading}>
-                {mapSectionTitle}
-              </h2>
-              <StravaRunsMapDynamic
-                runs={mapRuns}
-                mapIntroduction={pageCopy?.mapSectionIntroduction ?? undefined}
-              />
-            </section>
-
-            <StravaRunsTable
-              runs={tableRows}
-              sectionTitle={tableSectionTitle}
-              intro={tableIntro}
+          <Suspense fallback={<RunsMapTableSkeleton />}>
+            <RunsMapAndTable
+              mapSectionTitle={mapSectionTitle}
+              tableSectionTitle={tableSectionTitle}
+              mapSectionIntroduction={pageCopy?.mapSectionIntroduction}
+              tableSectionIntroduction={pageCopy?.tableSectionIntroduction}
             />
-          </>
+          </Suspense>
         ) : null}
       </div>
     </div>

@@ -255,6 +255,8 @@ If you previously used the retired **Backyard birds (iNaturalist)** singleton, c
 
 The **`/runs`** hero, map/table intros, section headings, and SEO are driven by the **`toolProjectPage`** singleton **Runs (Strava)** in Studio (document id **`toolProjectPage-runs`**). If the document is missing or fields are empty, the app falls back to built-in defaults. After adding or changing the schema, run **`sanity schema deploy`** (or deploy Studio) so the dataset has the new type. The pattern is reusable: add another **`projectKey`**, a matching singleton id, a GROQ query, and wire a route (same idea as **Pileated Watch** + `ebirdBirding`).
 
+The map/table block loads in a **React `Suspense`** boundary so the hero and connection panel can render before slow work finishes (Strava detail fetches, gear names, and OpenStreetMap reverse geocoding). That keeps **LCP** on the hero instead of blocking on Nominatim’s rate-limited queue.
+
 ### Navigation
 
 Add **`/runs`** under **Site settings → Projects menu** if you want it in the header **Projects** dropdown.

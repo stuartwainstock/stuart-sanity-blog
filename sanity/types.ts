@@ -15,12 +15,83 @@
 export declare const internalGroqTypeReferenceTo: unique symbol
 
 // Source: schema.json
+export type ToolProjectPage = {
+  _id: string
+  _type: 'toolProjectPage'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  projectKey?: 'runs'
+  pageTitle?: string
+  heroIntroduction?: BlockContent
+  mapSectionTitle?: string
+  mapSectionIntroduction?: BlockContent
+  tableSectionTitle?: string
+  tableSectionIntroduction?: BlockContent
+  seo?: Seo
+}
+
 export type SanityImageAssetReference = {
   _ref: string
   _type: 'reference'
   _weak?: boolean
   [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
 }
+
+export type Seo = {
+  _type: 'seo'
+  metaTitle?: string
+  metaDescription?: string
+  openGraphImage?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    credit?: string
+    _type: 'image'
+  }
+  keywords?: Array<string>
+  noIndex?: boolean
+}
+
+export type BlockContent = Array<
+  | {
+      children?: Array<{
+        marks?: Array<string>
+        text?: string
+        _type: 'span'
+        _key: string
+      }>
+      style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'blockquote'
+      listItem?: 'bullet'
+      markDefs?: Array<{
+        href?: string
+        _type: 'link'
+        _key: string
+      }>
+      level?: number
+      _type: 'block'
+      _key: string
+    }
+  | {
+      asset?: SanityImageAssetReference
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      alt?: string
+      caption?: string
+      credit?: string
+      _type: 'image'
+      _key: string
+    }
+  | {
+      language?: 'javascript' | 'typescript' | 'html' | 'css' | 'python' | 'json' | 'bash'
+      code?: string
+      _type: 'codeBlock'
+      _key: string
+    }
+>
 
 export type SiteSettings = {
   _id: string
@@ -79,23 +150,6 @@ export type SiteSettings = {
     }>
   }
   seo?: Seo
-}
-
-export type Seo = {
-  _type: 'seo'
-  metaTitle?: string
-  metaDescription?: string
-  openGraphImage?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    credit?: string
-    _type: 'image'
-  }
-  keywords?: Array<string>
-  noIndex?: boolean
 }
 
 export type SanityImageCrop = {
@@ -180,44 +234,6 @@ export type Post = {
   body?: BlockContent
   seo?: Seo
 }
-
-export type BlockContent = Array<
-  | {
-      children?: Array<{
-        marks?: Array<string>
-        text?: string
-        _type: 'span'
-        _key: string
-      }>
-      style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'blockquote'
-      listItem?: 'bullet'
-      markDefs?: Array<{
-        href?: string
-        _type: 'link'
-        _key: string
-      }>
-      level?: number
-      _type: 'block'
-      _key: string
-    }
-  | {
-      asset?: SanityImageAssetReference
-      media?: unknown
-      hotspot?: SanityImageHotspot
-      crop?: SanityImageCrop
-      alt?: string
-      caption?: string
-      credit?: string
-      _type: 'image'
-      _key: string
-    }
-  | {
-      language?: 'javascript' | 'typescript' | 'html' | 'css' | 'python' | 'json' | 'bash'
-      code?: string
-      _type: 'codeBlock'
-      _key: string
-    }
->
 
 export type Slug = {
   _type: 'slug'
@@ -479,16 +495,17 @@ export type Geopoint = {
 }
 
 export type AllSanitySchemaTypes =
+  | ToolProjectPage
   | SanityImageAssetReference
-  | SiteSettings
   | Seo
+  | BlockContent
+  | SiteSettings
   | SanityImageCrop
   | SanityImageHotspot
   | Resource
   | AuthorReference
   | CategoryReference
   | Post
-  | BlockContent
   | Slug
   | Page
   | Link
