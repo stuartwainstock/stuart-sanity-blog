@@ -249,7 +249,7 @@ If you previously used the retired **Backyard birds (iNaturalist)** singleton, c
 2. **OAuth**: Open **`/runs`** → **Connect Strava** → approve. Scopes include **`activity:read_all`** and **`profile:read_all`** (needed for athlete shoe list and richer profile). Tokens are stored in **`strava_oauth`**. If you connected before `profile:read_all` was added, use **Connect Strava** again so Strava re-authorizes.
 3. **Sync**: **Sync from Strava** on `/runs`, or **`POST /api/strava/sync`**. If **`STRAVA_SYNC_SECRET`** is set, the POST route requires `Authorization: Bearer <secret>` (useful for cron).
 4. **Data**: First successful sync performs a **full backfill** of activity history; later syncs are **incremental** (with a short lookback for edits). Only activities with **`sport_type` Run** are stored.
-5. **Map & table**: **`/runs`** shows a **MapLibre** map of run routes (**last 365 days**, full polylines) and a **recent runs** table with links to Strava—same page layout and typography pattern as Pileated Watch.
+5. **Map & table**: **`/runs`** shows a **MapLibre** map of run routes (**last 365 days**, full polylines) and a **recent runs** table with links to Strava—same page layout and typography pattern as Pileated Watch. **Location** uses city/state/country when Strava provides them; otherwise **start coordinates** from the activity, or a **per-activity detail** fetch (`GET /activities/:id`) for the newest rows still missing a label (Strava’s list endpoint often omits place names).
 
 ### Navigation
 

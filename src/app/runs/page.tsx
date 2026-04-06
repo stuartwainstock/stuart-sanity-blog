@@ -21,7 +21,7 @@ import {
   fetchRunsInWindow,
 } from '@/lib/strava/runsQuery'
 import {buildGearNameMap, gearIdFromRaw} from '@/lib/strava/gear'
-import {enrichRunsForTable} from '@/lib/strava/runDisplay'
+import {enrichRunsForTable, enrichRunsWithActivityDetailsForLocation} from '@/lib/strava/runDisplay'
 import {getValidStravaAccessToken} from '@/lib/strava/tokens'
 import type {StravaRunMapInput, StravaRunRow, StravaRunTableRow} from '@/lib/strava/types'
 
@@ -77,6 +77,7 @@ export default async function RunsPage({
     routesInWindow = rwP
 
     if (runCount > 0) {
+      windowRuns = await enrichRunsWithActivityDetailsForLocation(windowRuns, accessToken)
       const gearIds = windowRuns.map((r) => gearIdFromRaw(r.raw)).filter((x): x is string => Boolean(x))
       const gearById = await buildGearNameMap(accessToken, gearIds)
       tableRows = enrichRunsForTable(windowRuns, gearById)

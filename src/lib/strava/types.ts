@@ -28,6 +28,8 @@ export type StravaRunTableRow = {
   distance_m: number | null
   locationLabel: string | null
   shoeLabel: string | null
+  /** Strava Relative Effort (`suffer_score`); needs HR etc., may be null. */
+  relativeEffort: number | null
 }
 
 /** Minimal fields passed to the map (no `raw`). */

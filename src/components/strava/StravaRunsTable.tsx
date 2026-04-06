@@ -15,6 +15,11 @@ function formatKm(distanceM: number | null): string {
   return km < 10 ? `${km.toFixed(2)} km` : `${km.toFixed(1)} km`
 }
 
+function formatEffort(n: number | null): string {
+  if (n == null || Number.isNaN(n)) return '—'
+  return String(n)
+}
+
 export default function StravaRunsTable({runs, limit = 25}: Props) {
   const rows = runs.slice(0, limit)
 
@@ -24,13 +29,13 @@ export default function StravaRunsTable({runs, limit = 25}: Props) {
         Recent runs
       </h2>
       <p className={`${pageBodyParagraph} mb-6`}>
-        Most recent {RUNS_MAP_WINDOW_DAYS}-day window (up to {limit} rows). Location and shoe come from
-        Strava when available. Open Strava for full activity details.
+        Most recent {RUNS_MAP_WINDOW_DAYS}-day window (up to {limit} rows). Location, shoe, and relative
+        effort come from Strava when available. Open Strava for full activity details.
       </p>
       <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm bg-white">
         <table className="min-w-full text-left text-sm border-collapse">
           <caption className="sr-only">
-            Recent runs: date, location, distance, shoe, link to Strava
+            Recent runs: date, location, distance, relative effort, shoe, link to Strava
           </caption>
           <thead className="bg-gray-100 text-gray-800">
             <tr>
@@ -39,6 +44,13 @@ export default function StravaRunsTable({runs, limit = 25}: Props) {
               </th>
               <th scope="col" className="px-4 py-3 font-medium">
                 Location
+              </th>
+              <th
+                scope="col"
+                className="px-4 py-3 font-medium"
+                title="Strava Relative Effort (suffer_score); requires heart rate when Strava computes it"
+              >
+                Rel. effort
               </th>
               <th scope="col" className="px-4 py-3 font-medium">
                 Distance
@@ -54,7 +66,7 @@ export default function StravaRunsTable({runs, limit = 25}: Props) {
           <tbody className="divide-y divide-gray-200">
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-gray-600">
+                <td colSpan={6} className="px-4 py-8 text-center text-gray-600">
                   No runs in this window yet.
                 </td>
               </tr>
@@ -70,6 +82,9 @@ export default function StravaRunsTable({runs, limit = 25}: Props) {
                   </td>
                   <td className="px-4 py-3 text-gray-800 max-w-[min(28rem,50vw)]" title={r.locationLabel ?? ''}>
                     {r.locationLabel ?? '—'}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-gray-700 tabular-nums" title="Relative effort">
+                    {formatEffort(r.relativeEffort)}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap text-gray-700 tabular-nums">
                     {formatKm(r.distance_m)}
