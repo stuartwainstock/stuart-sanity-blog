@@ -7,14 +7,60 @@ import polyline from '@mapbox/polyline'
 import type {FeatureCollection} from 'geojson'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import {pageBodyParagraph} from '@/lib/pageTypography'
-import {RUNS_MAP_WINDOW_DAYS} from '@/lib/strava/constants'
+import {
+  RUNS_MAP_HOME_BOUNDS,
+  RUNS_MAP_HOME_CENTER,
+  RUNS_MAP_HOME_ZOOM,
+  RUNS_MAP_WINDOW_DAYS,
+} from '@/lib/strava/constants'
 import type {StravaRunMapInput} from '@/lib/strava/types'
 
 const MAP_STYLE =
   'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'
 
-const DEFAULT_CENTER = {latitude: 39.8283, longitude: -98.5795}
-const DEFAULT_ZOOM = 3
+function pointInHomeBounds(lng: number, lat: number): boolean {
+  const b = RUNS_MAP_HOME_BOUNDS
+  return lat >= b.south && lat <= b.north && lng >= b.west && lng <= b.east
+}
+
+/**
+ * Bounds for framing: prefer coordinates inside the home (MSP) box when the route touches
+ * that region; otherwise use the full route. Avoids zooming out for scattered global runs.
+ */
+function buildFitBounds(
+  features: FeatureCollection['features'],
+): LngLatBounds | null {
+  const homeBounds = new LngLatBounds()
+  let homeHas = false
+  const fullBounds = new LngLatBounds()
+  let fullHas = false
+
+  for (const f of features) {
+    if (f.geometry.type !== 'LineString') continue
+    const coords = f.geometry.coordinates
+    let routeTouchesHome = false
+    for (const c of coords) {
+      const lng = c[0]!
+      const lat = c[1]!
+      fullBounds.extend(c as [number, number])
+      fullHas = true
+      if (pointInHomeBounds(lng, lat)) routeTouchesHome = true
+    }
+    if (!routeTouchesHome) continue
+    for (const c of coords) {
+      const lng = c[0]!
+      const lat = c[1]!
+      if (pointInHomeBounds(lng, lat)) {
+        homeBounds.extend(c as [number, number])
+        homeHas = true
+      }
+    }
+  }
+
+  if (homeHas) return homeBounds
+  if (fullHas) return fullBounds
+  return null
+}
 
 type Props = {
   runs: StravaRunMapInput[]
@@ -60,19 +106,14 @@ export default function StravaRunsMap({runs}: Props) {
   const fitToRoutes = useCallback(() => {
     const map = mapRef.current?.getMap()
     if (!map || !hasRoutes) return
-    const bounds = new LngLatBounds()
-    for (const f of geojson.features) {
-      if (f.geometry.type !== 'LineString') continue
-      for (const c of f.geometry.coordinates) {
-        bounds.extend(c as [number, number])
-      }
-    }
+    const bounds = buildFitBounds(geojson.features)
+    if (!bounds) return
     try {
       map.fitBounds(bounds, {padding: 56, maxZoom: 14, duration: 0})
     } catch {
       map.jumpTo({
-        center: [DEFAULT_CENTER.longitude, DEFAULT_CENTER.latitude],
-        zoom: DEFAULT_ZOOM,
+        center: [RUNS_MAP_HOME_CENTER.longitude, RUNS_MAP_HOME_CENTER.latitude],
+        zoom: RUNS_MAP_HOME_ZOOM,
       })
     }
   }, [geojson.features, hasRoutes])
@@ -85,8 +126,9 @@ export default function StravaRunsMap({runs}: Props) {
   return (
     <div className="space-y-6">
       <p id={descriptionId} className={pageBodyParagraph}>
-        Routes from the last {RUNS_MAP_WINDOW_DAYS} days with GPS polylines from Strava. Zoom and pan to
-        explore; lines are your full recorded paths.
+        Routes from the last {RUNS_MAP_WINDOW_DAYS} days with GPS polylines from Strava. The map defaults to
+        the Minneapolis–Saint Paul area when you have runs there; zoom and pan to explore everywhere.
+        Lines are your full recorded paths.
       </p>
       {!hasRoutes ? (
         <p className={pageBodyParagraph}>
@@ -104,8 +146,8 @@ export default function StravaRunsMap({runs}: Props) {
           <Map
             ref={mapRef}
             initialViewState={{
-              ...DEFAULT_CENTER,
-              zoom: DEFAULT_ZOOM,
+              ...RUNS_MAP_HOME_CENTER,
+              zoom: RUNS_MAP_HOME_ZOOM,
             }}
             style={{width: '100%', height: '100%'}}
             mapStyle={MAP_STYLE}
