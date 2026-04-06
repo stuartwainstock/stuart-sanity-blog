@@ -6,12 +6,13 @@ import BackyardBirdMapDynamic from '@/components/backyard/BackyardBirdMapDynamic
 import BackyardObservationsTable from '@/components/backyard/BackyardObservationsTable'
 import {ebirdHasMapArea, fetchMapObservations} from '@/lib/ebird/client'
 import {resolveEbirdBirding} from '@/lib/ebird/resolveConfig'
+import PageHeroWithDataSource from '@/components/PageHeroWithDataSource'
 import {
   pageBanner,
   pageBodyTypography,
   pageContent,
   pageInner,
-  pageKicker,
+  pageDataSourceLink,
   pageSectionHeading,
   pageShellBg,
   pageTitleH1,
@@ -114,36 +115,30 @@ export default async function PileatedWatchPage() {
         Skip to sightings table
       </a>
 
-      <header
-        className={pageBanner}
-        role="banner"
-        aria-labelledby="pileated-title"
-      >
-        <div className={pageInner}>
-          <p className={pageKicker}>
+      <PageHeroWithDataSource
+        titleId="pileated-title"
+        title={config.mapPageTitle}
+        dataSource={
+          <p>
             Data from{' '}
             <a
               href="https://ebird.org/home"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-800 underline"
+              className={pageDataSourceLink}
             >
               eBird
             </a>
+            .
           </p>
-          <h1 id="pileated-title" className={pageTitleH1}>
-            {config.mapPageTitle}
-          </h1>
-          {config.mapPageIntroduction?.length ? (
-            <div className={pageBodyTypography}>
-              <PortableText
-                value={config.mapPageIntroduction}
-                pageBodyTypography
-              />
-            </div>
-          ) : null}
-        </div>
-      </header>
+        }
+      >
+        {config.mapPageIntroduction?.length ? (
+          <div className={pageBodyTypography}>
+            <PortableText value={config.mapPageIntroduction} pageBodyTypography />
+          </div>
+        ) : null}
+      </PageHeroWithDataSource>
 
       <div className={pageContent} aria-labelledby="pileated-title">
         {!obsResult.ok ? (

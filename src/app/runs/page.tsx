@@ -2,17 +2,15 @@ import Link from 'next/link'
 import type {Metadata} from 'next'
 import {createServerSupabase} from '@/lib/supabase/server'
 import {syncRunsAction} from '@/app/runs/actions'
+import PageHeroWithDataSource from '@/components/PageHeroWithDataSource'
 import StravaRunsMapDynamic from '@/components/strava/StravaRunsMapDynamic'
 import StravaRunsTable from '@/components/strava/StravaRunsTable'
 import {
-  pageBanner,
   pageBodyTypography,
   pageContent,
-  pageInner,
-  pageKicker,
+  pageDataSourceLink,
   pageSectionHeading,
   pageShellBg,
-  pageTitleH1,
 } from '@/lib/pageTypography'
 import {RUNS_MAP_WINDOW_DAYS} from '@/lib/strava/constants'
 import {
@@ -110,30 +108,54 @@ export default async function RunsPage({
         Skip to recent runs
       </a>
 
-      <header className={pageBanner} role="banner" aria-labelledby="runs-title">
-        <div className={pageInner}>
-          <p className={pageKicker}>
-            Data from{' '}
-            <a
-              href="https://www.strava.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-800 underline"
-            >
-              Strava
-            </a>
-          </p>
-          <h1 id="runs-title" className={pageTitleH1}>
-            Runs
-          </h1>
-          <div className={pageBodyTypography}>
-            <p className="mb-6 text-inherit">
-              Personal Strava runs stored in Supabase. Connect once, then sync to pull activity history (runs
-              only). The map and table highlight the last {RUNS_MAP_WINDOW_DAYS} days.
+      <PageHeroWithDataSource
+        titleId="runs-title"
+        title="Runs"
+        dataSource={
+          <>
+            <p>
+              Activity data provided by{' '}
+              <a
+                href="https://www.strava.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={pageDataSourceLink}
+              >
+                Strava
+              </a>
+              .
             </p>
-          </div>
+            <p>
+              Place names inferred from coordinates use{' '}
+              <a
+                href="https://nominatim.openstreetmap.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={pageDataSourceLink}
+              >
+                OpenStreetMap Nominatim
+              </a>{' '}
+              (© OpenStreetMap contributors,{' '}
+              <a
+                href="https://www.openstreetmap.org/copyright"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={pageDataSourceLink}
+              >
+                ODbL
+              </a>
+              ).
+            </p>
+          </>
+        }
+      >
+        <div className={pageBodyTypography}>
+          <p className="mb-6 text-inherit">
+            Personal Strava runs stored in Supabase. Connect once, then sync to pull activity history (runs
+            only). The map and table highlight the last {RUNS_MAP_WINDOW_DAYS} days.
+          </p>
         </div>
-      </header>
+      </PageHeroWithDataSource>
 
       <div className={pageContent} aria-labelledby="runs-title">
         {params.strava === 'connected' ? (
@@ -234,37 +256,6 @@ export default async function RunsPage({
             <StravaRunsTable runs={tableRows} />
           </>
         ) : null}
-
-        <p className="mt-10 text-sm text-gray-500">
-          Activity data provided by{' '}
-          <a
-            href="https://www.strava.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-600 underline underline-offset-2 hover:text-gray-900"
-          >
-            Strava
-          </a>
-          . Place names inferred from coordinates use{' '}
-          <a
-            href="https://nominatim.openstreetmap.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-600 underline underline-offset-2 hover:text-gray-900"
-          >
-            OpenStreetMap Nominatim
-          </a>{' '}
-          (© OpenStreetMap contributors,{' '}
-          <a
-            href="https://www.openstreetmap.org/copyright"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-600 underline underline-offset-2 hover:text-gray-900"
-          >
-            ODbL
-          </a>
-          ).
-        </p>
       </div>
     </div>
   )

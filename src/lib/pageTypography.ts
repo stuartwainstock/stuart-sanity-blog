@@ -8,6 +8,23 @@ export const pageInner = 'max-w-5xl mx-auto'
 export const pageTitleH1 =
   'text-4xl font-semibold mb-12 text-gray-900 leading-tight'
 
+/**
+ * H1 on data-driven tool pages (map + external API) when attribution sits directly under the title.
+ * Pair with {@link pageDataSourceCredit}.
+ */
+export const pageTitleH1DataPage =
+  'text-4xl font-semibold mb-4 text-gray-900 leading-tight'
+
+/**
+ * Primary data-source attribution block (eBird, Strava, OSM, etc.) placed **below** the H1.
+ */
+export const pageDataSourceCredit =
+  'text-sm text-gray-600 mb-10 max-w-4xl space-y-2'
+
+/** Links inside {@link pageDataSourceCredit}. */
+export const pageDataSourceLink =
+  'text-gray-700 underline underline-offset-2 hover:text-gray-900'
+
 export const pageExcerpt =
   'text-[30px] font-light tracking-[2px] leading-[1.6] mb-2 text-gray-600 max-w-4xl'
 
