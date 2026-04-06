@@ -20,7 +20,10 @@ import {
   countRunsWithPolylineInWindow,
   fetchRunsInWindow,
 } from '@/lib/strava/runsQuery'
-import type {StravaRunRow} from '@/lib/strava/types'
+import {buildGearNameMap, gearIdFromRaw} from '@/lib/strava/gear'
+import {enrichRunsForTable} from '@/lib/strava/runDisplay'
+import {getValidStravaAccessToken} from '@/lib/strava/tokens'
+import type {StravaRunMapInput, StravaRunRow, StravaRunTableRow} from '@/lib/strava/types'
 
 export const metadata: Metadata = {
   title: 'Runs',
@@ -54,19 +57,36 @@ export default async function RunsPage({
     .from('strava_activities')
     .select('*', {count: 'exact', head: true})
 
+  const runCount = totalCount ?? 0
+
   let windowRuns: StravaRunRow[] = []
   let runsInWindow = 0
   let routesInWindow = 0
+  let tableRows: StravaRunTableRow[] = []
+  let mapRuns: StravaRunMapInput[] = []
 
   if (connected) {
-    ;[windowRuns, runsInWindow, routesInWindow] = await Promise.all([
+    const [wr, rw, rwP, accessToken] = await Promise.all([
       fetchRunsInWindow(),
       countRunsInWindow(),
       countRunsWithPolylineInWindow(),
+      getValidStravaAccessToken(),
     ])
-  }
+    windowRuns = wr
+    runsInWindow = rw
+    routesInWindow = rwP
 
-  const runCount = totalCount ?? 0
+    if (runCount > 0) {
+      const gearIds = windowRuns.map((r) => gearIdFromRaw(r.raw)).filter((x): x is string => Boolean(x))
+      const gearById = await buildGearNameMap(accessToken, gearIds)
+      tableRows = enrichRunsForTable(windowRuns, gearById)
+      mapRuns = windowRuns.map((r) => ({
+        id: r.id,
+        map_polyline: r.map_polyline,
+        start_date: r.start_date,
+      }))
+    }
+  }
 
   return (
     <div className={pageShellBg}>
@@ -200,11 +220,11 @@ export default async function RunsPage({
                 Map
               </h2>
               <div id="runs-map">
-                <StravaRunsMapDynamic runs={windowRuns} />
+                <StravaRunsMapDynamic runs={mapRuns} />
               </div>
             </section>
 
-            <StravaRunsTable runs={windowRuns} />
+            <StravaRunsTable runs={tableRows} />
           </>
         ) : null}
 

@@ -1,10 +1,10 @@
 import Link from 'next/link'
 import {pageBodyParagraph, pageSectionHeading} from '@/lib/pageTypography'
-import type {StravaRunRow} from '@/lib/strava/types'
+import type {StravaRunTableRow} from '@/lib/strava/types'
 import {RUNS_MAP_WINDOW_DAYS} from '@/lib/strava/constants'
 
 type Props = {
-  runs: StravaRunRow[]
+  runs: StravaRunTableRow[]
   /** Max rows to show (most recent first). */
   limit?: number
 }
@@ -24,13 +24,13 @@ export default function StravaRunsTable({runs, limit = 25}: Props) {
         Recent runs
       </h2>
       <p className={`${pageBodyParagraph} mb-6`}>
-        Most recent {RUNS_MAP_WINDOW_DAYS}-day window (up to {limit} rows). Open Strava for full activity
-        details.
+        Most recent {RUNS_MAP_WINDOW_DAYS}-day window (up to {limit} rows). Location and shoe come from
+        Strava when available. Open Strava for full activity details.
       </p>
       <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm bg-white">
         <table className="min-w-full text-left text-sm border-collapse">
           <caption className="sr-only">
-            Recent runs: date, name, distance, link to Strava
+            Recent runs: date, location, distance, shoe, link to Strava
           </caption>
           <thead className="bg-gray-100 text-gray-800">
             <tr>
@@ -38,10 +38,13 @@ export default function StravaRunsTable({runs, limit = 25}: Props) {
                 Date
               </th>
               <th scope="col" className="px-4 py-3 font-medium">
-                Name
+                Location
               </th>
               <th scope="col" className="px-4 py-3 font-medium">
                 Distance
+              </th>
+              <th scope="col" className="px-4 py-3 font-medium">
+                Shoe
               </th>
               <th scope="col" className="px-4 py-3 font-medium">
                 Strava
@@ -51,7 +54,7 @@ export default function StravaRunsTable({runs, limit = 25}: Props) {
           <tbody className="divide-y divide-gray-200">
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-4 py-8 text-center text-gray-600">
+                <td colSpan={5} className="px-4 py-8 text-center text-gray-600">
                   No runs in this window yet.
                 </td>
               </tr>
@@ -65,13 +68,16 @@ export default function StravaRunsTable({runs, limit = 25}: Props) {
                       day: 'numeric',
                     })}
                   </td>
-                  <td className="px-4 py-3 text-gray-800 max-w-[min(28rem,50vw)] truncate" title={r.name ?? ''}>
-                    {r.name ?? 'Run'}
+                  <td className="px-4 py-3 text-gray-800 max-w-[min(28rem,50vw)]" title={r.locationLabel ?? ''}>
+                    {r.locationLabel ?? '—'}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap text-gray-700 tabular-nums">
                     {formatKm(r.distance_m)}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 text-gray-800 max-w-[min(20rem,40vw)] truncate" title={r.shoeLabel ?? ''}>
+                    {r.shoeLabel ?? '—'}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap">
                     <Link
                       href={`https://www.strava.com/activities/${r.id}`}
                       target="_blank"

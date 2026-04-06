@@ -17,6 +17,24 @@ export type StravaRunRow = {
   start_date: string
   distance_m: number | null
   map_polyline: string | null
+  /** Stored Strava activity JSON (location, gear_id, etc.). */
+  raw?: unknown
+}
+
+/** Table row after resolving location + shoe from `raw` + gear map. */
+export type StravaRunTableRow = {
+  id: number
+  start_date: string
+  distance_m: number | null
+  locationLabel: string | null
+  shoeLabel: string | null
+}
+
+/** Minimal fields passed to the map (no `raw`). */
+export type StravaRunMapInput = {
+  id: number
+  start_date: string
+  map_polyline: string | null
 }
 
 /** Activity summary from GET /athlete/activities (subset). */

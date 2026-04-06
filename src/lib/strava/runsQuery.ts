@@ -18,7 +18,7 @@ export async function fetchRunsInWindow(): Promise<StravaRunRow[]> {
 
   const {data, error} = await supabase
     .from('strava_activities')
-    .select('id, name, start_date, distance_m, map_polyline')
+    .select('id, name, start_date, distance_m, map_polyline, raw')
     .gte('start_date', sinceIso)
     .order('start_date', {ascending: false})
 

@@ -8,7 +8,7 @@ import type {FeatureCollection} from 'geojson'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import {pageBodyParagraph} from '@/lib/pageTypography'
 import {RUNS_MAP_WINDOW_DAYS} from '@/lib/strava/constants'
-import type {StravaRunRow} from '@/lib/strava/types'
+import type {StravaRunMapInput} from '@/lib/strava/types'
 
 const MAP_STYLE =
   'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'
@@ -17,10 +17,10 @@ const DEFAULT_CENTER = {latitude: 39.8283, longitude: -98.5795}
 const DEFAULT_ZOOM = 3
 
 type Props = {
-  runs: StravaRunRow[]
+  runs: StravaRunMapInput[]
 }
 
-function buildGeoJson(runs: StravaRunRow[]): FeatureCollection {
+function buildGeoJson(runs: StravaRunMapInput[]): FeatureCollection {
   const features: FeatureCollection['features'] = []
   for (const r of runs) {
     if (!r.map_polyline?.trim()) continue
@@ -32,7 +32,6 @@ function buildGeoJson(runs: StravaRunRow[]): FeatureCollection {
         type: 'Feature',
         properties: {
           id: r.id,
-          name: r.name ?? 'Run',
           start_date: r.start_date,
         },
         geometry: {

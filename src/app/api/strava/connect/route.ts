@@ -31,7 +31,7 @@ export async function GET() {
     client_id: clientId,
     redirect_uri: redirectUri,
     response_type: 'code',
-    scope: 'activity:read_all',
+    scope: 'activity:read_all,profile:read_all',
     state,
   })
 

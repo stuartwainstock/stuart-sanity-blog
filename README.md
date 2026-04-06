@@ -246,7 +246,7 @@ If you previously used the retired **Backyard birds (iNaturalist)** singleton, c
 1. **Environment** (server-only — see `.env.local.example`):
    - **`SUPABASE_URL`** and **`SUPABASE_SERVICE_ROLE_KEY`** — use the **Secret** key from Supabase (Settings → API), not the publishable/anon key.
    - **`STRAVA_CLIENT_ID`**, **`STRAVA_CLIENT_SECRET`**, **`STRAVA_REDIRECT_URI`** — e.g. `http://localhost:3000/api/strava/callback` locally and `https://yourdomain.com/api/strava/callback` in production.
-2. **OAuth**: Open **`/runs`** → **Connect Strava** → approve. Tokens are stored in **`strava_oauth`**.
+2. **OAuth**: Open **`/runs`** → **Connect Strava** → approve. Scopes include **`activity:read_all`** and **`profile:read_all`** (needed for athlete shoe list and richer profile). Tokens are stored in **`strava_oauth`**. If you connected before `profile:read_all` was added, use **Connect Strava** again so Strava re-authorizes.
 3. **Sync**: **Sync from Strava** on `/runs`, or **`POST /api/strava/sync`**. If **`STRAVA_SYNC_SECRET`** is set, the POST route requires `Authorization: Bearer <secret>` (useful for cron).
 4. **Data**: First successful sync performs a **full backfill** of activity history; later syncs are **incremental** (with a short lookback for edits). Only activities with **`sport_type` Run** are stored.
 5. **Map & table**: **`/runs`** shows a **MapLibre** map of run routes (**last 365 days**, full polylines) and a **recent runs** table with links to Strava—same page layout and typography pattern as Pileated Watch.

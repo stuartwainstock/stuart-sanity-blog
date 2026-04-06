@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import type {StravaRunRow} from '@/lib/strava/types'
+import type {StravaRunMapInput} from '@/lib/strava/types'
 import StravaRunsMapLoading from '@/components/strava/StravaRunsMapLoading'
 
 const Map = dynamic(() => import('@/components/strava/StravaRunsMap'), {
@@ -10,7 +10,7 @@ const Map = dynamic(() => import('@/components/strava/StravaRunsMap'), {
 })
 
 type Props = {
-  runs: StravaRunRow[]
+  runs: StravaRunMapInput[]
 }
 
 export default function StravaRunsMapDynamic(props: Props) {
