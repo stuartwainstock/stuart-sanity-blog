@@ -21,7 +21,11 @@ import {
   fetchRunsInWindow,
 } from '@/lib/strava/runsQuery'
 import {buildGearNameMap, gearIdFromRaw} from '@/lib/strava/gear'
-import {enrichRunsForTable, enrichRunsWithActivityDetailsForLocation} from '@/lib/strava/runDisplay'
+import {
+  enrichRunsForTable,
+  enrichRunsWithActivityDetailsForLocation,
+  enrichTableRowsWithReverseGeocodePlaceLabels,
+} from '@/lib/strava/runDisplay'
 import {getValidStravaAccessToken} from '@/lib/strava/tokens'
 import type {StravaRunMapInput, StravaRunRow, StravaRunTableRow} from '@/lib/strava/types'
 
@@ -80,7 +84,9 @@ export default async function RunsPage({
       windowRuns = await enrichRunsWithActivityDetailsForLocation(windowRuns, accessToken)
       const gearIds = windowRuns.map((r) => gearIdFromRaw(r.raw)).filter((x): x is string => Boolean(x))
       const gearById = await buildGearNameMap(accessToken, gearIds)
+      const runsById = new Map(windowRuns.map((r) => [r.id, r]))
       tableRows = enrichRunsForTable(windowRuns, gearById)
+      tableRows = await enrichTableRowsWithReverseGeocodePlaceLabels(tableRows, runsById)
       mapRuns = windowRuns.map((r) => ({
         id: r.id,
         map_polyline: r.map_polyline,
@@ -239,7 +245,25 @@ export default async function RunsPage({
           >
             Strava
           </a>
-          .
+          . Place names inferred from coordinates use{' '}
+          <a
+            href="https://nominatim.openstreetmap.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-600 underline underline-offset-2 hover:text-gray-900"
+          >
+            OpenStreetMap Nominatim
+          </a>{' '}
+          (© OpenStreetMap contributors,{' '}
+          <a
+            href="https://www.openstreetmap.org/copyright"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-600 underline underline-offset-2 hover:text-gray-900"
+          >
+            ODbL
+          </a>
+          ).
         </p>
       </div>
     </div>

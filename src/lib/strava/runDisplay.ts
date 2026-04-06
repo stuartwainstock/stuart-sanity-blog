@@ -1,3 +1,10 @@
+import {
+  MAX_UNIQUE_REVERSE_GEOCODE,
+  NOMINATIM_REQUEST_GAP_MS,
+  coordBucketKey,
+  reverseGeocodePlaceLabel,
+  sleep,
+} from '@/lib/geocoding/nominatim'
 import type {StravaRunRow, StravaRunTableRow} from '@/lib/strava/types'
 import {fetchActivityDetail} from '@/lib/strava/activityDetail'
 import {gearIdFromRaw} from '@/lib/strava/gear'
@@ -13,11 +20,8 @@ function formatCityStateCountryFromRaw(raw: unknown): string | null {
   return parts.length > 0 ? parts.join(', ') : null
 }
 
-/**
- * Strava list responses usually omit human-readable location; `start_latlng` is more reliable.
- * Format: "lat, lng" (4 decimals) as a fallback label when city/state/country are absent.
- */
-function formatStartLatLngFromRaw(raw: unknown): string | null {
+/** Parsed Strava `start_latlng` [lat, lng] when present. */
+export function parseStartLatLngFromRaw(raw: unknown): {lat: number; lng: number} | null {
   if (!raw || typeof raw !== 'object') return null
   const r = raw as Record<string, unknown>
   const arr = r.start_latlng
@@ -25,7 +29,23 @@ function formatStartLatLngFromRaw(raw: unknown): string | null {
   const lat = Number(arr[0])
   const lng = Number(arr[1])
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null
-  return `${lat.toFixed(4)}, ${lng.toFixed(4)}`
+  return {lat, lng}
+}
+
+/**
+ * Strava list responses usually omit human-readable location; `start_latlng` is more reliable.
+ * Format: "lat, lng" (4 decimals) as a fallback label when city/state/country are absent.
+ */
+function formatStartLatLngFromRaw(raw: unknown): string | null {
+  const p = parseStartLatLngFromRaw(raw)
+  if (!p) return null
+  return `${p.lat.toFixed(4)}, ${p.lng.toFixed(4)}`
+}
+
+/** True when Strava did not provide city/state/country but we have coordinates to resolve. */
+export function needsReverseGeocodeForRaw(raw: unknown): boolean {
+  if (formatCityStateCountryFromRaw(raw)) return false
+  return parseStartLatLngFromRaw(raw) != null
 }
 
 export function formatLocationFromRaw(raw: unknown): string | null {
@@ -102,5 +122,61 @@ export function enrichRunsForTable(
       shoeLabel,
       relativeEffort: parseRelativeEffortFromRaw(r.raw),
     }
+  })
+}
+
+/**
+ * Replace coordinate-only location labels with city / metro names via OpenStreetMap Nominatim.
+ * Respects public API limits: dedupes by ~1 km grid, sequential requests, max unique buckets per request.
+ * Set STRAVA_REVERSE_GEOCODE=0 to skip.
+ */
+export async function enrichTableRowsWithReverseGeocodePlaceLabels(
+  rows: StravaRunTableRow[],
+  runsById: Map<number, StravaRunRow>,
+): Promise<StravaRunTableRow[]> {
+  if (process.env.STRAVA_REVERSE_GEOCODE === '0') return rows
+
+  const byBucket = new Map<string, {lat: number; lng: number}>()
+  const runIdsByBucket = new Map<string, number[]>()
+  const bucketOrder: string[] = []
+
+  for (const row of rows) {
+    const run = runsById.get(row.id)
+    if (!run || !needsReverseGeocodeForRaw(run.raw)) continue
+    const ll = parseStartLatLngFromRaw(run.raw)
+    if (!ll) continue
+    const key = coordBucketKey(ll.lat, ll.lng)
+    if (!byBucket.has(key)) {
+      byBucket.set(key, ll)
+      runIdsByBucket.set(key, [])
+      bucketOrder.push(key)
+    }
+    runIdsByBucket.get(key)!.push(row.id)
+  }
+
+  if (bucketOrder.length === 0) return rows
+
+  const toFetch = bucketOrder.slice(0, MAX_UNIQUE_REVERSE_GEOCODE)
+  const labelByBucket = new Map<string, string | null>()
+
+  for (let i = 0; i < toFetch.length; i++) {
+    const key = toFetch[i]!
+    const ll = byBucket.get(key)!
+    if (i > 0) await sleep(NOMINATIM_REQUEST_GAP_MS)
+    const label = await reverseGeocodePlaceLabel(ll.lat, ll.lng)
+    labelByBucket.set(key, label)
+  }
+
+  const idToLabel = new Map<number, string>()
+  for (const key of toFetch) {
+    const label = labelByBucket.get(key)
+    if (!label) continue
+    for (const id of runIdsByBucket.get(key) ?? []) idToLabel.set(id, label)
+  }
+
+  return rows.map((row) => {
+    const resolved = idToLabel.get(row.id)
+    if (!resolved) return row
+    return {...row, locationLabel: resolved}
   })
 }

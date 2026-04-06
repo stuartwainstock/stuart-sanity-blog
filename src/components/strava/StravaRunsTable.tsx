@@ -30,7 +30,8 @@ export default function StravaRunsTable({runs, limit = 25}: Props) {
       </h2>
       <p className={`${pageBodyParagraph} mb-6`}>
         Most recent {RUNS_MAP_WINDOW_DAYS}-day window (up to {limit} rows). Location, shoe, and relative
-        effort come from Strava when available. Open Strava for full activity details.
+        effort come from Strava when available. When Strava only has GPS start points, place names are
+        resolved from coordinates (city-level, via OpenStreetMap). Open Strava for full activity details.
       </p>
       <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm bg-white">
         <table className="min-w-full text-left text-sm border-collapse">
