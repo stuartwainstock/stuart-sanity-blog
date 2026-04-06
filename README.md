@@ -174,7 +174,7 @@ sanity-blog/
 - Site title and description
 - Logo and favicon
 - Social media links
-- **Projects menu** (optional): top-level label (e.g. “Projects”) and links to **internal paths** like `/pileated-watch`. Each route implements its own data layer (eBird, Strava, etc.) in the Next.js app—not in this menu.
+- **Projects menu** (optional): top-level label (e.g. “Projects”) and links to **internal paths** like `/pileated-watch` or `/runs`. Each route implements its own data layer (eBird, Strava, etc.) in the Next.js app—not in this menu.
 - Footer configuration
 - Default SEO settings
 
@@ -232,6 +232,38 @@ If you previously used the retired **Backyard birds (iNaturalist)** singleton, c
 
 - Root `.gitignore` lists `.gitdata/` and `.ssh/` so accidental local copies of git metadata or keys are not committed.
 
+## Strava runs & Supabase
+
+**Strava runs** at **`/runs`** syncs **your** Strava activities (**runs only**) into **Supabase** for a personal archive. Visitors never log in; you connect once with OAuth.
+
+### Prerequisites
+
+- **Supabase** project with tables `strava_oauth`, `strava_activities`, and `strava_sync_state` (create them in the SQL Editor using the schema documented when you set up this feature).
+- **Strava API** application ([strava.com/settings/api](https://www.strava.com/settings/api)): note **Client ID** and **Client Secret**, and set the **Authorization Callback Domain** (or redirect URL) so that `https://<your-domain>/api/strava/callback` is allowed—must match **`STRAVA_REDIRECT_URI`** exactly.
+
+### How it works
+
+1. **Environment** (server-only — see `.env.local.example`):
+   - **`SUPABASE_URL`** and **`SUPABASE_SERVICE_ROLE_KEY`** — use the **Secret** key from Supabase (Settings → API), not the publishable/anon key.
+   - **`STRAVA_CLIENT_ID`**, **`STRAVA_CLIENT_SECRET`**, **`STRAVA_REDIRECT_URI`** — e.g. `http://localhost:3000/api/strava/callback` locally and `https://yourdomain.com/api/strava/callback` in production.
+2. **OAuth**: Open **`/runs`** → **Connect Strava** → approve. Tokens are stored in **`strava_oauth`**.
+3. **Sync**: **Sync from Strava** on `/runs`, or **`POST /api/strava/sync`**. If **`STRAVA_SYNC_SECRET`** is set, the POST route requires `Authorization: Bearer <secret>` (useful for cron).
+4. **Data**: First successful sync performs a **full backfill** of activity history; later syncs are **incremental** (with a short lookback for edits). Only activities with **`sport_type` Run** are stored.
+
+### Navigation
+
+Add **`/runs`** under **Site settings → Projects menu** if you want it in the header **Projects** dropdown.
+
+### Production (Vercel)
+
+- Add the same Supabase and Strava variables in **Vercel → Environment Variables** (Production).
+- **`STRAVA_REDIRECT_URI`** must use your real **HTTPS** site URL and match the Strava app settings.
+- Redeploy after changing env vars, then connect Strava once on production if needed.
+
+### Attribution
+
+The `/runs` page includes a small **Strava** credit link, consistent with API terms.
+
 ## Deployment
 
 ### Deploy to Vercel (Recommended)
@@ -265,10 +297,20 @@ SANITY_API_WRITE_TOKEN=your-write-token
 QUICK_ADD_API_KEY=your-bookmarklet-secret
 NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 EBIRD_API_KEY=your-ebird-api-key
+
+# Strava runs (/runs) — Supabase + Strava (server-only)
+SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your-supabase-secret-key
+STRAVA_CLIENT_ID=
+STRAVA_CLIENT_SECRET=
+STRAVA_REDIRECT_URI=https://yourdomain.com/api/strava/callback
+# Optional: protect POST /api/strava/sync (e.g. cron)
+# STRAVA_SYNC_SECRET=
 ```
 
 - `NEXT_PUBLIC_GA_MEASUREMENT_ID` enables baseline GA4 pageview tracking.
 - `EBIRD_API_KEY` powers `/pileated-watch` (server-only; get a key at [ebird.org/api/keygen](https://ebird.org/api/keygen)).
+- `SUPABASE_*` and `STRAVA_*` power **`/runs`** (see [Strava runs & Supabase](#strava-runs--supabase)).
 
 ### Quick-Add Link Bookmarklet
 
