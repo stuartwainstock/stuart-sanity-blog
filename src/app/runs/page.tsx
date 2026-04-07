@@ -5,7 +5,7 @@ import PortableText from '@/components/PortableText'
 import {createServerSupabase} from '@/lib/supabase/server'
 import {syncRunsAction} from '@/app/runs/actions'
 import PageHeroWithDataSource from '@/components/PageHeroWithDataSource'
-import RunsMapTableSkeleton from '@/components/strava/RunsMapTableSkeleton'
+import {RunsMapSectionSkeleton, RunsTableSectionSkeleton} from '@/components/strava/RunsMapTableSkeleton'
 import {fetchToolProjectPageRuns, getImageUrl} from '@/lib/sanity'
 import {
   pageBodyTypography,
@@ -15,7 +15,8 @@ import {
 } from '@/lib/pageTypography'
 import {RUNS_MAP_WINDOW_DAYS} from '@/lib/strava/constants'
 import {countRunsInWindow, countRunsWithPolylineInWindow} from '@/lib/strava/runsQuery'
-import RunsMapAndTable from './RunsMapAndTable'
+import RunsMapSection from './RunsMapSection'
+import RunsTableSection from './RunsTableSection'
 
 export const dynamic = 'force-dynamic'
 
@@ -239,14 +240,20 @@ export default async function RunsPage({
         </section>
 
         {connected && runCount > 0 ? (
-          <Suspense fallback={<RunsMapTableSkeleton />}>
-            <RunsMapAndTable
-              mapSectionTitle={mapSectionTitle}
-              tableSectionTitle={tableSectionTitle}
-              mapSectionIntroduction={pageCopy?.mapSectionIntroduction}
-              tableSectionIntroduction={pageCopy?.tableSectionIntroduction}
-            />
-          </Suspense>
+          <>
+            <Suspense fallback={<RunsMapSectionSkeleton />}>
+              <RunsMapSection
+                mapSectionTitle={mapSectionTitle}
+                mapSectionIntroduction={pageCopy?.mapSectionIntroduction}
+              />
+            </Suspense>
+            <Suspense fallback={<RunsTableSectionSkeleton />}>
+              <RunsTableSection
+                tableSectionTitle={tableSectionTitle}
+                tableSectionIntroduction={pageCopy?.tableSectionIntroduction}
+              />
+            </Suspense>
+          </>
         ) : null}
       </div>
     </div>

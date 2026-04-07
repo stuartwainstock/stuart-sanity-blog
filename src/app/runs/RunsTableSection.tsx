@@ -1,7 +1,6 @@
 import PortableText from '@/components/PortableText'
-import StravaRunsMapDynamic from '@/components/strava/StravaRunsMapDynamic'
 import StravaRunsTable from '@/components/strava/StravaRunsTable'
-import {pageBodyTypography, pageSectionHeading} from '@/lib/pageTypography'
+import {pageBodyTypography} from '@/lib/pageTypography'
 import {fetchRunsInWindow} from '@/lib/strava/runsQuery'
 import {buildGearNameMap, gearIdFromRaw} from '@/lib/strava/gear'
 import {
@@ -10,24 +9,19 @@ import {
   enrichTableRowsWithReverseGeocodePlaceLabels,
 } from '@/lib/strava/runDisplay'
 import {getValidStravaAccessToken} from '@/lib/strava/tokens'
-import type {StravaRunMapInput, StravaRunTableRow} from '@/lib/strava/types'
+import type {StravaRunTableRow} from '@/lib/strava/types'
 import type {TypedObject} from '@portabletext/types'
 
 type Props = {
-  mapSectionTitle: string
   tableSectionTitle: string
-  mapSectionIntroduction?: TypedObject[] | null
   tableSectionIntroduction?: TypedObject[] | null
 }
 
 /**
- * Heavy path: full run rows, Strava detail merge, gear names, Nominatim geocoding.
- * Loaded inside Suspense so the hero + sync panel can stream first.
+ * Heavy path: Strava activity details, gear names, Nominatim (sequential). Own Suspense boundary.
  */
-export default async function RunsMapAndTable({
-  mapSectionTitle,
+export default async function RunsTableSection({
   tableSectionTitle,
-  mapSectionIntroduction,
   tableSectionIntroduction,
 }: Props) {
   const accessToken = await getValidStravaAccessToken()
@@ -39,11 +33,6 @@ export default async function RunsMapAndTable({
   const runsById = new Map(windowRuns.map((r) => [r.id, r]))
   let tableRows: StravaRunTableRow[] = enrichRunsForTable(windowRuns, gearById)
   tableRows = await enrichTableRowsWithReverseGeocodePlaceLabels(tableRows, runsById)
-  const mapRuns: StravaRunMapInput[] = windowRuns.map((r) => ({
-    id: r.id,
-    map_polyline: r.map_polyline,
-    start_date: r.start_date,
-  }))
 
   const tableIntro =
     tableSectionIntroduction && tableSectionIntroduction.length > 0 ? (
@@ -52,19 +41,5 @@ export default async function RunsMapAndTable({
       </div>
     ) : undefined
 
-  return (
-    <>
-      <section className="mb-14" aria-labelledby="map-section-title">
-        <h2 id="map-section-title" className={pageSectionHeading}>
-          {mapSectionTitle}
-        </h2>
-        <StravaRunsMapDynamic
-          runs={mapRuns}
-          mapIntroduction={mapSectionIntroduction ?? undefined}
-        />
-      </section>
-
-      <StravaRunsTable runs={tableRows} sectionTitle={tableSectionTitle} intro={tableIntro} />
-    </>
-  )
+  return <StravaRunsTable runs={tableRows} sectionTitle={tableSectionTitle} intro={tableIntro} />
 }

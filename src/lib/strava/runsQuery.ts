@@ -1,3 +1,4 @@
+import {cache} from 'react'
 import {createServerSupabase} from '@/lib/supabase/server'
 import {RUNS_MAP_WINDOW_DAYS} from '@/lib/strava/constants'
 import type {StravaRunRow} from '@/lib/strava/types'
@@ -12,7 +13,7 @@ export function getRunsWindowStartIso(): string {
 }
 
 /** Runs in the window with fields needed for map + table. */
-export async function fetchRunsInWindow(): Promise<StravaRunRow[]> {
+async function fetchRunsInWindowImpl(): Promise<StravaRunRow[]> {
   const supabase = createServerSupabase()
   const sinceIso = getRunsWindowStartIso()
 
@@ -25,6 +26,9 @@ export async function fetchRunsInWindow(): Promise<StravaRunRow[]> {
   if (error) throw new Error(`Failed to load runs: ${error.message}`)
   return (data ?? []) as StravaRunRow[]
 }
+
+/** Deduped per request when map + table load in parallel (separate Suspense trees). */
+export const fetchRunsInWindow = cache(fetchRunsInWindowImpl)
 
 export async function countRunsInWindow(): Promise<number> {
   const supabase = createServerSupabase()
