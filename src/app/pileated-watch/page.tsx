@@ -106,6 +106,13 @@ export default async function PileatedWatchPage() {
   const config = resolveEbirdBirding(raw)!
   const obsResult = await fetchMapObservations(config, revalidate)
 
+  const sightingsIntro =
+    config.sightingsIntroduction && config.sightingsIntroduction.length > 0 ? (
+      <div className={pageBodyTypography}>
+        <PortableText value={config.sightingsIntroduction as never[]} pageBodyTypography />
+      </div>
+    ) : undefined
+
   return (
     <div className={pageShellBg}>
       <a
@@ -149,7 +156,7 @@ export default async function PileatedWatchPage() {
           <>
             <section className="mb-14" aria-labelledby="map-section-title">
               <h2 id="map-section-title" className={pageSectionHeading}>
-                Map
+                {config.mapSectionTitle}
               </h2>
               <BackyardBirdMapDynamic
                 observations={obsResult.observations}
@@ -163,6 +170,8 @@ export default async function PileatedWatchPage() {
             <BackyardObservationsTable
               observations={obsResult.observations}
               focusSpeciesLabel={config.focusSpeciesCommonName}
+              heading={config.sightingsSectionTitle}
+              intro={sightingsIntro}
             />
           </>
         )}

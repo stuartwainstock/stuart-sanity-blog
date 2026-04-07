@@ -17,6 +17,8 @@ export type ResolvedEbirdBirding = EbirdBirding & {
   defaultMapZoom: number
   focusSpeciesCode: string
   focusSpeciesCommonName: string
+  mapSectionTitle: string
+  sightingsSectionTitle: string
 }
 
 export function resolveEbirdBirding(
@@ -35,5 +37,7 @@ export function resolveEbirdBirding(
     focusSpeciesCode: code,
     focusSpeciesCommonName:
       raw.focusSpeciesCommonName?.trim() || DEFAULT_SPECIES_LABEL,
+    mapSectionTitle: raw.mapSectionTitle?.trim() || 'Map',
+    sightingsSectionTitle: raw.sightingsSectionTitle?.trim() || 'Sightings',
   }
 }

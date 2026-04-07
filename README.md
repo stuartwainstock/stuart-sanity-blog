@@ -282,6 +282,10 @@ The `/runs` page includes a **Strava** credit link (API terms) and **OpenStreetM
    git push origin main
    ```
 
+## CMS-driven project pages
+
+For “Projects” routes like `/runs` and `/pileated-watch`, the preferred pattern is **CMS-managed copy + SEO in Sanity**, with code owning behavior and required attribution. See `docs/cms-driven-project-pages.md`.
+
 2. **Deploy to Vercel**
    - Connect your GitHub repository to Vercel
    - Add environment variables in Vercel dashboard

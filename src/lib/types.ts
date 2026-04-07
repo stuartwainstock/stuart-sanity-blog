@@ -159,6 +159,9 @@ export interface EbirdBirding {
   _id: string
   mapPageTitle: string
   mapPageIntroduction?: unknown[]
+  mapSectionTitle?: string
+  sightingsSectionTitle?: string
+  sightingsIntroduction?: unknown[]
   mapDataSource: 'hotspots' | 'region'
   hotspotCodes?: string
   regionCode?: string

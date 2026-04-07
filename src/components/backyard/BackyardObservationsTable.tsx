@@ -8,8 +8,8 @@ type Props = {
   heading?: string
   headingId?: string
   sectionId?: string
-  intro?: string
-  emptyMessage?: string
+  intro?: React.ReactNode
+  emptyMessage?: React.ReactNode
 }
 
 export default function BackyardObservationsTable({
@@ -32,7 +32,11 @@ export default function BackyardObservationsTable({
       <h2 id={headingId} className={pageSectionHeading}>
         {heading}
       </h2>
-      <p className={`${pageBodyParagraph} mb-6`}>{intro}</p>
+      {typeof intro === 'string' ? (
+        <p className={`${pageBodyParagraph} mb-6`}>{intro}</p>
+      ) : (
+        <div className={`${pageBodyParagraph} mb-6`}>{intro}</div>
+      )}
       <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
         <table className="min-w-full text-left text-sm border-collapse">
           <caption className="sr-only">
