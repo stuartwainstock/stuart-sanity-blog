@@ -14,6 +14,7 @@ import {
   pageShellBg,
 } from '@/lib/pageTypography'
 import {RUNS_MAP_WINDOW_DAYS} from '@/lib/strava/constants'
+import {allowInsecureStravaConnect, isStravaAdminAuthConfigured} from '@/lib/admin/session'
 import {countRunsInWindow, countRunsWithPolylineInWindow} from '@/lib/strava/runsQuery'
 import RunsMapSection from './RunsMapSection'
 import RunsTableSection from './RunsTableSection'
@@ -80,6 +81,10 @@ export default async function RunsPage({
   const pageTitle = pageCopy?.pageTitle?.trim() || 'Runs'
   const mapSectionTitle = pageCopy?.mapSectionTitle?.trim() || 'Map'
   const tableSectionTitle = pageCopy?.tableSectionTitle?.trim() || 'Recent runs'
+
+  const stravaOAuthRequiresAdminLogin = isStravaAdminAuthConfigured() && !allowInsecureStravaConnect()
+  const stravaOAuthDisabledMissingEnv =
+    !isStravaAdminAuthConfigured() && !allowInsecureStravaConnect()
 
   const heroIntroduction =
     pageCopy?.heroIntroduction && pageCopy.heroIntroduction.length > 0 ? (
@@ -163,7 +168,26 @@ export default async function RunsPage({
         ) : null}
         {params.strava === 'error' ? (
           <p className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-900 text-base">
-            Connection issue{params.reason ? `: ${params.reason}` : ''}.
+            {params.reason === 'admin_session_required' ? (
+              <>
+                Strava could not finish connecting: sign in with your site admin password first, then use{' '}
+                <strong className="font-semibold">Connect Strava</strong> again.{' '}
+                <Link
+                  href="/admin/login?next=/api/strava/connect"
+                  className="font-medium text-orange-800 underline underline-offset-2 hover:text-orange-900"
+                >
+                  Open admin sign-in
+                </Link>
+                .
+              </>
+            ) : params.reason === 'admin_not_configured' ? (
+              <>
+                Strava OAuth is not configured for this deployment (set{' '}
+                <code className="text-sm bg-red-100 px-1 rounded">ADMIN_PASSWORD</code> in the environment).
+              </>
+            ) : (
+              <>Connection issue{params.reason ? `: ${params.reason}` : ''}.</>
+            )}
           </p>
         ) : null}
         {params.synced === '1' ? (
@@ -213,13 +237,35 @@ export default async function RunsPage({
           </div>
 
           <div className="flex flex-wrap gap-3 pt-2">
+            {stravaOAuthDisabledMissingEnv ? (
+              <p className="w-full text-sm text-amber-900 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
+                Strava connect is disabled until{' '}
+                <code className="text-xs bg-amber-100 px-1 rounded">ADMIN_PASSWORD</code> is set in production
+                (and optionally <code className="text-xs bg-amber-100 px-1 rounded">ADMIN_SESSION_SECRET</code>
+                ).
+              </p>
+            ) : null}
             {!connected ? (
-              <Link
-                href="/api/strava/connect"
-                className="inline-flex items-center rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
-              >
-                Connect Strava
-              </Link>
+              <div className="w-full flex flex-col gap-2 sm:flex-row sm:items-center sm:flex-wrap">
+                <Link
+                  href="/api/strava/connect"
+                  className="inline-flex items-center rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+                >
+                  Connect Strava
+                </Link>
+                {stravaOAuthRequiresAdminLogin ? (
+                  <p className="text-sm text-gray-600 sm:ml-1">
+                    You may be redirected to{' '}
+                    <Link
+                      href="/admin/login?next=/api/strava/connect"
+                      className="font-medium text-orange-700 hover:text-orange-800 underline underline-offset-2"
+                    >
+                      admin sign-in
+                    </Link>{' '}
+                    first.
+                  </p>
+                ) : null}
+              </div>
             ) : (
               <form action={syncRunsAction}>
                 <button
