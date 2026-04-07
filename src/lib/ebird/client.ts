@@ -1,7 +1,6 @@
 import type {ResolvedEbirdBirding} from '@/lib/ebird/resolveConfig'
 import type {
   BirdObservation,
-  EbirdFetchError,
   EbirdObservationsResult,
 } from '@/lib/ebird/types'
 import type {EbirdBirding} from '@/lib/types'

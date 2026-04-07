@@ -1,3 +1,5 @@
+import type {TypedObject} from '@portabletext/types'
+
 export interface SanityImage {
   asset: {
     _id: string
@@ -23,7 +25,7 @@ export interface Author {
     current: string
   }
   image?: SanityImage
-  bio?: any[]
+  bio?: TypedObject[]
   email?: string
   website?: string
   social?: {
@@ -54,7 +56,7 @@ export interface Post {
   categories?: Category[]
   publishedAt: string
   excerpt?: string
-  body?: any[]
+  body?: TypedObject[]
   featured?: boolean
   seo?: SEO
 }
@@ -93,7 +95,7 @@ export interface Page {
   }
   mainImage?: SanityImage
   excerpt?: string
-  body?: any[]
+  body?: TypedObject[]
   showInNavigation?: boolean
   navigationOrder?: number
   speakingEngagements?: SpeakingEngagement[]
@@ -158,10 +160,10 @@ export interface Homepage {
 export interface EbirdBirding {
   _id: string
   mapPageTitle: string
-  mapPageIntroduction?: unknown[]
+  mapPageIntroduction?: TypedObject[]
   mapSectionTitle?: string
   sightingsSectionTitle?: string
-  sightingsIntroduction?: unknown[]
+  sightingsIntroduction?: TypedObject[]
   mapDataSource: 'hotspots' | 'region'
   hotspotCodes?: string
   regionCode?: string
@@ -180,10 +182,10 @@ export interface ToolProjectPage {
   _id: string
   projectKey?: 'runs'
   pageTitle?: string
-  heroIntroduction?: unknown[]
+  heroIntroduction?: TypedObject[]
   mapSectionTitle?: string
-  mapSectionIntroduction?: unknown[]
+  mapSectionIntroduction?: TypedObject[]
   tableSectionTitle?: string
-  tableSectionIntroduction?: unknown[]
+  tableSectionIntroduction?: TypedObject[]
   seo?: SEO
 }

@@ -1,9 +1,16 @@
-import { PortableText as BasePortableText, PortableTextComponents } from '@portabletext/react'
+import type {ReactNode} from 'react'
+import {PortableText as BasePortableText, type PortableTextComponents} from '@portabletext/react'
+import type {TypedObject} from '@portabletext/types'
 import Image from 'next/image'
 import { getImageUrl } from '@/lib/sanity'
+import type {SanityImage} from '@/lib/types'
+
+type PortableTextMarkLink = {href?: string}
+type PortableTextImageValue = SanityImage
+type PortableTextCodeValue = {language?: string; code?: string}
 
 interface PortableTextProps {
-  value: any[]
+  value: TypedObject[]
   className?: string
   /**
    * Omit Tailwind Typography `prose`; use `text-inherit` on blocks so a parent
@@ -28,7 +35,7 @@ function buildComponents(pageBody: boolean): PortableTextComponents {
 
   return {
   types: {
-    image: ({ value }: any) => (
+    image: ({value}: {value: PortableTextImageValue}) => (
       <div className="my-8">
         <Image
           src={getImageUrl(value, 800, 600)}
@@ -49,7 +56,7 @@ function buildComponents(pageBody: boolean): PortableTextComponents {
         )}
       </div>
     ),
-    codeBlock: ({ value }: any) => (
+    codeBlock: ({value}: {value: PortableTextCodeValue}) => (
       <div className="my-8">
         <pre 
           className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"
@@ -58,77 +65,78 @@ function buildComponents(pageBody: boolean): PortableTextComponents {
           tabIndex={0}
         >
           <code className={`language-${value.language || 'text'}`}>
-            {value.code}
+            {value.code || ''}
           </code>
         </pre>
       </div>
     ),
   },
   block: {
-    h1: ({ children }: any) => (
+    h1: ({children}: {children?: ReactNode}) => (
       <h1 className="text-4xl font-bold text-gray-900 mt-12 mb-6 first:mt-0">
         {children}
       </h1>
     ),
-    h2: ({ children }: any) => (
+    h2: ({children}: {children?: ReactNode}) => (
       <h2 className="text-3xl font-bold text-gray-900 mt-10 mb-5 first:mt-0">
         {children}
       </h2>
     ),
-    h3: ({ children }: any) => (
+    h3: ({children}: {children?: ReactNode}) => (
       <h3 className="text-2xl font-bold text-gray-900 mt-8 mb-4 first:mt-0">
         {children}
       </h3>
     ),
-    h4: ({ children }: any) => (
+    h4: ({children}: {children?: ReactNode}) => (
       <h4 className="text-xl font-bold text-gray-900 mt-6 mb-3 first:mt-0">
         {children}
       </h4>
     ),
-    normal: ({ children }: any) => (
+    normal: ({children}: {children?: ReactNode}) => (
       <p className={normalClass}>
         {children}
       </p>
     ),
-    blockquote: ({ children }: any) => (
+    blockquote: ({children}: {children?: ReactNode}) => (
       <blockquote className={blockquoteClass}>
         {children}
       </blockquote>
     ),
   },
   list: {
-    bullet: ({ children }: any) => (
+    bullet: ({children}: {children?: ReactNode}) => (
       <ul className={listClass}>
         {children}
       </ul>
     ),
-    number: ({ children }: any) => (
+    number: ({children}: {children?: ReactNode}) => (
       <ol className={olClass}>
         {children}
       </ol>
     ),
   },
   listItem: {
-    bullet: ({ children }: any) => <li>{children}</li>,
-    number: ({ children }: any) => <li>{children}</li>,
+    bullet: ({children}: {children?: ReactNode}) => <li>{children}</li>,
+    number: ({children}: {children?: ReactNode}) => <li>{children}</li>,
   },
   marks: {
-    strong: ({ children }: any) => (
+    strong: ({children}: {children?: ReactNode}) => (
       <strong className="font-semibold text-gray-900">{children}</strong>
     ),
-    em: ({ children }: any) => (
+    em: ({children}: {children?: ReactNode}) => (
       <em className="italic">{children}</em>
     ),
-    code: ({ children }: any) => (
+    code: ({children}: {children?: ReactNode}) => (
       <code className="bg-gray-100 text-gray-900 px-2 py-1 rounded text-sm font-mono">
         {children}
       </code>
     ),
-    link: ({ children, value }: any) => {
-      const isExternal = typeof value.href === 'string' && value.href.startsWith('http')
+    link: ({children, value}: {children?: ReactNode; value?: PortableTextMarkLink}) => {
+      const href = typeof value?.href === 'string' ? value.href : ''
+      const isExternal = href.startsWith('http')
       return (
         <a
-          href={value.href}
+          href={href}
           className="text-blue-600 hover:text-blue-800 underline"
           target={isExternal ? '_blank' : undefined}
           rel={isExternal ? 'noopener noreferrer' : undefined}

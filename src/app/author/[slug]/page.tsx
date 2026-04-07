@@ -15,6 +15,18 @@ interface AuthorPageProps {
 // Revalidate every hour
 export const revalidate = 3600
 
+function firstPortableTextSpanText(value: unknown): string | null {
+  if (!Array.isArray(value) || value.length === 0) return null
+  const firstBlock = value[0]
+  if (typeof firstBlock !== 'object' || firstBlock === null) return null
+  const children = (firstBlock as Record<string, unknown>).children
+  if (!Array.isArray(children) || children.length === 0) return null
+  const firstChild = children[0]
+  if (typeof firstChild !== 'object' || firstChild === null) return null
+  const text = (firstChild as Record<string, unknown>).text
+  return typeof text === 'string' && text.trim() ? text.trim() : null
+}
+
 async function getAuthorData(slug: string) {
   try {
     const [author, posts] = await Promise.all([
@@ -40,7 +52,7 @@ export async function generateMetadata({ params }: AuthorPageProps) {
 
   return {
     title: `${author.name} - Author`,
-    description: author.bio ? author.bio[0]?.children?.[0]?.text || 'Author profile' : 'Author profile',
+    description: firstPortableTextSpanText(author.bio) || 'Author profile',
   }
 }
 
@@ -53,7 +65,7 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Author Not Found</h1>
-          <p className="text-gray-600 mb-8">The author you're looking for doesn't exist.</p>
+          <p className="text-gray-600 mb-8">The author you&apos;re looking for doesn&apos;t exist.</p>
           <Link
             href="/"
             className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
@@ -86,7 +98,7 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
               {author.bio && (
                 <div className="text-xl text-blue-100 max-w-3xl">
                   {/* You might want to render this as PortableText if it's rich text */}
-                  <p>{author.bio[0]?.children?.[0]?.text || 'Author bio'}</p>
+                  <p>{firstPortableTextSpanText(author.bio) || 'Author bio'}</p>
                 </div>
               )}
               <div className="flex flex-wrap gap-4 mt-6 justify-center md:justify-start">
@@ -177,7 +189,7 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
               No Posts Yet
             </h2>
             <p className="text-xl text-gray-600 mb-8">
-              {author.name} hasn't published any posts yet.
+              {author.name} hasn&apos;t published any posts yet.
             </p>
             <Link
               href="/journal"

@@ -13,19 +13,32 @@ interface UnsplashMetadata {
   }
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null
+}
+
+function pickUnsplashMetadata(imageAsset: unknown): UnsplashMetadata | null {
+  if (!isRecord(imageAsset)) return null
+  const metadata = imageAsset.metadata
+  if (!isRecord(metadata)) return null
+  const unsplash = metadata.unsplash
+  if (!isRecord(unsplash)) return null
+  return unsplash as UnsplashMetadata
+}
+
 export function AutoAltTextInput(props: StringInputProps) {
   const {onChange, value} = props
   const [isGenerating, setIsGenerating] = useState(false)
   const [suggestions, setSuggestions] = useState<string[]>([])
   
   // Get the parent image asset to check for metadata
-  const imageAsset = useFormValue(['asset']) as any
-  const parentDocument = useFormValue([]) as any
+  const imageAsset = useFormValue(['asset']) as unknown
+  const parentDocument = useFormValue([]) as unknown
   
   // Auto-populate from Unsplash metadata
   useEffect(() => {
-    if (imageAsset?.metadata?.unsplash) {
-      const unsplashData = imageAsset.metadata.unsplash as UnsplashMetadata
+    const unsplashData = pickUnsplashMetadata(imageAsset)
+    if (unsplashData) {
       const altText = unsplashData.alt_description || unsplashData.description
       
       if (altText && !value) {
@@ -40,18 +53,18 @@ export function AutoAltTextInput(props: StringInputProps) {
     const newSuggestions: string[] = []
     
     // Suggestion 1: Based on document title
-    if (parentDocument?.title) {
-      newSuggestions.push(`Image related to ${parentDocument.title}`)
+    if (isRecord(parentDocument) && typeof parentDocument.title === 'string' && parentDocument.title.trim()) {
+      newSuggestions.push(`Image related to ${parentDocument.title.trim()}`)
     }
     
     // Suggestion 2: Based on document excerpt
-    if (parentDocument?.excerpt) {
-      newSuggestions.push(`Image depicting ${parentDocument.excerpt.slice(0, 50)}...`)
+    if (isRecord(parentDocument) && typeof parentDocument.excerpt === 'string' && parentDocument.excerpt.trim()) {
+      newSuggestions.push(`Image depicting ${parentDocument.excerpt.trim().slice(0, 50)}...`)
     }
     
     // Suggestion 3: Based on image filename
-    if (imageAsset?.originalFilename) {
-      const filename = imageAsset.originalFilename
+    if (isRecord(imageAsset) && typeof imageAsset.originalFilename === 'string' && imageAsset.originalFilename.trim()) {
+      const filename = imageAsset.originalFilename.trim()
         .replace(/[-_]/g, ' ')
         .replace(/\.[^/.]+$/, '')
         .replace(/\b\w/g, (l: string) => l.toUpperCase())
@@ -111,7 +124,7 @@ export function AutoAltTextInput(props: StringInputProps) {
             </Stack>
           )}
           
-          {imageAsset?.metadata?.unsplash && (
+          {pickUnsplashMetadata(imageAsset) && (
             <Card padding={2} tone="positive">
               <Text size={1}>
                 ✓ This image includes metadata from Unsplash that can help with alt text

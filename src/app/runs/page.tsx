@@ -213,12 +213,12 @@ export default async function RunsPage({
 
           <div className="flex flex-wrap gap-3 pt-2">
             {!connected ? (
-              <a
+              <Link
                 href="/api/strava/connect"
                 className="inline-flex items-center rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
               >
                 Connect Strava
-              </a>
+              </Link>
             ) : (
               <form action={syncRunsAction}>
                 <button

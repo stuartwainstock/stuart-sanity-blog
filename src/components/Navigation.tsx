@@ -50,8 +50,10 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
   }
 
   useEffect(() => {
-    setProjectsOpen(false)
-    setMobileProjectsOpen(false)
+    queueMicrotask(() => {
+      setProjectsOpen(false)
+      setMobileProjectsOpen(false)
+    })
   }, [pathname])
 
   useEffect(() => {

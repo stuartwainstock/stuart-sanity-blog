@@ -11,12 +11,13 @@ import {
 } from '@/lib/strava/runDisplay'
 import {getValidStravaAccessToken} from '@/lib/strava/tokens'
 import type {StravaRunMapInput, StravaRunTableRow} from '@/lib/strava/types'
+import type {TypedObject} from '@portabletext/types'
 
 type Props = {
   mapSectionTitle: string
   tableSectionTitle: string
-  mapSectionIntroduction?: unknown[] | null
-  tableSectionIntroduction?: unknown[] | null
+  mapSectionIntroduction?: TypedObject[] | null
+  tableSectionIntroduction?: TypedObject[] | null
 }
 
 /**

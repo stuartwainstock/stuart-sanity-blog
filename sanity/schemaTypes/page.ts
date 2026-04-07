@@ -182,7 +182,7 @@ export const page = defineType({
       showInNav: 'showInNavigation',
     },
     prepare(selection) {
-      const {title, showInNav} = selection
+      const {showInNav} = selection
       return {
         ...selection,
         subtitle: showInNav ? 'In Navigation' : 'Standalone Page',

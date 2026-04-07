@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { StringInputProps, useFormValue, set } from 'sanity'
+import { StringInputProps, set } from 'sanity'
 
 interface OpenLibraryBook {
   key: string
@@ -25,12 +25,6 @@ export default function BookSearchInput(props: StringInputProps) {
   const [isSearching, setIsSearching] = useState(false)
   const [selectedBook, setSelectedBook] = useState<OpenLibraryBook | null>(null)
   const [showResults, setShowResults] = useState(false)
-
-  // Get the current form value
-  const formValue = useFormValue(['readingList']) as any[]
-  
-  // Simple approach - we don't need to know the exact index
-  // The component will work regardless of the book's position in the array
 
   useEffect(() => {
     if (searchQuery.length > 2) {
@@ -200,7 +194,7 @@ export default function BookSearchInput(props: StringInputProps) {
 
       {/* Manual Entry Fallback */}
       <div style={{ fontSize: '12px', color: '#6b7280' }}>
-        Can't find the book? You can still enter the details manually in the fields below.
+        Can&apos;t find the book? You can still enter the details manually in the fields below.
       </div>
 
       <style>{`

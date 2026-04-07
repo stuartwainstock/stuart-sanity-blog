@@ -35,10 +35,11 @@ export default function ArticleScrollProgress({articleId}: ArticleScrollProgress
   }, [articleId])
 
   useEffect(() => {
-    update()
+    const raf = window.requestAnimationFrame(() => update())
     window.addEventListener('scroll', update, {passive: true})
     window.addEventListener('resize', update)
     return () => {
+      window.cancelAnimationFrame(raf)
       window.removeEventListener('scroll', update)
       window.removeEventListener('resize', update)
     }
