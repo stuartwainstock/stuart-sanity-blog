@@ -21,6 +21,7 @@ export const toolProjectPage = defineType({
       options: {
         list: [
           {title: 'Runs (Strava) — /runs', value: 'runs'},
+          {title: 'Flights (TripIt) — /flights', value: 'flights'},
           {title: 'Flight paths (demo) — /travel/flights-demo', value: 'flights-demo'},
           // Add entries when you add new tool routes + singleton documents.
         ],

@@ -180,7 +180,7 @@ export interface EbirdBirding {
 /** Singletons `toolProjectPage-runs`, `toolProjectPage-flights-demo`, etc. */
 export interface ToolProjectPage {
   _id: string
-  projectKey?: 'runs' | 'flights-demo'
+  projectKey?: 'runs' | 'flights' | 'flights-demo'
   pageTitle?: string
   heroIntroduction?: TypedObject[]
   mapSectionTitle?: string

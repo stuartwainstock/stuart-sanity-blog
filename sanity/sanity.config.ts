@@ -67,6 +67,14 @@ export default defineConfig({
                   .documentId('toolProjectPage-runs')
               ),
             S.listItem()
+              .title('Flights (TripIt)')
+              .id('toolProjectPage-flights')
+              .child(
+                S.document()
+                  .schemaType('toolProjectPage')
+                  .documentId('toolProjectPage-flights')
+              ),
+            S.listItem()
               .title('Flight paths (demo)')
               .id('toolProjectPage-flights-demo')
               .child(
