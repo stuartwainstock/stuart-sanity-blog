@@ -9,6 +9,10 @@ jobs:
   chromatic:
     name: Publish Storybook to Chromatic
     runs-on: ubuntu-latest
+    # Storybook imports `@/lib/sanity` (e.g. PortableText); same public IDs as the deployed site.
+    env:
+      NEXT_PUBLIC_SANITY_PROJECT_ID: ojv692hs
+      NEXT_PUBLIC_SANITY_DATASET: production
     steps:
       - name: Checkout
         uses: actions/checkout@v4
