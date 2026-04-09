@@ -1,7 +1,7 @@
 import { sanityClient } from '@/lib/sanity'
 import { AUTHOR_QUERY, POSTS_BY_AUTHOR_QUERY } from '@/lib/queries'
 import { Author, Post } from '@/lib/types'
-import PostCard from '@/components/PostCard'
+import PostCard from '@/components/molecules/PostCard'
 import Image from 'next/image'
 import { getImageUrl } from '@/lib/sanity'
 import Link from 'next/link'

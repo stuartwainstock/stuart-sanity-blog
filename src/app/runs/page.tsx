@@ -1,10 +1,10 @@
 import Link from 'next/link'
 import type {Metadata} from 'next'
 import {Suspense} from 'react'
-import PortableText from '@/components/PortableText'
+import PortableText from '@/components/molecules/PortableText'
 import {createServerSupabase} from '@/lib/supabase/server'
 import {syncRunsAction} from '@/app/runs/actions'
-import PageHeroWithDataSource from '@/components/PageHeroWithDataSource'
+import PageHeroWithDataSource from '@/components/molecules/PageHeroWithDataSource'
 import {RunsMapSectionSkeleton, RunsTableSectionSkeleton} from '@/components/strava/RunsMapTableSkeleton'
 import {fetchToolProjectPageRuns, getImageUrl} from '@/lib/sanity'
 import {

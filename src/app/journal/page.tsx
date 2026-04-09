@@ -1,7 +1,7 @@
 import { sanityClient } from '@/lib/sanity'
 import { POSTS_QUERY, CATEGORIES_QUERY, SITE_SETTINGS_QUERY } from '@/lib/queries'
 import { Post, Category, SiteSettings } from '@/lib/types'
-import PostCard from '@/components/PostCard'
+import PostCard from '@/components/molecules/PostCard'
 import Link from 'next/link'
 
 // Revalidate every hour

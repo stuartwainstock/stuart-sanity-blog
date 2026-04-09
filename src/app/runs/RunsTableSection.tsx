@@ -1,4 +1,4 @@
-import PortableText from '@/components/PortableText'
+import PortableText from '@/components/molecules/PortableText'
 import StravaRunsTable from '@/components/strava/StravaRunsTable'
 import {pageBodyTypography} from '@/lib/pageTypography'
 import {fetchRunsInWindow} from '@/lib/strava/runsQuery'

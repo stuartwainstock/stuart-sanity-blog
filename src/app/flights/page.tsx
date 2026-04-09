@@ -1,6 +1,6 @@
 import type {Metadata} from 'next'
-import PageHeroWithDataSource from '@/components/PageHeroWithDataSource'
-import PortableText from '@/components/PortableText'
+import PageHeroWithDataSource from '@/components/molecules/PageHeroWithDataSource'
+import PortableText from '@/components/molecules/PortableText'
 import FlightsMapSection from './FlightsMapSection'
 import {fetchToolProjectPageFlights, getImageUrl} from '@/lib/sanity'
 import {

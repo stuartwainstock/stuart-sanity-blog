@@ -16,7 +16,10 @@
     "audit:a11y": "npm run build && node scripts/a11y-audit.mjs",
     "audit:a11y:run": "node scripts/a11y-audit.mjs",
     "migrate:featured": "node scripts/migrate-featured-to-boolean.mjs",
-    "postinstall": "node scripts/copy-maplibre-worker.mjs"
+    "postinstall": "node scripts/copy-maplibre-worker.mjs",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "chromatic": "node ./scripts/chromatic.mjs"
   },
   "dependencies": {
     "@babel/runtime": "^7.29.2",
@@ -40,19 +43,34 @@
     "sanity-plugin-asset-source-unsplash": "^7.0.5"
   },
   "devDependencies": {
+    "@chromatic-com/storybook": "^5.1.1",
     "@eslint/eslintrc": "^3.3.5",
+    "@storybook/addon-a11y": "^10.3.5",
+    "@storybook/addon-docs": "^10.3.5",
+    "@storybook/addon-onboarding": "^10.3.5",
+    "@storybook/addon-vitest": "^10.3.5",
+    "@storybook/nextjs-vite": "^10.3.5",
     "@tailwindcss/postcss": "^4.2.2",
     "@types/mapbox__polyline": "^1.0.5",
     "@types/node": "^20",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19",
+    "@vitest/browser-playwright": "^4.1.4",
+    "@vitest/coverage-v8": "^4.1.4",
     "axe-core": "^4.11.2",
+    "chromatic": "^16.2.0",
+    "dotenv": "^17.4.1",
     "eslint": "^9.39.4",
     "eslint-config-next": "^16.2.2",
+    "eslint-plugin-storybook": "^10.3.5",
     "lighthouse": "^13.1.0",
+    "playwright": "^1.59.1",
     "puppeteer": "^24.40.0",
+    "storybook": "^10.3.5",
     "tailwindcss": "^4.2.2",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vite": "^8.0.8",
+    "vitest": "^4.1.4"
   },
   "browserslist": {
     "production": [

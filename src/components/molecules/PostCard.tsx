@@ -112,3 +112,4 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
     </article>
   )
 }
+

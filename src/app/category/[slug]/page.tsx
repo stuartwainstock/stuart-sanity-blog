@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { sanityClient } from '@/lib/sanity'
 import { POSTS_BY_CATEGORY_QUERY, CATEGORIES_QUERY } from '@/lib/queries'
 import { Post, Category } from '@/lib/types'
-import PostCard from '@/components/PostCard'
+import PostCard from '@/components/molecules/PostCard'
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>

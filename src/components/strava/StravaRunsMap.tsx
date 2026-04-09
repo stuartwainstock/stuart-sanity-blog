@@ -7,7 +7,7 @@ import polyline from '@mapbox/polyline'
 import type {FeatureCollection} from 'geojson'
 import {maplibregl} from '@/lib/maplibreClient'
 import {SITE_MAP_STYLE} from '@/lib/maps/cartoStyle'
-import PortableText from '@/components/PortableText'
+import PortableText from '@/components/molecules/PortableText'
 import {pageBodyParagraph, pageBodyTypography} from '@/lib/pageTypography'
 import {
   RUNS_MAP_HOME_BOUNDS,

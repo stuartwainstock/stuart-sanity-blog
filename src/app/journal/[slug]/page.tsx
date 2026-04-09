@@ -5,7 +5,7 @@ import { sanityClient } from '@/lib/sanity'
 import { POST_QUERY, POSTS_QUERY } from '@/lib/queries'
 import { Post } from '@/lib/types'
 import { getImageUrl } from '@/lib/sanity'
-import PortableText from '@/components/PortableText'
+import PortableText from '@/components/molecules/PortableText'
 import ArticleScrollProgress from '@/components/ArticleScrollProgress'
 
 interface BlogPostPageProps {

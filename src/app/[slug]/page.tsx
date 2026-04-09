@@ -4,7 +4,7 @@ import { sanityClient } from '@/lib/sanity'
 import { PAGE_QUERY, PAGES_QUERY, PUBLISHED_RESOURCES_QUERY } from '@/lib/queries'
 import { Page, Resource } from '@/lib/types'
 import { getImageUrl } from '@/lib/sanity'
-import PortableText from '@/components/PortableText'
+import PortableText from '@/components/molecules/PortableText'
 import {
   pageBanner,
   pageBodyTypography,
@@ -14,8 +14,8 @@ import {
   pageShellBg,
   pageTitleH1,
 } from '@/lib/pageTypography'
-import SpeakingEngagements from '@/components/SpeakingEngagements'
-import ReadingList from '@/components/ReadingList'
+import SpeakingEngagements from '@/components/organisms/SpeakingEngagements'
+import ReadingList from '@/components/organisms/ReadingList'
 
 interface PageProps {
   params: Promise<{ slug: string }>

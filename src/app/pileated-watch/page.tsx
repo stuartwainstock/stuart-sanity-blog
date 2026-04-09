@@ -1,12 +1,12 @@
 import type {Metadata} from 'next'
 import {fetchEbirdBirdingConfig, getImageUrl} from '@/lib/sanity'
 import type {EbirdBirding} from '@/lib/types'
-import PortableText from '@/components/PortableText'
+import PortableText from '@/components/molecules/PortableText'
 import BackyardBirdMapDynamic from '@/components/backyard/BackyardBirdMapDynamic'
 import BackyardObservationsTable from '@/components/backyard/BackyardObservationsTable'
 import {ebirdHasMapArea, fetchMapObservations} from '@/lib/ebird/client'
 import {resolveEbirdBirding} from '@/lib/ebird/resolveConfig'
-import PageHeroWithDataSource from '@/components/PageHeroWithDataSource'
+import PageHeroWithDataSource from '@/components/molecules/PageHeroWithDataSource'
 import {
   pageBanner,
   pageBodyTypography,

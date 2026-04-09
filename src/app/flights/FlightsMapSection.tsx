@@ -1,6 +1,6 @@
 import {Suspense} from 'react'
 import FlightPathMapDynamic from '@/components/travel/FlightPathMapDynamic'
-import PortableText from '@/components/PortableText'
+import PortableText from '@/components/molecules/PortableText'
 import {fetchTripItFlights} from '@/lib/tripit/flights'
 import {pageBodyTypography, pageSectionHeading} from '@/lib/pageTypography'
 

@@ -3,7 +3,7 @@ import { Work_Sans } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
+import Footer from "@/components/organisms/Footer";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { sanityClient } from "@/lib/sanity";
 import { SITE_SETTINGS_QUERY, NAVIGATION_QUERY } from "@/lib/queries";
