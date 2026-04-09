@@ -3,13 +3,10 @@
 import {useCallback, useEffect, useId, useRef, useState} from 'react'
 import Map, {Marker, NavigationControl, type MapRef} from 'react-map-gl/maplibre'
 import {LngLatBounds} from 'maplibre-gl'
-import 'maplibre-gl/dist/maplibre-gl.css'
+import {maplibregl} from '@/lib/maplibreClient'
+import {SITE_MAP_STYLE} from '@/lib/maps/cartoStyle'
 import type {BirdObservation} from '@/lib/ebird/types'
 import {pageBodyParagraph} from '@/lib/pageTypography'
-
-/** Carto Positron (no API key). */
-const MAP_STYLE =
-  'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'
 
 type Props = {
   observations: BirdObservation[]
@@ -73,9 +70,10 @@ export default function BackyardBirdMap({
       >
         <Map
           ref={mapRef}
+          mapLib={maplibregl}
           initialViewState={initialView}
           style={{width: '100%', height: '100%'}}
-          mapStyle={MAP_STYLE}
+          mapStyle={SITE_MAP_STYLE}
           onLoad={() => {
             setMapReady(true)
           }}

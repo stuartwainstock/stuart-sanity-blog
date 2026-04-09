@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
+    "dev:turbo": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint .",
@@ -14,9 +15,11 @@
     "typecheck": "cd sanity && npm run typecheck",
     "audit:a11y": "npm run build && node scripts/a11y-audit.mjs",
     "audit:a11y:run": "node scripts/a11y-audit.mjs",
-    "migrate:featured": "node scripts/migrate-featured-to-boolean.mjs"
+    "migrate:featured": "node scripts/migrate-featured-to-boolean.mjs",
+    "postinstall": "node scripts/copy-maplibre-worker.mjs"
   },
   "dependencies": {
+    "@babel/runtime": "^7.29.2",
     "@mapbox/polyline": "^1.2.1",
     "@portabletext/react": "^4.0.3",
     "@sanity/client": "^7.20.0",

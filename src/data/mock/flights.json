@@ -1,0 +1,38 @@
+[
+  {
+    "id": "mock-msp-lax-1",
+    "date": "2024-06-12",
+    "origin": "MSP",
+    "destination": "LAX"
+  },
+  {
+    "id": "mock-lax-nrt-1",
+    "date": "2024-08-03",
+    "origin": "LAX",
+    "destination": "NRT"
+  },
+  {
+    "id": "mock-nrt-dxb-1",
+    "date": "2024-08-18",
+    "origin": "NRT",
+    "destination": "DXB"
+  },
+  {
+    "id": "mock-jfk-lhr-1",
+    "date": "2025-02-20",
+    "origin": "JFK",
+    "destination": "LHR"
+  },
+  {
+    "id": "mock-lhr-cdg-1",
+    "date": "2025-02-27",
+    "origin": "LHR",
+    "destination": "CDG"
+  },
+  {
+    "id": "mock-cdg-msp-1",
+    "date": "2025-03-05",
+    "origin": "CDG",
+    "destination": "MSP"
+  }
+]

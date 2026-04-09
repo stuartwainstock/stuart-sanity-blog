@@ -1,6 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  /**
+   * react-map-gl wrappers only — do not transpile `maplibre-gl` itself; its dist embeds a
+   * worker bundle string that re-transpilation can break (blank basemap, markers still OK).
+   * Use `src/lib/maplibreClient.ts` + `@babel/runtime` polyfill for `_wrap_native_super`.
+   */
+  transpilePackages: ['react-map-gl', '@vis.gl/react-maplibre'],
   experimental: {
     optimizePackageImports: ['@portabletext/react', '@mapbox/polyline'],
   },
@@ -52,7 +58,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()'
+            value: 'camera=(), microphone=(), geolocation=()'
           },
           {
             key: 'Content-Security-Policy',
@@ -63,8 +69,8 @@ const nextConfig: NextConfig = {
                 : "script-src 'self' 'unsafe-inline' https://cdn.sanity.io https://vercel.live https://www.googletagmanager.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com data:",
-              "img-src 'self' data: blob: https://cdn.sanity.io https://www.google-analytics.com https://tiles.basemaps.cartocdn.com",
-              "connect-src 'self' https://*.sanity.io https://*.sanity.run https://vercel.live https://www.google-analytics.com https://region1.google-analytics.com https://www.googletagmanager.com https://api.ebird.org https://basemaps.cartocdn.com https://tiles.basemaps.cartocdn.com https://*.basemaps.cartocdn.com",
+              "img-src 'self' data: blob: https://cdn.sanity.io https://www.google-analytics.com https://*.basemaps.cartocdn.com",
+              "connect-src 'self' https://*.sanity.io https://*.sanity.run https://vercel.live https://www.google-analytics.com https://region1.google-analytics.com https://www.googletagmanager.com https://api.ebird.org https://*.basemaps.cartocdn.com",
               "worker-src 'self' blob:",
               "frame-src 'self' https://*.sanity.io",
               "object-src 'none'",

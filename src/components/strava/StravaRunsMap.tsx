@@ -5,7 +5,8 @@ import Map, {Layer, NavigationControl, Source, type MapRef} from 'react-map-gl/m
 import {LngLatBounds} from 'maplibre-gl'
 import polyline from '@mapbox/polyline'
 import type {FeatureCollection} from 'geojson'
-import 'maplibre-gl/dist/maplibre-gl.css'
+import {maplibregl} from '@/lib/maplibreClient'
+import {SITE_MAP_STYLE} from '@/lib/maps/cartoStyle'
 import PortableText from '@/components/PortableText'
 import {pageBodyParagraph, pageBodyTypography} from '@/lib/pageTypography'
 import {
@@ -15,9 +16,6 @@ import {
   RUNS_MAP_WINDOW_DAYS,
 } from '@/lib/strava/constants'
 import type {StravaRunMapInput} from '@/lib/strava/types'
-
-const MAP_STYLE =
-  'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'
 
 function pointInHomeBounds(lng: number, lat: number): boolean {
   const b = RUNS_MAP_HOME_BOUNDS
@@ -156,12 +154,13 @@ export default function StravaRunsMap({runs, mapIntroduction}: Props) {
         >
           <Map
             ref={mapRef}
+            mapLib={maplibregl}
             initialViewState={{
               ...RUNS_MAP_HOME_CENTER,
               zoom: RUNS_MAP_HOME_ZOOM,
             }}
             style={{width: '100%', height: '100%'}}
-            mapStyle={MAP_STYLE}
+            mapStyle={SITE_MAP_STYLE}
             onLoad={() => setMapReady(true)}
           >
             <NavigationControl position="top-right" showCompass={false} />

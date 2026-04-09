@@ -21,6 +21,7 @@ export const toolProjectPage = defineType({
       options: {
         list: [
           {title: 'Runs (Strava) — /runs', value: 'runs'},
+          {title: 'Flight paths (demo) — /travel/flights-demo', value: 'flights-demo'},
           // Add entries when you add new tool routes + singleton documents.
         ],
         layout: 'radio',
@@ -43,7 +44,7 @@ export const toolProjectPage = defineType({
       type: 'blockContent',
       group: 'content',
       description:
-        'Shown below Strava / API attribution and above the connection panel. Mention sync, Supabase, and the rolling window if relevant.',
+        'Shown below data-source attribution in the hero. On /runs: sync and window copy. On flight demo: optional extra intro (map intro also uses “Map section introduction”).',
     }),
     defineField({
       name: 'mapSectionTitle',

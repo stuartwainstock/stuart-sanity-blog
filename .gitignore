@@ -18,6 +18,9 @@
 /.next/
 /out/
 
+# Copied from maplibre-gl on postinstall (npm install regenerates)
+public/maplibre-gl-csp-worker.js
+
 # production
 /build
 

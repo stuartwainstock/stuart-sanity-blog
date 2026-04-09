@@ -177,10 +177,10 @@ export interface EbirdBirding {
   seoMap?: SEO
 }
 
-/** Singleton `toolProjectPage-runs` — /runs copy + SEO (Strava tool page). */
+/** Singletons `toolProjectPage-runs`, `toolProjectPage-flights-demo`, etc. */
 export interface ToolProjectPage {
   _id: string
-  projectKey?: 'runs'
+  projectKey?: 'runs' | 'flights-demo'
   pageTitle?: string
   heroIntroduction?: TypedObject[]
   mapSectionTitle?: string

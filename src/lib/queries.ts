@@ -393,6 +393,34 @@ export const HOMEPAGE_QUERY = groq`
   }
 `
 
+/** Flight paths demo — /travel/flights-demo (document ID fixed in Studio structure). */
+export const TOOL_PROJECT_PAGE_FLIGHTS_DEMO_QUERY = groq`
+  *[_type == "toolProjectPage" && _id == "toolProjectPage-flights-demo"][0]{
+    _id,
+    projectKey,
+    pageTitle,
+    heroIntroduction,
+    mapSectionTitle,
+    mapSectionIntroduction,
+    tableSectionTitle,
+    tableSectionIntroduction,
+    seo {
+      metaTitle,
+      metaDescription,
+      openGraphImage {
+        asset->{
+          _id,
+          url
+        },
+        alt,
+        credit
+      },
+      keywords,
+      noIndex
+    },
+  }
+`
+
 /** Strava /runs singleton — document ID fixed in Studio structure. */
 export const TOOL_PROJECT_PAGE_RUNS_QUERY = groq`
   *[_type == "toolProjectPage" && _id == "toolProjectPage-runs"][0]{

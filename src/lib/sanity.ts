@@ -1,7 +1,11 @@
 import { cache } from 'react'
 import { createClient } from 'next-sanity'
 import imageUrlBuilder from '@sanity/image-url'
-import { EBIRD_BIRDING_QUERY, TOOL_PROJECT_PAGE_RUNS_QUERY } from './queries'
+import {
+  EBIRD_BIRDING_QUERY,
+  TOOL_PROJECT_PAGE_FLIGHTS_DEMO_QUERY,
+  TOOL_PROJECT_PAGE_RUNS_QUERY,
+} from './queries'
 import type { EbirdBirding, SanityImage, ToolProjectPage } from './types'
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
@@ -56,6 +60,23 @@ export const fetchToolProjectPageRuns = cache(async (): Promise<ToolProjectPage 
     )
   } catch (e) {
     console.error('tool project page (runs) fetch failed:', e)
+    return null
+  }
+})
+
+/** Dedupes between `generateMetadata` and the flight demo page render. */
+export const fetchToolProjectPageFlightsDemo = cache(async (): Promise<ToolProjectPage | null> => {
+  try {
+    return await sanityClient.fetch<ToolProjectPage | null>(
+      TOOL_PROJECT_PAGE_FLIGHTS_DEMO_QUERY,
+      {},
+      {
+        useCdn: false,
+        next: {revalidate: 60},
+      }
+    )
+  } catch (e) {
+    console.error('tool project page (flights demo) fetch failed:', e)
     return null
   }
 })
