@@ -1,5 +1,6 @@
 import 'server-only'
 
+import {existsSync} from 'node:fs'
 import {readFile} from 'node:fs/promises'
 import path from 'node:path'
 import {cache} from 'react'
@@ -7,6 +8,9 @@ import {resolveAirportCoordsForIataCodes} from '@/lib/travel/airportCoordsNode'
 import type {AirportCoords, FlightLeg} from '@/lib/travel/types'
 import {tripitGetJson} from './client'
 import type {TripItAirObject, TripItListAirResponse} from './types'
+
+/** Slim list-air JSON (dates + IATA only). Committed copy avoids needing TRIPIT_FLIGHTS_JSON in production. */
+const DEFAULT_TRIPIT_FLIGHTS_JSON = 'src/data/tripit/list-air-historical.json'
 
 function arr<T>(v: T | T[] | undefined): T[] {
   if (!v) return []
@@ -74,7 +78,10 @@ export const fetchTripItFlights = cache(async (): Promise<{
   legs: FlightLeg[]
   airports: AirportCoords
 }> => {
-  const filePath = process.env.TRIPIT_FLIGHTS_JSON?.trim()
+  const envPath = process.env.TRIPIT_FLIGHTS_JSON?.trim()
+  const defaultAbs = path.join(process.cwd(), DEFAULT_TRIPIT_FLIGHTS_JSON)
+  const filePath =
+    envPath || (existsSync(defaultAbs) ? DEFAULT_TRIPIT_FLIGHTS_JSON : '')
 
   if (filePath) {
     const data = await loadTripItJsonFromPath(filePath)

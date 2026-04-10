@@ -1,0 +1,1339 @@
+{
+  "timestamp": "2026-04-10T13:54:37.004Z",
+  "num_bytes": "0",
+  "AirObject": [
+    {
+      "id": "export-trip3-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2025-11-07"
+          },
+          "start_airport_code": "FRA",
+          "end_airport_code": "DXB"
+        },
+        {
+          "StartDateTime": {
+            "date": "2025-11-18"
+          },
+          "start_airport_code": "DXB",
+          "end_airport_code": "BOS"
+        }
+      ]
+    },
+    {
+      "id": "export-trip4-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2025-11-28"
+          },
+          "start_airport_code": "DXB",
+          "end_airport_code": "NBO"
+        },
+        {
+          "StartDateTime": {
+            "date": "2025-12-01"
+          },
+          "start_airport_code": "NBO",
+          "end_airport_code": "DXB"
+        }
+      ]
+    },
+    {
+      "id": "export-trip5-obj5",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2025-11-07"
+          },
+          "start_airport_code": "FRA",
+          "end_airport_code": "DXB"
+        },
+        {
+          "StartDateTime": {
+            "date": "2025-11-18"
+          },
+          "start_airport_code": "DXB",
+          "end_airport_code": "BOS"
+        }
+      ]
+    },
+    {
+      "id": "export-trip6-obj2",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2025-08-12"
+          },
+          "start_airport_code": "FRA",
+          "end_airport_code": "MSP"
+        },
+        {
+          "StartDateTime": {
+            "date": "2025-08-26"
+          },
+          "start_airport_code": "MSP",
+          "end_airport_code": "FRA"
+        }
+      ]
+    },
+    {
+      "id": "export-trip7-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2025-07-31"
+          },
+          "start_airport_code": "NUE",
+          "end_airport_code": "MUC"
+        },
+        {
+          "StartDateTime": {
+            "date": "2025-07-31"
+          },
+          "start_airport_code": "MUC",
+          "end_airport_code": "MAN"
+        },
+        {
+          "StartDateTime": {
+            "date": "2025-08-01"
+          },
+          "start_airport_code": "MAN",
+          "end_airport_code": "MUC"
+        },
+        {
+          "StartDateTime": {
+            "date": "2025-08-01"
+          },
+          "start_airport_code": "MUC",
+          "end_airport_code": "NUE"
+        }
+      ]
+    },
+    {
+      "id": "export-trip10-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2025-05-13"
+          },
+          "start_airport_code": "NUE",
+          "end_airport_code": "AMS"
+        },
+        {
+          "StartDateTime": {
+            "date": "2025-05-13"
+          },
+          "start_airport_code": "AMS",
+          "end_airport_code": "LHR"
+        },
+        {
+          "StartDateTime": {
+            "date": "2025-05-16"
+          },
+          "start_airport_code": "MAN",
+          "end_airport_code": "AMS"
+        },
+        {
+          "StartDateTime": {
+            "date": "2025-05-16"
+          },
+          "start_airport_code": "AMS",
+          "end_airport_code": "NUE"
+        }
+      ]
+    },
+    {
+      "id": "export-trip11-obj1",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2025-05-08"
+          },
+          "start_airport_code": "FRA",
+          "end_airport_code": "DXB"
+        },
+        {
+          "StartDateTime": {
+            "date": "2025-05-10"
+          },
+          "start_airport_code": "DXB",
+          "end_airport_code": "FRA"
+        }
+      ]
+    },
+    {
+      "id": "export-trip12-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2025-01-29"
+          },
+          "start_airport_code": "NUE",
+          "end_airport_code": "AMS"
+        },
+        {
+          "StartDateTime": {
+            "date": "2025-01-29"
+          },
+          "start_airport_code": "AMS",
+          "end_airport_code": "LAX"
+        },
+        {
+          "StartDateTime": {
+            "date": "2025-02-03"
+          },
+          "start_airport_code": "LAX",
+          "end_airport_code": "AMS"
+        },
+        {
+          "StartDateTime": {
+            "date": "2025-02-04"
+          },
+          "start_airport_code": "AMS",
+          "end_airport_code": "NUE"
+        }
+      ]
+    },
+    {
+      "id": "export-trip13-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2024-09-18"
+          },
+          "start_airport_code": "NUE",
+          "end_airport_code": "AMS"
+        },
+        {
+          "StartDateTime": {
+            "date": "2024-09-18"
+          },
+          "start_airport_code": "AMS",
+          "end_airport_code": "KRK"
+        },
+        {
+          "StartDateTime": {
+            "date": "2024-09-21"
+          },
+          "start_airport_code": "KRK",
+          "end_airport_code": "AMS"
+        },
+        {
+          "StartDateTime": {
+            "date": "2024-09-21"
+          },
+          "start_airport_code": "AMS",
+          "end_airport_code": "NUE"
+        }
+      ]
+    },
+    {
+      "id": "export-trip15-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2024-06-25"
+          },
+          "start_airport_code": "NUE",
+          "end_airport_code": "AMS"
+        },
+        {
+          "StartDateTime": {
+            "date": "2024-06-25"
+          },
+          "start_airport_code": "AMS",
+          "end_airport_code": "SFO"
+        },
+        {
+          "StartDateTime": {
+            "date": "2024-07-02"
+          },
+          "start_airport_code": "LAX",
+          "end_airport_code": "CDG"
+        },
+        {
+          "StartDateTime": {
+            "date": "2024-07-03"
+          },
+          "start_airport_code": "CDG",
+          "end_airport_code": "NUE"
+        }
+      ]
+    },
+    {
+      "id": "export-trip17-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2024-02-28"
+          },
+          "start_airport_code": "NUE",
+          "end_airport_code": "AMS"
+        },
+        {
+          "StartDateTime": {
+            "date": "2024-02-28"
+          },
+          "start_airport_code": "AMS",
+          "end_airport_code": "LHR"
+        },
+        {
+          "StartDateTime": {
+            "date": "2024-03-02"
+          },
+          "start_airport_code": "LHR",
+          "end_airport_code": "AMS"
+        },
+        {
+          "StartDateTime": {
+            "date": "2024-03-02"
+          },
+          "start_airport_code": "AMS",
+          "end_airport_code": "NUE"
+        }
+      ]
+    },
+    {
+      "id": "export-trip20-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2023-12-24"
+          },
+          "start_airport_code": "NUE",
+          "end_airport_code": "AMS"
+        },
+        {
+          "StartDateTime": {
+            "date": "2023-12-24"
+          },
+          "start_airport_code": "AMS",
+          "end_airport_code": "EDI"
+        },
+        {
+          "StartDateTime": {
+            "date": "2023-12-31"
+          },
+          "start_airport_code": "EDI",
+          "end_airport_code": "AMS"
+        },
+        {
+          "StartDateTime": {
+            "date": "2023-12-31"
+          },
+          "start_airport_code": "AMS",
+          "end_airport_code": "NUE"
+        }
+      ]
+    },
+    {
+      "id": "export-trip23-obj1",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2023-06-21"
+          },
+          "start_airport_code": "NUE",
+          "end_airport_code": "AMS"
+        },
+        {
+          "StartDateTime": {
+            "date": "2023-06-21"
+          },
+          "start_airport_code": "AMS",
+          "end_airport_code": "MSP"
+        },
+        {
+          "StartDateTime": {
+            "date": "2023-07-05"
+          },
+          "start_airport_code": "MSP",
+          "end_airport_code": "CDG"
+        },
+        {
+          "StartDateTime": {
+            "date": "2023-07-06"
+          },
+          "start_airport_code": "CDG",
+          "end_airport_code": "NUE"
+        }
+      ]
+    },
+    {
+      "id": "export-trip26-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2023-04-24"
+          },
+          "start_airport_code": "NUE",
+          "end_airport_code": "LHR"
+        },
+        {
+          "StartDateTime": {
+            "date": "2023-04-27"
+          },
+          "start_airport_code": "LHR",
+          "end_airport_code": "NUE"
+        }
+      ]
+    },
+    {
+      "id": "export-trip27-obj1",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2023-01-29"
+          },
+          "start_airport_code": "NUE",
+          "end_airport_code": "CDG"
+        },
+        {
+          "StartDateTime": {
+            "date": "2023-01-29"
+          },
+          "start_airport_code": "CDG",
+          "end_airport_code": "BOS"
+        },
+        {
+          "StartDateTime": {
+            "date": "2023-02-02"
+          },
+          "start_airport_code": "BOS",
+          "end_airport_code": "CDG"
+        },
+        {
+          "StartDateTime": {
+            "date": "2023-02-03"
+          },
+          "start_airport_code": "CDG",
+          "end_airport_code": "NUE"
+        }
+      ]
+    },
+    {
+      "id": "export-trip29-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2022-11-27"
+          },
+          "start_airport_code": "NUE",
+          "end_airport_code": "CDG"
+        },
+        {
+          "StartDateTime": {
+            "date": "2022-11-27"
+          },
+          "start_airport_code": "CDG",
+          "end_airport_code": "MAD"
+        },
+        {
+          "StartDateTime": {
+            "date": "2022-12-02"
+          },
+          "start_airport_code": "MAD",
+          "end_airport_code": "CDG"
+        },
+        {
+          "StartDateTime": {
+            "date": "2022-12-02"
+          },
+          "start_airport_code": "CDG",
+          "end_airport_code": "NUE"
+        }
+      ]
+    },
+    {
+      "id": "export-trip31-obj1",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2022-09-19"
+          },
+          "start_airport_code": "NUE",
+          "end_airport_code": "LHR"
+        },
+        {
+          "StartDateTime": {
+            "date": "2022-09-23"
+          },
+          "start_airport_code": "LHR",
+          "end_airport_code": "NUE"
+        }
+      ]
+    },
+    {
+      "id": "export-trip33-obj1",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2022-08-01"
+          },
+          "start_airport_code": "NUE",
+          "end_airport_code": "AMS"
+        },
+        {
+          "StartDateTime": {
+            "date": "2022-08-01"
+          },
+          "start_airport_code": "AMS",
+          "end_airport_code": "PDX"
+        },
+        {
+          "StartDateTime": {
+            "date": "2022-08-15"
+          },
+          "start_airport_code": "PDX",
+          "end_airport_code": "AMS"
+        },
+        {
+          "StartDateTime": {
+            "date": "2022-08-16"
+          },
+          "start_airport_code": "AMS",
+          "end_airport_code": "NUE"
+        }
+      ]
+    },
+    {
+      "id": "export-trip37-obj1",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2022-05-23"
+          },
+          "start_airport_code": "NUE",
+          "end_airport_code": "LHR"
+        },
+        {
+          "StartDateTime": {
+            "date": "2022-05-27"
+          },
+          "start_airport_code": "LHR",
+          "end_airport_code": "NUE"
+        }
+      ]
+    },
+    {
+      "id": "export-trip38-obj1",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2022-04-19"
+          },
+          "start_airport_code": "NUE",
+          "end_airport_code": "AMS"
+        },
+        {
+          "StartDateTime": {
+            "date": "2022-04-19"
+          },
+          "start_airport_code": "AMS",
+          "end_airport_code": "BOS"
+        },
+        {
+          "StartDateTime": {
+            "date": "2022-04-22"
+          },
+          "start_airport_code": "BOS",
+          "end_airport_code": "AMS"
+        },
+        {
+          "StartDateTime": {
+            "date": "2022-04-23"
+          },
+          "start_airport_code": "AMS",
+          "end_airport_code": "NUE"
+        }
+      ]
+    },
+    {
+      "id": "export-trip39-obj1",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2022-03-15"
+          },
+          "start_airport_code": "NUE",
+          "end_airport_code": "AMS"
+        },
+        {
+          "StartDateTime": {
+            "date": "2022-03-15"
+          },
+          "start_airport_code": "AMS",
+          "end_airport_code": "JFK"
+        },
+        {
+          "StartDateTime": {
+            "date": "2022-03-18"
+          },
+          "start_airport_code": "JFK",
+          "end_airport_code": "CDG"
+        },
+        {
+          "StartDateTime": {
+            "date": "2022-03-19"
+          },
+          "start_airport_code": "JFK",
+          "end_airport_code": "NUE"
+        }
+      ]
+    },
+    {
+      "id": "export-trip41-obj1",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2021-11-23"
+          },
+          "start_airport_code": "NUE",
+          "end_airport_code": "CDG"
+        },
+        {
+          "StartDateTime": {
+            "date": "2021-11-23"
+          },
+          "start_airport_code": "CDG",
+          "end_airport_code": "SFO"
+        },
+        {
+          "StartDateTime": {
+            "date": "2021-12-08"
+          },
+          "start_airport_code": "SFO",
+          "end_airport_code": "AMS"
+        },
+        {
+          "StartDateTime": {
+            "date": "2021-12-09"
+          },
+          "start_airport_code": "AMS",
+          "end_airport_code": "NUE"
+        }
+      ]
+    },
+    {
+      "id": "export-trip41-obj4",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2021-12-01"
+          },
+          "start_airport_code": "SJC",
+          "end_airport_code": "MSP"
+        },
+        {
+          "StartDateTime": {
+            "date": "2021-12-07"
+          },
+          "start_airport_code": "MSP",
+          "end_airport_code": "SFO"
+        }
+      ]
+    },
+    {
+      "id": "export-trip42-obj1",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2021-03-27"
+          },
+          "start_airport_code": "HND",
+          "end_airport_code": "IST"
+        },
+        {
+          "StartDateTime": {
+            "date": "2021-03-28"
+          },
+          "start_airport_code": "IST",
+          "end_airport_code": "NUE"
+        }
+      ]
+    },
+    {
+      "id": "export-trip43-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2020-02-24"
+          },
+          "start_airport_code": "HND",
+          "end_airport_code": "MSP"
+        },
+        {
+          "StartDateTime": {
+            "date": "2020-03-13"
+          },
+          "start_airport_code": "MSP",
+          "end_airport_code": "HND"
+        }
+      ]
+    },
+    {
+      "id": "export-trip44-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2019-09-02"
+          },
+          "start_airport_code": "NRT",
+          "end_airport_code": "ICN"
+        },
+        {
+          "StartDateTime": {
+            "date": "2019-09-02"
+          },
+          "start_airport_code": "ICN",
+          "end_airport_code": "SFO"
+        },
+        {
+          "StartDateTime": {
+            "date": "2019-09-09"
+          },
+          "start_airport_code": "SFO",
+          "end_airport_code": "ICN"
+        },
+        {
+          "StartDateTime": {
+            "date": "2019-09-10"
+          },
+          "start_airport_code": "ICN",
+          "end_airport_code": "NRT"
+        }
+      ]
+    },
+    {
+      "id": "export-trip47-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2019-03-06"
+          },
+          "start_airport_code": "MSP",
+          "end_airport_code": "DEN"
+        },
+        {
+          "StartDateTime": {
+            "date": "2019-03-06"
+          },
+          "start_airport_code": "DEN",
+          "end_airport_code": "BUR"
+        }
+      ]
+    },
+    {
+      "id": "export-trip50-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2018-10-18"
+          },
+          "start_airport_code": "MSP",
+          "end_airport_code": "PDX"
+        },
+        {
+          "StartDateTime": {
+            "date": "2018-10-21"
+          },
+          "start_airport_code": "PDX",
+          "end_airport_code": "MSP"
+        }
+      ]
+    },
+    {
+      "id": "export-trip52-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2018-07-12"
+          },
+          "start_airport_code": "MSP",
+          "end_airport_code": "COS"
+        },
+        {
+          "StartDateTime": {
+            "date": "2018-07-15"
+          },
+          "start_airport_code": "COS",
+          "end_airport_code": "MSP"
+        }
+      ]
+    },
+    {
+      "id": "export-trip59-obj1",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2017-08-10"
+          },
+          "start_airport_code": "MSP",
+          "end_airport_code": "BNA"
+        },
+        {
+          "StartDateTime": {
+            "date": "2017-08-13"
+          },
+          "start_airport_code": "BNA",
+          "end_airport_code": "MSP"
+        }
+      ]
+    },
+    {
+      "id": "export-trip67-obj3",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2016-12-02"
+          },
+          "start_airport_code": "MSP",
+          "end_airport_code": "LAX"
+        },
+        {
+          "StartDateTime": {
+            "date": "2016-12-04"
+          },
+          "start_airport_code": "LAX",
+          "end_airport_code": "MSP"
+        }
+      ]
+    },
+    {
+      "id": "export-trip79-obj3",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2016-01-02"
+          },
+          "start_airport_code": "SFO",
+          "end_airport_code": "PHX"
+        },
+        {
+          "StartDateTime": {
+            "date": "2016-01-02"
+          },
+          "start_airport_code": "PHX",
+          "end_airport_code": "MSP"
+        }
+      ]
+    },
+    {
+      "id": "export-trip96-obj2",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2015-03-25"
+          },
+          "start_airport_code": "MSP",
+          "end_airport_code": "YYZ"
+        },
+        {
+          "StartDateTime": {
+            "date": "2015-03-29"
+          },
+          "start_airport_code": "YYZ",
+          "end_airport_code": "MSP"
+        }
+      ]
+    },
+    {
+      "id": "export-trip97-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2015-03-25"
+          },
+          "start_airport_code": "MSP",
+          "end_airport_code": "YYZ"
+        },
+        {
+          "StartDateTime": {
+            "date": "2015-03-29"
+          },
+          "start_airport_code": "YYZ",
+          "end_airport_code": "MSP"
+        }
+      ]
+    },
+    {
+      "id": "export-trip100-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2014-11-24"
+          },
+          "start_airport_code": "MSP",
+          "end_airport_code": "DTW"
+        },
+        {
+          "StartDateTime": {
+            "date": "2014-11-28"
+          },
+          "start_airport_code": "DTW",
+          "end_airport_code": "MSP"
+        }
+      ]
+    },
+    {
+      "id": "export-trip104-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2014-03-17"
+          },
+          "start_airport_code": "MSP",
+          "end_airport_code": "DEN"
+        },
+        {
+          "StartDateTime": {
+            "date": "2014-03-19"
+          },
+          "start_airport_code": "DEN",
+          "end_airport_code": "MSP"
+        }
+      ]
+    },
+    {
+      "id": "export-trip105-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2014-01-12"
+          },
+          "start_airport_code": "LAS",
+          "end_airport_code": "DEN"
+        },
+        {
+          "StartDateTime": {
+            "date": "2014-01-12"
+          },
+          "start_airport_code": "DEN",
+          "end_airport_code": "MSP"
+        }
+      ]
+    },
+    {
+      "id": "export-trip106-obj1",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2014-01-10"
+          },
+          "start_airport_code": "MSP",
+          "end_airport_code": "DFW"
+        },
+        {
+          "StartDateTime": {
+            "date": "2014-01-10"
+          },
+          "start_airport_code": "DFW",
+          "end_airport_code": "LAS"
+        }
+      ]
+    },
+    {
+      "id": "export-trip111-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2013-08-14"
+          },
+          "start_airport_code": "MSP",
+          "end_airport_code": "ORD"
+        },
+        {
+          "StartDateTime": {
+            "date": "2013-08-17"
+          },
+          "start_airport_code": "ORD",
+          "end_airport_code": "MSP"
+        }
+      ]
+    },
+    {
+      "id": "export-trip118-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2013-05-23"
+          },
+          "start_airport_code": "MSP",
+          "end_airport_code": "STL"
+        },
+        {
+          "StartDateTime": {
+            "date": "2013-05-23"
+          },
+          "start_airport_code": "STL",
+          "end_airport_code": "LAX"
+        },
+        {
+          "StartDateTime": {
+            "date": "2013-05-27"
+          },
+          "start_airport_code": "LAX",
+          "end_airport_code": "DEN"
+        },
+        {
+          "StartDateTime": {
+            "date": "2013-05-27"
+          },
+          "start_airport_code": "DEN",
+          "end_airport_code": "MSP"
+        }
+      ]
+    },
+    {
+      "id": "export-trip129-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2012-04-25"
+          },
+          "start_airport_code": "PDX",
+          "end_airport_code": "SFO"
+        },
+        {
+          "StartDateTime": {
+            "date": "2012-04-25"
+          },
+          "start_airport_code": "SFO",
+          "end_airport_code": "MSP"
+        }
+      ]
+    },
+    {
+      "id": "export-trip131-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2011-11-22"
+          },
+          "start_airport_code": "PDX",
+          "end_airport_code": "SEA"
+        },
+        {
+          "StartDateTime": {
+            "date": "2011-11-22"
+          },
+          "start_airport_code": "SEA",
+          "end_airport_code": "LAX"
+        },
+        {
+          "StartDateTime": {
+            "date": "2011-11-29"
+          },
+          "start_airport_code": "LAX",
+          "end_airport_code": "PDX"
+        }
+      ]
+    },
+    {
+      "id": "export-trip132-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2011-10-26"
+          },
+          "start_airport_code": "PDX",
+          "end_airport_code": "DEN"
+        },
+        {
+          "StartDateTime": {
+            "date": "2011-10-26"
+          },
+          "start_airport_code": "DEN",
+          "end_airport_code": "MSP"
+        },
+        {
+          "StartDateTime": {
+            "date": "2011-11-02"
+          },
+          "start_airport_code": "MSP",
+          "end_airport_code": "DEN"
+        },
+        {
+          "StartDateTime": {
+            "date": "2011-11-02"
+          },
+          "start_airport_code": "DEN",
+          "end_airport_code": "PDX"
+        }
+      ]
+    },
+    {
+      "id": "export-trip133-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2011-10-13"
+          },
+          "start_airport_code": "PDX",
+          "end_airport_code": "OAK"
+        },
+        {
+          "StartDateTime": {
+            "date": "2011-10-13"
+          },
+          "start_airport_code": "OAK",
+          "end_airport_code": "LAX"
+        },
+        {
+          "StartDateTime": {
+            "date": "2011-10-22"
+          },
+          "start_airport_code": "LAX",
+          "end_airport_code": "OAK"
+        },
+        {
+          "StartDateTime": {
+            "date": "2011-10-22"
+          },
+          "start_airport_code": "OAK",
+          "end_airport_code": "PDX"
+        }
+      ]
+    },
+    {
+      "id": "export-trip140-obj2",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2011-04-02"
+          },
+          "start_airport_code": "BUR",
+          "end_airport_code": "PDX"
+        },
+        {
+          "StartDateTime": {
+            "date": "2011-04-05"
+          },
+          "start_airport_code": "PDX",
+          "end_airport_code": "BUR"
+        }
+      ]
+    },
+    {
+      "id": "export-trip141-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2011-02-11"
+          },
+          "start_airport_code": "LAX",
+          "end_airport_code": "PDX"
+        },
+        {
+          "StartDateTime": {
+            "date": "2011-02-13"
+          },
+          "start_airport_code": "PDX",
+          "end_airport_code": "LAX"
+        }
+      ]
+    },
+    {
+      "id": "export-trip142-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2010-11-01"
+          },
+          "start_airport_code": "BUR",
+          "end_airport_code": "SFO"
+        },
+        {
+          "StartDateTime": {
+            "date": "2010-11-01"
+          },
+          "start_airport_code": "SFO",
+          "end_airport_code": "MSP"
+        },
+        {
+          "StartDateTime": {
+            "date": "2010-11-24"
+          },
+          "start_airport_code": "MSP",
+          "end_airport_code": "SFO"
+        },
+        {
+          "StartDateTime": {
+            "date": "2010-11-24"
+          },
+          "start_airport_code": "SFO",
+          "end_airport_code": "BUR"
+        }
+      ]
+    },
+    {
+      "id": "export-trip142-obj4",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2010-11-15"
+          },
+          "start_airport_code": "MSP",
+          "end_airport_code": "PHX"
+        },
+        {
+          "StartDateTime": {
+            "date": "2010-11-15"
+          },
+          "start_airport_code": "PHX",
+          "end_airport_code": "BUR"
+        }
+      ]
+    },
+    {
+      "id": "export-trip143-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2010-10-07"
+          },
+          "start_airport_code": "MSP",
+          "end_airport_code": "DFW"
+        },
+        {
+          "StartDateTime": {
+            "date": "2010-10-07"
+          },
+          "start_airport_code": "DFW",
+          "end_airport_code": "AUS"
+        }
+      ]
+    },
+    {
+      "id": "export-trip143-obj6",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2010-10-11"
+          },
+          "start_airport_code": "AUS",
+          "end_airport_code": "LAS"
+        },
+        {
+          "StartDateTime": {
+            "date": "2010-10-11"
+          },
+          "start_airport_code": "LAS",
+          "end_airport_code": "BUR"
+        }
+      ]
+    },
+    {
+      "id": "export-trip144-obj0",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2010-10-03"
+          },
+          "start_airport_code": "LGA",
+          "end_airport_code": "MKE"
+        },
+        {
+          "StartDateTime": {
+            "date": "2010-10-03"
+          },
+          "start_airport_code": "MKE",
+          "end_airport_code": "MSP"
+        }
+      ]
+    },
+    {
+      "id": "export-trip145-obj8",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2010-10-03"
+          },
+          "start_airport_code": "LGA",
+          "end_airport_code": "MKE"
+        },
+        {
+          "StartDateTime": {
+            "date": "2010-10-03"
+          },
+          "start_airport_code": "MKE",
+          "end_airport_code": "MSP"
+        }
+      ]
+    },
+    {
+      "id": "export-trip156-obj1",
+      "display_name": "Flight",
+      "Segment": [
+        {
+          "StartDateTime": {
+            "date": "2010-04-09"
+          },
+          "start_airport_code": "GMP",
+          "end_airport_code": "CJU"
+        },
+        {
+          "StartDateTime": {
+            "date": "2010-04-11"
+          },
+          "start_airport_code": "CJU",
+          "end_airport_code": "GMP"
+        }
+      ]
+    }
+  ]
+}
