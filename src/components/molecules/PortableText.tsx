@@ -137,7 +137,7 @@ function buildComponents(pageBody: boolean): PortableTextComponents {
       return (
         <a
           href={href}
-          className="text-blue-600 hover:text-blue-800 underline"
+          className="text-blue-800 hover:text-blue-900 underline"
           target={isExternal ? '_blank' : undefined}
           rel={isExternal ? 'noopener noreferrer' : undefined}
         >

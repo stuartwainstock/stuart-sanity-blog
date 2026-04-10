@@ -154,7 +154,7 @@ export const Reference: Story = {
                         </span>
                       )}
                       {row.$description ? (
-                        <p className="mt-1 text-xs text-gray-500">{row.$description}</p>
+                        <p className="mt-1 text-xs text-gray-700">{row.$description}</p>
                       ) : null}
                     </td>
                   </tr>
@@ -182,7 +182,7 @@ export const Reference: Story = {
               />
               <div className="p-2">
                 <div className="font-mono text-xs font-medium text-gray-900">{token}</div>
-                <div className="font-mono text-[10px] text-gray-500">{hex}</div>
+                <div className="font-mono text-[10px] text-gray-700">{hex}</div>
               </div>
             </div>
           ))}
@@ -220,7 +220,7 @@ export const Reference: Story = {
               />
               <div>
                 <div className="font-medium text-gray-900">{label}</div>
-                <div className="font-mono text-xs text-gray-500">{hex}</div>
+                <div className="font-mono text-xs text-gray-700">{hex}</div>
               </div>
             </div>
           ))}
@@ -235,7 +235,7 @@ export const Reference: Story = {
         <div className="space-y-8">
           <div>
             <div className="mb-2 flex flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+              <span className="text-xs font-semibold uppercase tracking-wide text-gray-700">
                 pageShellBg
               </span>
               <Mono>{pageShellBg}</Mono>
@@ -246,7 +246,7 @@ export const Reference: Story = {
           </div>
           <div>
             <div className="mb-2 flex flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+              <span className="text-xs font-semibold uppercase tracking-wide text-gray-700">
                 pageBanner / pageContent
               </span>
             </div>
@@ -261,7 +261,7 @@ export const Reference: Story = {
           </div>
           <div>
             <div className="mb-2 flex flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+              <span className="text-xs font-semibold uppercase tracking-wide text-gray-700">
                 pageInner
               </span>
               <Mono>{pageInner}</Mono>
@@ -274,7 +274,7 @@ export const Reference: Story = {
           </div>
           <div>
             <div className="mb-2 flex flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+              <span className="text-xs font-semibold uppercase tracking-wide text-gray-700">
                 pageDataSourceCredit / pageDataSourceLink
               </span>
             </div>
@@ -349,14 +349,14 @@ export const Reference: Story = {
         <div className="space-y-2">
           {spacingSteps.map((n) => (
             <div key={n} className="flex items-center gap-4">
-              <div className="w-24 shrink-0 font-mono text-xs text-gray-500">{n}</div>
+              <div className="w-24 shrink-0 font-mono text-xs text-gray-700">{n}</div>
               <div className="flex h-8 flex-1 items-center bg-gray-100">
               <div
                 className="h-4 bg-orange-500/80"
                 style={{width: `${n * 0.25}rem`}}
               />
               </div>
-              <div className="w-20 shrink-0 font-mono text-xs text-gray-400">{n * 4}px</div>
+              <div className="w-20 shrink-0 font-mono text-xs text-gray-700">{n * 4}px</div>
             </div>
           ))}
         </div>

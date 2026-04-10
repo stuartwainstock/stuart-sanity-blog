@@ -424,6 +424,9 @@ npm run lint
 
 # Regenerate CSS variables from tokens/*.json (also runs automatically before build / build-storybook)
 npm run tokens:build
+
+# Storybook + Vitest browser tests (includes @storybook/addon-a11y in error mode; run `npx playwright install chromium` once locally)
+npm run test:storybook
 ```
 
 ### Customization

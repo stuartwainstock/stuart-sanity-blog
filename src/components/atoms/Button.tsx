@@ -21,7 +21,7 @@ const sizes: Record<Size, string> = {
 
 const styles: Record<Tone, Record<Variant, string>> = {
   brand: {
-    primary: 'bg-orange-600 text-white hover:bg-orange-700 focus:ring-orange-500',
+    primary: 'bg-orange-700 text-white hover:bg-orange-800 focus:ring-orange-500',
     secondary:
       'border border-orange-300 bg-white text-orange-900 hover:bg-orange-50 focus:ring-orange-500',
     ghost: 'bg-transparent text-orange-900 hover:bg-orange-50 focus:ring-orange-500',

@@ -2,9 +2,30 @@
 @import "../styles/generated/tokens.css";
 @import "tailwindcss";
 
-body {
-  background-color: var(--color-background);
-  font-family: var(--font-work-sans);
+/* Base layer so Tailwind utilities (e.g. text-gray-700, underline on <a>) win over element defaults */
+@layer base {
+  body {
+    background-color: var(--color-background);
+    font-family: var(--font-work-sans);
+  }
+
+  a {
+    color: var(--color-link);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  a:hover {
+    color: var(--color-link-hover);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--color-heading);
+  }
+
+  p {
+    color: var(--color-documented-body);
+  }
 }
 
 /* Custom background classes — values from Style Dictionary tokens (plain CSS avoids @apply + var quirks in PostCSS) */
@@ -40,25 +61,6 @@ body {
 
 .link-custom:hover {
   color: var(--color-link-hover);
-}
-
-/* Apply custom link color globally */
-a {
-  color: var(--color-link);
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-a:hover {
-  color: var(--color-link-hover);
-}
-
-h1, h2, h3, h4, h5, h6 {
-  color: var(--color-heading);
-}
-
-p {
-  color: var(--color-documented-body);
 }
 
 /* Custom utilities for line clamping */
@@ -148,65 +150,67 @@ html {
   color: var(--color-documented-selection-fg);
 }
 
-/* Custom prose styles for better typography */
-.prose {
-  color: var(--color-documented-prose-body);
-  max-width: none;
-  font-family: var(--font-work-sans);
-}
+/* Components layer: below utilities so explicit classes on links (e.g. in Portable Text) win */
+@layer components {
+  .prose {
+    color: var(--color-documented-prose-body);
+    max-width: none;
+    font-family: var(--font-work-sans);
+  }
 
-.prose h1,
-.prose h2,
-.prose h3,
-.prose h4 {
-  color: var(--color-documented-prose-heading);
-  font-weight: 700;
-  font-family: var(--font-work-sans);
-}
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose h4 {
+    color: var(--color-documented-prose-heading);
+    font-weight: 700;
+    font-family: var(--font-work-sans);
+  }
 
-.prose a {
-  color: var(--color-link);
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.2s ease;
-}
+  .prose a {
+    color: var(--color-link);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
 
-.prose a:hover {
-  color: var(--color-link-hover);
-}
+  .prose a:hover {
+    color: var(--color-link-hover);
+  }
 
-.prose code {
-  color: var(--color-documented-prose-heading);
-  background-color: #f3f4f6;
-  padding: 0.125rem 0.25rem;
-  border-radius: 0.25rem;
-  font-size: 0.875em;
-}
+  .prose code {
+    color: var(--color-documented-prose-heading);
+    background-color: #f3f4f6;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-size: 0.875em;
+  }
 
-.prose pre {
-  background-color: var(--color-documented-selection-bg);
-  color: var(--color-documented-selection-fg);
-  overflow-x: auto;
-  border-radius: 0.5rem;
-}
+  .prose pre {
+    background-color: var(--color-documented-selection-bg);
+    color: var(--color-documented-selection-fg);
+    overflow-x: auto;
+    border-radius: 0.5rem;
+  }
 
-.prose pre code {
-  background-color: transparent;
-  color: inherit;
-  padding: 0;
-}
+  .prose pre code {
+    background-color: transparent;
+    color: inherit;
+    padding: 0;
+  }
 
-.prose blockquote {
-  border-left: 4px solid #3b82f6;
-  padding-left: 1rem;
-  font-style: italic;
-  color: var(--color-documented-prose-body);
-  background-color: #f9fafb;
-  margin: 1.5rem 0;
-  padding: 1rem;
-}
+  .prose blockquote {
+    border-left: 4px solid #3b82f6;
+    padding-left: 1rem;
+    font-style: italic;
+    color: var(--color-documented-prose-body);
+    background-color: #f9fafb;
+    margin: 1.5rem 0;
+    padding: 1rem;
+  }
 
-.prose img {
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  .prose img {
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
 }
