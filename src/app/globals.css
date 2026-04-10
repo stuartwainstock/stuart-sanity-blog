@@ -1,49 +1,45 @@
+/* Generated from tokens/*.json — run `npm run tokens:build` after edits */
+@import "../styles/generated/tokens.css";
 @import "tailwindcss";
 
-:root {
-  --font-work-sans: 'Work Sans', sans-serif;
-  --color-background: #e8e8e8;
-  --color-link: #0000ff;
-}
-
 body {
-  background-color: #e8e8e8;
+  background-color: var(--color-background);
   font-family: var(--font-work-sans);
 }
 
-/* Custom background classes using your hex color */
+/* Custom background classes — values from Style Dictionary tokens (plain CSS avoids @apply + var quirks in PostCSS) */
 .bg-custom {
-  @apply bg-[#e8e8e8];
+  background-color: var(--color-custom-200);
 }
 
 .bg-custom-light {
-  @apply bg-[#f5f5f5];
+  background-color: var(--color-section-bg);
 }
 
 .bg-custom-dark {
-  @apply bg-[#d1d1d1];
+  background-color: var(--color-custom-300);
 }
 
-/* Or create semantic classes */
 .bg-page {
-  @apply bg-[#e8e8e8];
+  background-color: var(--color-page-bg);
 }
 
 .bg-section {
-  @apply bg-[#f5f5f5];
+  background-color: var(--color-section-bg);
 }
 
 .bg-card {
-  @apply bg-white;
+  background-color: var(--color-card-bg);
 }
 
 /* Custom link classes */
 .link-custom {
-  @apply text-[#0000ff] hover:text-[#0000cc] transition-colors duration-200;
+  color: var(--color-link);
+  transition: color 0.2s ease;
 }
 
 .link-custom:hover {
-  color: #0000cc; /* Slightly darker blue on hover */
+  color: var(--color-link-hover);
 }
 
 /* Apply custom link color globally */
@@ -54,15 +50,15 @@ a {
 }
 
 a:hover {
-  color: #0000cc; /* Darker blue on hover */
+  color: var(--color-link-hover);
 }
 
 h1, h2, h3, h4, h5, h6 {
-  color: #4F4F4F;
+  color: var(--color-heading);
 }
 
 p {
-  color: #000;
+  color: var(--color-documented-body);
 }
 
 /* Custom utilities for line clamping */
@@ -137,24 +133,24 @@ html {
 
 /* Text selection styles - inverse colors */
 ::selection {
-  background-color: #1f2937; /* Dark gray background */
-  color: #f9fafb; /* Light text */
+  background-color: var(--color-documented-selection-bg);
+  color: var(--color-documented-selection-fg);
 }
 
 ::-moz-selection {
-  background-color: #1f2937; /* Dark gray background */
-  color: #f9fafb; /* Light text */
+  background-color: var(--color-documented-selection-bg);
+  color: var(--color-documented-selection-fg);
 }
 
 /* Alternative selection style for better contrast */
 ::-webkit-selection {
-  background-color: #1f2937; /* Dark gray background */
-  color: #f9fafb; /* Light text */
+  background-color: var(--color-documented-selection-bg);
+  color: var(--color-documented-selection-fg);
 }
 
 /* Custom prose styles for better typography */
 .prose {
-  color: #374151;
+  color: var(--color-documented-prose-body);
   max-width: none;
   font-family: var(--font-work-sans);
 }
@@ -163,24 +159,24 @@ html {
 .prose h2,
 .prose h3,
 .prose h4 {
-  color: #111827;
+  color: var(--color-documented-prose-heading);
   font-weight: 700;
   font-family: var(--font-work-sans);
 }
 
 .prose a {
-  color: #0000ff;
+  color: var(--color-link);
   text-decoration: none;
   font-weight: 500;
   transition: color 0.2s ease;
 }
 
 .prose a:hover {
-  color: #0000cc;
+  color: var(--color-link-hover);
 }
 
 .prose code {
-  color: #111827;
+  color: var(--color-documented-prose-heading);
   background-color: #f3f4f6;
   padding: 0.125rem 0.25rem;
   border-radius: 0.25rem;
@@ -188,8 +184,8 @@ html {
 }
 
 .prose pre {
-  background-color: #1f2937;
-  color: #f9fafb;
+  background-color: var(--color-documented-selection-bg);
+  color: var(--color-documented-selection-fg);
   overflow-x: auto;
   border-radius: 0.5rem;
 }
@@ -204,7 +200,7 @@ html {
   border-left: 4px solid #3b82f6;
   padding-left: 1rem;
   font-style: italic;
-  color: #374151;
+  color: var(--color-documented-prose-body);
   background-color: #f9fafb;
   margin: 1.5rem 0;
   padding: 1rem;

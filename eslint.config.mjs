@@ -10,6 +10,7 @@ const eslintConfig = [...coreWebVitals, ...typescript, {
     '.next/**',
     'out/**',
     'build/**',
+    'storybook-static/**',
     'next-env.d.ts',
     // Copied MapLibre worker bundle (postinstall)
     'public/maplibre-gl-csp-worker.js',

@@ -76,6 +76,8 @@ A modern, full-featured blog built with Next.js 16 and Sanity CMS. This project 
 
 ```
 sanity-blog/
+├── tokens/                          # Design tokens (Style Dictionary source JSON)
+├── config.style-dictionary.json     # SD build → src/styles/generated/tokens.css
 ├── src/
 │   ├── app/                         # Next.js App Router routes
 │   │   ├── api/add-link/route.ts    # Quick-add ingestion endpoint
@@ -419,14 +421,20 @@ npm run type-check
 
 # Linting
 npm run lint
+
+# Regenerate CSS variables from tokens/*.json (also runs automatically before build / build-storybook)
+npm run tokens:build
 ```
 
 ### Customization
 
 #### Styling
-- Edit `src/app/globals.css` for global styles
-- Modify Tailwind classes in components
-- Update color schemes in `tailwind.config.js`
+- **Design tokens (source of truth):** edit JSON under `tokens/` (e.g. `tokens/color.json`, `tokens/font.json`), then run **`npm run tokens:build`**. [Style Dictionary](https://amzn.github.io/style-dictionary/) generates **`src/styles/generated/tokens.css`** (`:root` CSS variables). Do not hand-edit the generated file.
+- **`npm run build`** and **`npm run build-storybook`** run token generation first (`prebuild` / `prebuild-storybook`) so CI and local builds stay in sync; still commit **`tokens.css`** after token changes so clones match without running the CLI.
+- **Wiring:** `src/app/globals.css` imports the generated CSS before Tailwind; `tailwind.config.js` maps extended colors and `font-work-sans` to those `var(--…)` values.
+- **Docs:** Storybook → **Foundations → Design Tokens** reflects the same JSON (see `src/stories/designTokens.data.ts` + `src/lib/tokens/walkJsonTokens.ts`).
+- For one-off global CSS (not tokens), edit `src/app/globals.css` below the token import.
+- Component-level styling: Tailwind classes in components as usual.
 
 #### Content Schemas
 - Add new fields to existing schemas in `sanity/schemaTypes/`

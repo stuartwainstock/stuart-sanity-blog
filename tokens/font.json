@@ -1,0 +1,10 @@
+{
+  "font": {
+    "$description": "Font stacks (CSS variables)",
+    "work-sans": {
+      "$type": "fontFamily",
+      "$value": "'Work Sans', sans-serif",
+      "$description": "Primary UI font (matches Google Fonts / layout)"
+    }
+  }
+}
