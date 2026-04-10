@@ -15,6 +15,11 @@ const withSiteFrame: Preview['decorators'][number] = (Story) => {
 const preview: Preview = {
   decorators: [withSiteFrame],
   parameters: {
+    options: {
+      storySort: {
+        order: ['Foundations', 'Atoms', 'Molecules', 'Organisms'],
+      },
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,

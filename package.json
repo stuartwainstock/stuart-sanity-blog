@@ -23,7 +23,8 @@
     "prebuild-storybook": "npm run tokens:build",
     "build-storybook": "storybook build",
     "test:storybook": "vitest run --project storybook",
-    "chromatic": "node ./scripts/chromatic.mjs"
+    "chromatic": "node ./scripts/chromatic.mjs",
+    "tripit:transform": "node scripts/tripit-export-to-list-air.mjs"
   },
   "dependencies": {
     "@babel/runtime": "^7.29.2",

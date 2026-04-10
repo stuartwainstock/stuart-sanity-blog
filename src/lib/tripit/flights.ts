@@ -1,7 +1,9 @@
 import 'server-only'
 
+import {readFile} from 'node:fs/promises'
+import path from 'node:path'
 import {cache} from 'react'
-import {OurAirports} from 'ourairports-data-js'
+import {resolveAirportCoordsForIataCodes} from '@/lib/travel/airportCoordsNode'
 import type {AirportCoords, FlightLeg} from '@/lib/travel/types'
 import {tripitGetJson} from './client'
 import type {TripItAirObject, TripItListAirResponse} from './types'
@@ -10,12 +12,6 @@ function arr<T>(v: T | T[] | undefined): T[] {
   if (!v) return []
   return Array.isArray(v) ? v : [v]
 }
-
-const getAirportsDb = cache(async () => {
-  const db = new OurAirports()
-  await db.init()
-  return db
-})
 
 function toLegs(objects: TripItAirObject[]): FlightLeg[] {
   const legs: FlightLeg[] = []
@@ -37,37 +33,59 @@ function toLegs(objects: TripItAirObject[]): FlightLeg[] {
   return legs
 }
 
-export const fetchTripItFlights = cache(async (): Promise<{
+/**
+ * Resolve airport coordinates for legs (IATA → lat/lng via ourairports JSON shards).
+ * Same pipeline for live API and historical JSON exports.
+ */
+async function legsToFlightMap(legs: FlightLeg[]): Promise<{
   legs: FlightLeg[]
   airports: AirportCoords
-}> => {
-  // All air objects where the authenticated user is a traveler, including past flights.
-  const data = await tripitGetJson<TripItListAirResponse>(
-    '/v1/list/object/type/air/traveler/true/past/true/format/json',
-  )
-
-  const airObjects = arr(data.AirObject)
-  const legs = toLegs(airObjects)
-
+}> {
   const uniqueCodes = new Set<string>()
   for (const l of legs) {
     uniqueCodes.add(l.origin)
     uniqueCodes.add(l.destination)
   }
 
-  const db = await getAirportsDb()
-  const airports: AirportCoords = {}
-  for (const code of uniqueCodes) {
-    const a = db.findByIataCode(code)
-    if (!a) continue
-    // ourairports-data-js uses {latitude, longitude}
-    const lat = (a as unknown as {latitude?: number}).latitude
-    const lng = (a as unknown as {longitude?: number}).longitude
-    if (typeof lat === 'number' && typeof lng === 'number') {
-      airports[code] = {lat, lng}
-    }
+  const airports = await resolveAirportCoordsForIataCodes(uniqueCodes)
+  return {legs, airports}
+}
+
+async function loadTripItJsonFromPath(relativeOrAbsolute: string): Promise<TripItListAirResponse> {
+  const p = String(relativeOrAbsolute).trim()
+  const resolved = path.isAbsolute(p) ? p : path.join(process.cwd(), p)
+  const raw = await readFile(resolved, 'utf8')
+  return JSON.parse(raw) as TripItListAirResponse
+}
+
+/**
+ * TripIt list-air JSON (same shape as `GET .../format/json` from the API).
+ * Set `TRIPIT_FLIGHTS_JSON` to a path (repo-relative or absolute) to use this instead of OAuth.
+ */
+export async function tripItListAirResponseToFlightMap(
+  data: TripItListAirResponse,
+): Promise<{legs: FlightLeg[]; airports: AirportCoords}> {
+  const airObjects = arr(data.AirObject)
+  const legs = toLegs(airObjects)
+  return legsToFlightMap(legs)
+}
+
+export const fetchTripItFlights = cache(async (): Promise<{
+  legs: FlightLeg[]
+  airports: AirportCoords
+}> => {
+  const filePath = process.env.TRIPIT_FLIGHTS_JSON?.trim()
+
+  if (filePath) {
+    const data = await loadTripItJsonFromPath(filePath)
+    return tripItListAirResponseToFlightMap(data)
   }
 
-  return {legs, airports}
+  // All air objects where the authenticated user is a traveler, including past flights.
+  const data = await tripitGetJson<TripItListAirResponse>(
+    '/v1/list/object/type/air/traveler/true/past/true/format/json',
+  )
+
+  return tripItListAirResponseToFlightMap(data)
 })
 

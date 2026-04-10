@@ -1,0 +1,15 @@
+{
+  "timestamp": "2026-04-10T00:00:00.000Z",
+  "num_bytes": "0",
+  "AirObject": [
+    {
+      "id": "export-trip0-obj0",
+      "display_name": "Flight",
+      "Segment": {
+        "StartDateTime": { "date": "2024-06-12" },
+        "start_airport_code": "MSP",
+        "end_airport_code": "LAX"
+      }
+    }
+  ]
+}
