@@ -21,9 +21,9 @@ export const pageTitleH1DataPage =
 export const pageDataSourceCredit =
   'text-sm text-gray-600 mb-10 max-w-4xl space-y-2'
 
-/** Links inside {@link pageDataSourceCredit}. */
+/** Links inside {@link pageDataSourceCredit} (uses design tokens for link color). */
 export const pageDataSourceLink =
-  'text-gray-700 underline underline-offset-2 hover:text-gray-900'
+  'text-[var(--color-link)] underline underline-offset-2 hover:text-[var(--color-link-hover)]'
 
 export const pageExcerpt =
   'text-[30px] font-light tracking-[2px] leading-[1.6] mb-2 text-gray-600 max-w-4xl'

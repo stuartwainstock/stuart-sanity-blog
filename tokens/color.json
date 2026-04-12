@@ -8,13 +8,13 @@
     },
     "link": {
       "$type": "color",
-      "$value": "#1d4ed8",
-      "$description": "Default anchor color (blue-700; WCAG-friendly vs body text)"
+      "$value": "#0000FF",
+      "$description": "Default anchor color (classic browser blue; base a / prose / link-custom)"
     },
     "link-hover": {
       "$type": "color",
-      "$value": "#1e40af",
-      "$description": "Link hover (see globals a:hover)"
+      "$value": "#0000CC",
+      "$description": "Link hover (darker blue; see globals a:hover)"
     },
     "custom": {
       "$type": "color",

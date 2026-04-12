@@ -4,8 +4,8 @@
 
 :root {
   --color-background: #e8e8e8; /* Default page background; matches body */
-  --color-link: #1d4ed8; /* Default anchor color (blue-700; WCAG-friendly vs body text) */
-  --color-link-hover: #1e40af; /* Link hover (see globals a:hover) */
+  --color-link: #0000ff; /* Default anchor color (classic browser blue; base a / prose / link-custom) */
+  --color-link-hover: #0000cc; /* Link hover (darker blue; see globals a:hover) */
   --color-custom-50: #f9f9f9;
   --color-custom-100: #f0f0f0;
   --color-custom-200: #e8e8e8;
