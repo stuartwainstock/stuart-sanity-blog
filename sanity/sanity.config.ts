@@ -59,7 +59,7 @@ export default defineConfig({
                   .documentId('ebirdBirding')
               ),
             S.listItem()
-              .title('Runs (Strava)')
+              .title('Runs (Strava · sync: Site operations tab)')
               .id('toolProjectPage-runs')
               .child(
                 S.document()

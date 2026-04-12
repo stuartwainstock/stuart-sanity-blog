@@ -25,8 +25,8 @@ export default async function AdminLoginPage({
             Set <code className="text-sm bg-gray-100 px-1 rounded">ADMIN_PASSWORD</code> in the environment
             to enable protected Strava OAuth.
           </p>
-          <Link href="/runs" className="text-orange-600 hover:text-orange-700 font-medium">
-            Back to Runs
+          <Link href="/" className="text-orange-600 hover:text-orange-700 font-medium">
+            Home
           </Link>
         </div>
       </div>
@@ -67,9 +67,12 @@ export default async function AdminLoginPage({
             Sign in
           </button>
         </form>
-        <p className="mt-8">
-          <Link href="/runs" className="text-orange-600 hover:text-orange-700 text-sm font-medium">
-            Cancel — back to Runs
+        <p className="mt-8 text-sm text-gray-600 space-x-4">
+          <Link href="/" className="text-orange-600 hover:text-orange-700 font-medium">
+            Home
+          </Link>
+          <Link href="/admin/strava" className="text-orange-600 hover:text-orange-700 font-medium">
+            Strava sync (after you sign in)
           </Link>
         </p>
       </div>

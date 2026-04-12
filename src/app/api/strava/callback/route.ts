@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
   const code = url.searchParams.get('code')
   const state = url.searchParams.get('state')
 
-  const base = new URL('/runs', request.url)
+  const base = new URL('/admin/strava', request.url)
 
   if (error) {
     base.searchParams.set('strava', 'error')

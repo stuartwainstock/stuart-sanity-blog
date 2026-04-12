@@ -10,6 +10,7 @@ export const toolProjectPage = defineType({
   type: 'document',
   groups: [
     {name: 'content', title: 'Page content', default: true},
+    {name: 'operations', title: 'Site operations'},
     {name: 'seo', title: 'SEO'},
   ],
   fields: [
@@ -45,7 +46,16 @@ export const toolProjectPage = defineType({
       type: 'blockContent',
       group: 'content',
       description:
-        'Shown below data-source attribution in the hero. On /runs: sync and window copy. On flight demo: optional extra intro (map intro also uses “Map section introduction”).',
+        'Shown below data-source attribution in the hero. On /runs: intro copy (map/table use the last 365-day window). Strava connect & sync live on the password-protected /admin/strava page — see Site operations.',
+    }),
+    defineField({
+      name: 'runsStravaAdminDashboardUrl',
+      title: 'Strava sync — admin page URL',
+      type: 'url',
+      group: 'operations',
+      hidden: ({document}) => document?.projectKey !== 'runs',
+      description:
+        'Open this in your browser to connect Strava and sync runs into the database (sign in at /admin/login on that site if required). Format: https://your-domain.com/admin/strava — local dev: http://localhost:3000/admin/strava',
     }),
     defineField({
       name: 'mapSectionTitle',
