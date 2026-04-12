@@ -1,6 +1,5 @@
 import type {Metadata} from 'next'
 import {fetchEbirdBirdingConfig, getImageUrl} from '@/lib/sanity'
-import type {EbirdBirding} from '@/lib/types'
 import PortableText from '@/components/molecules/PortableText'
 import BackyardBirdMapDynamic from '@/components/backyard/BackyardBirdMapDynamic'
 import BackyardObservationsTable from '@/components/backyard/BackyardObservationsTable'
@@ -20,12 +19,8 @@ import {
 
 export const revalidate = 300
 
-function getConfig(): Promise<EbirdBirding | null> {
-  return fetchEbirdBirdingConfig()
-}
-
 export async function generateMetadata(): Promise<Metadata> {
-  const raw = await getConfig()
+  const raw = await fetchEbirdBirdingConfig()
   const config = resolveEbirdBirding(raw)
   if (!config) {
     return {title: 'Pileated Watch'}
@@ -58,13 +53,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function PileatedWatchPage() {
-  const raw = await getConfig()
-  const rawConfig = raw
+  const raw = await fetchEbirdBirdingConfig()
 
   const missingCms =
-    !rawConfig ||
-    !rawConfig.mapPageTitle?.trim() ||
-    !ebirdHasMapArea(rawConfig)
+    !raw ||
+    !raw.mapPageTitle?.trim() ||
+    !ebirdHasMapArea(raw)
 
   if (missingCms) {
     return (
