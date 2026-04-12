@@ -23,9 +23,20 @@ import {
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'ojv692hs'
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
 
-/** Hosted Studio (`*.sanity.studio`) must call your Next app’s absolute URL. Embedded `/studio` uses `/api/analytics`. */
-const gaAnalyticsApiUrl =
-  process.env.NEXT_PUBLIC_SANITY_GA_API_URL?.trim() || '/api/analytics'
+/**
+ * GA dashboard proxy for `sanity-plugin-ga-dashboard`.
+ * Relative `/api/analytics` on hosted `*.sanity.studio` resolves against Sanity’s origin and redirects to
+ * sanity.io — CORS fails. Use your live Next origin when building Studio via `sanity deploy` (no VERCEL).
+ */
+const PRODUCTION_SITE_ORIGIN = 'https://www.stuartwainstock.com'
+
+const gaAnalyticsApiUrl = (() => {
+  const explicit = process.env.NEXT_PUBLIC_SANITY_GA_API_URL?.trim()
+  if (explicit) return explicit
+  if (process.env.VERCEL) return '/api/analytics'
+  if (process.env.NODE_ENV !== 'production') return '/api/analytics'
+  return `${PRODUCTION_SITE_ORIGIN}/api/analytics`
+})()
 
 export default defineConfig({
   name: 'default',
