@@ -177,10 +177,10 @@ export interface EbirdBirding {
   seoMap?: SEO
 }
 
-/** Singletons `toolProjectPage-runs`, `toolProjectPage-flights-demo`, etc. */
+/** Singletons `toolProjectPage-runs`, `toolProjectPage-flights`, etc. */
 export interface ToolProjectPage {
   _id: string
-  projectKey?: 'runs' | 'flights' | 'flights-demo'
+  projectKey?: 'runs' | 'flights'
   pageTitle?: string
   heroIntroduction?: TypedObject[]
   mapSectionTitle?: string

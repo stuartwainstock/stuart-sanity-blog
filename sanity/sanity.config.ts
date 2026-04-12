@@ -74,14 +74,6 @@ export default defineConfig({
                   .schemaType('toolProjectPage')
                   .documentId('toolProjectPage-flights')
               ),
-            S.listItem()
-              .title('Flight paths (demo)')
-              .id('toolProjectPage-flights-demo')
-              .child(
-                S.document()
-                  .schemaType('toolProjectPage')
-                  .documentId('toolProjectPage-flights-demo')
-              ),
             S.divider(),
             S.listItem()
               .title('Blog Posts')

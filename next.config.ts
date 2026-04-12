@@ -17,6 +17,15 @@ const nextConfig: NextConfig = {
       exclude: ['error', 'warn'],
     } : false,
   },
+  async redirects() {
+    return [
+      {
+        source: '/travel/flights-demo',
+        destination: '/flights',
+        permanent: true,
+      },
+    ]
+  },
   images: {
     remotePatterns: [
       {
