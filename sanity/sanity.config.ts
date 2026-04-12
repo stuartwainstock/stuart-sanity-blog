@@ -2,6 +2,7 @@ import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
 import {unsplashImageAsset} from 'sanity-plugin-asset-source-unsplash'
+import {googleAnalyticsPlugin} from 'sanity-plugin-ga-dashboard'
 import {
   author,
   blockContent,
@@ -21,6 +22,10 @@ import {
 // at runtime. Keep env override support, but fall back to this project's values.
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'ojv692hs'
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
+
+/** Hosted Studio (`*.sanity.studio`) must call your Next app’s absolute URL. Embedded `/studio` uses `/api/analytics`. */
+const gaAnalyticsApiUrl =
+  process.env.NEXT_PUBLIC_SANITY_GA_API_URL?.trim() || '/api/analytics'
 
 export default defineConfig({
   name: 'default',
@@ -152,6 +157,10 @@ export default defineConfig({
     }),
     visionTool(),
     unsplashImageAsset(),
+    googleAnalyticsPlugin({
+      apiUrl: gaAnalyticsApiUrl,
+      disabled: process.env.SANITY_DISABLE_GA_DASHBOARD === '1',
+    }),
   ],
   schema: {
     types: [

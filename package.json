@@ -45,7 +45,8 @@
     "react-dom": "^19.2.1",
     "react-map-gl": "^8.1.0",
     "sanity": "^5.20.0",
-    "sanity-plugin-asset-source-unsplash": "^7.0.5"
+    "sanity-plugin-asset-source-unsplash": "^7.0.5",
+    "sanity-plugin-ga-dashboard": "^1.0.6"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^5.1.1",

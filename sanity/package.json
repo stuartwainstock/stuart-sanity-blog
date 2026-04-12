@@ -22,6 +22,7 @@
     "react-dom": "^19.1",
     "sanity": "^5.20.0",
     "sanity-plugin-asset-source-unsplash": "^7.0.5",
+    "sanity-plugin-ga-dashboard": "^1.0.6",
     "styled-components": "^6.1.18"
   },
   "devDependencies": {
