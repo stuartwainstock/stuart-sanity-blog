@@ -10,6 +10,17 @@
 import {GET as gaDashboardGET} from 'sanity-plugin-ga-dashboard/api'
 import type {NextRequest} from 'next/server'
 
+/**
+ * Vercel and some dashboards store the PEM as one line with literal `\n` sequences.
+ * `jose` (used by the plugin) needs real newline characters in `GA_PRIVATE_KEY`.
+ */
+function normalizeGaEnvForVercel() {
+  const k = process.env.GA_PRIVATE_KEY
+  if (k && k.includes('\\n')) {
+    process.env.GA_PRIVATE_KEY = k.replace(/\\n/g, '\n')
+  }
+}
+
 function allowedOrigins(): string[] {
   const raw = process.env.SANITY_ANALYTICS_CORS_ORIGINS?.trim()
   if (!raw) return []
@@ -28,6 +39,7 @@ function applyCors(request: NextRequest, headers: Headers) {
 }
 
 export async function GET(request: NextRequest) {
+  normalizeGaEnvForVercel()
   const res = await gaDashboardGET(request)
   const headers = new Headers(res.headers)
   applyCors(request, headers)
