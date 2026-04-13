@@ -21,6 +21,20 @@ function normalizeGaEnvForVercel() {
   }
 }
 
+/**
+ * Plugin builds URLs as `.../properties/${GA_PROPERTY_ID}:runReport`.
+ * GA Admin sometimes shows `properties/123`; if that is pasted verbatim the path is invalid.
+ */
+function normalizeGaPropertyId() {
+  let id = process.env.GA_PROPERTY_ID?.trim()
+  if (!id) return
+  if (id.startsWith('properties/')) id = id.slice('properties/'.length)
+  if ((id.startsWith('"') && id.endsWith('"')) || (id.startsWith("'") && id.endsWith("'"))) {
+    id = id.slice(1, -1)
+  }
+  process.env.GA_PROPERTY_ID = id
+}
+
 function allowedOrigins(): string[] {
   const raw = process.env.SANITY_ANALYTICS_CORS_ORIGINS?.trim()
   if (!raw) return []
@@ -40,6 +54,7 @@ function applyCors(request: NextRequest, headers: Headers) {
 
 export async function GET(request: NextRequest) {
   normalizeGaEnvForVercel()
+  normalizeGaPropertyId()
   const res = await gaDashboardGET(request)
   const headers = new Headers(res.headers)
   applyCors(request, headers)
