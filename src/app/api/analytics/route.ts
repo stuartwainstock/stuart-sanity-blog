@@ -7,33 +7,9 @@
  *
  * @see https://github.com/hardik-143/sanity-plugin-ga-dashboard#setup
  */
+import {normalizeGaEnvForVercel, normalizeGaPropertyId} from '@/lib/analytics/gaEnv'
 import {GET as gaDashboardGET} from 'sanity-plugin-ga-dashboard/api'
 import type {NextRequest} from 'next/server'
-
-/**
- * Vercel and some dashboards store the PEM as one line with literal `\n` sequences.
- * `jose` (used by the plugin) needs real newline characters in `GA_PRIVATE_KEY`.
- */
-function normalizeGaEnvForVercel() {
-  const k = process.env.GA_PRIVATE_KEY
-  if (k && k.includes('\\n')) {
-    process.env.GA_PRIVATE_KEY = k.replace(/\\n/g, '\n')
-  }
-}
-
-/**
- * Plugin builds URLs as `.../properties/${GA_PROPERTY_ID}:runReport`.
- * GA Admin sometimes shows `properties/123`; if that is pasted verbatim the path is invalid.
- */
-function normalizeGaPropertyId() {
-  let id = process.env.GA_PROPERTY_ID?.trim()
-  if (!id) return
-  if (id.startsWith('properties/')) id = id.slice('properties/'.length)
-  if ((id.startsWith('"') && id.endsWith('"')) || (id.startsWith("'") && id.endsWith("'"))) {
-    id = id.slice(1, -1)
-  }
-  process.env.GA_PROPERTY_ID = id
-}
 
 function allowedOrigins(): string[] {
   const raw = process.env.SANITY_ANALYTICS_CORS_ORIGINS?.trim()
