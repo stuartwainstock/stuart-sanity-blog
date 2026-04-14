@@ -30,8 +30,9 @@ const builder = imageUrlBuilder(sanityClient)
 /**
  * Pileated Watch singleton: useCdn false + short Next revalidate so Studio
  * edits reach the site without waiting on the Sanity CDN.
+ * Wrapped in cache() to dedupe between generateMetadata and page render.
  */
-export async function fetchEbirdBirdingConfig(): Promise<EbirdBirding | null> {
+export const fetchEbirdBirdingConfig = cache(async (): Promise<EbirdBirding | null> => {
   try {
     return await sanityClient.fetch<EbirdBirding | null>(
       EBIRD_BIRDING_QUERY,
@@ -45,7 +46,7 @@ export async function fetchEbirdBirdingConfig(): Promise<EbirdBirding | null> {
     console.error('eBird birding config fetch failed:', e)
     return null
   }
-}
+})
 
 /** Dedupes between `generateMetadata` and the page render. */
 export const fetchToolProjectPageRuns = cache(async (): Promise<ToolProjectPage | null> => {
