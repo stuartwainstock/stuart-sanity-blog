@@ -4,6 +4,7 @@ import { sanityClient } from '@/lib/sanity'
 import { POSTS_BY_CATEGORY_QUERY, CATEGORIES_QUERY } from '@/lib/queries'
 import { Post, Category } from '@/lib/types'
 import PostCard from '@/components/molecules/PostCard'
+import styles from './page.module.css'
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>
@@ -64,44 +65,78 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     notFound()
   }
 
+  const categoryBadgeClass = (color?: string) => {
+    const base = styles.badge
+    switch (color) {
+      case 'blue':
+        return `${base} ${styles.badgeBlue}`
+      case 'green':
+        return `${base} ${styles.badgeGreen}`
+      case 'red':
+        return `${base} ${styles.badgeRed}`
+      case 'yellow':
+        return `${base} ${styles.badgeYellow}`
+      case 'purple':
+        return `${base} ${styles.badgePurple}`
+      case 'pink':
+        return `${base} ${styles.badgePink}`
+      case 'gray':
+      default:
+        return `${base} ${styles.badgeGray}`
+    }
+  }
+
+  const categoryChipClass = (color?: string) => {
+    const base = styles.chip
+    switch (color) {
+      case 'blue':
+        return `${base} ${styles.chipBlue}`
+      case 'green':
+        return `${base} ${styles.chipGreen}`
+      case 'red':
+        return `${base} ${styles.chipRed}`
+      case 'yellow':
+        return `${base} ${styles.chipYellow}`
+      case 'purple':
+        return `${base} ${styles.chipPurple}`
+      case 'pink':
+        return `${base} ${styles.chipPink}`
+      case 'gray':
+      default:
+        return `${base} ${styles.chipGray}`
+    }
+  }
+
   return (
-    <div className="min-h-screen py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className={styles.page}>
+      <div className={styles.container}>
         {/* Header */}
-        <div className="text-center mb-12">
-          <div className="mb-4">
-            <span className={`inline-block px-4 py-2 rounded-full text-lg font-medium
-              ${currentCategory.color === 'blue' ? 'bg-blue-100 text-blue-800' : ''}
-              ${currentCategory.color === 'green' ? 'bg-green-100 text-green-800' : ''}
-              ${currentCategory.color === 'red' ? 'bg-red-100 text-red-800' : ''}
-              ${currentCategory.color === 'yellow' ? 'bg-yellow-100 text-yellow-800' : ''}
-              ${currentCategory.color === 'purple' ? 'bg-purple-100 text-purple-800' : ''}
-              ${currentCategory.color === 'pink' ? 'bg-pink-100 text-pink-800' : ''}
-              ${currentCategory.color === 'gray' ? 'bg-gray-100 text-gray-800' : ''}
-            `}>
+        <div className={styles.header}>
+          <div className={styles.badgeWrap}>
+            <span className={categoryBadgeClass(currentCategory.color)}>
               {currentCategory.title}
             </span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          <h1 className={styles.title}>
             {currentCategory.title} Posts
           </h1>
           {currentCategory.description && (
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className={styles.subtitle}>
               {currentCategory.description}
             </p>
           )}
-          <p className="text-gray-700 mt-4">
+          <p className={styles.count}>
             {posts.length} {posts.length === 1 ? 'post' : 'posts'} found
           </p>
         </div>
 
         {/* Category Navigation */}
-        <div className="mb-12">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Other Categories</h2>
-          <div className="flex flex-wrap gap-3">
+        <div className={styles.navSection}>
+          <h2 className={styles.navHeading}>Other Categories</h2>
+          <div className={styles.chipRow}>
             <Link
               href="/journal"
-              className="px-4 py-2 bg-gray-100 text-gray-800 rounded-full hover:bg-gray-200 transition-colors"
+              className={`${styles.chip} ${styles.chipAll}`}
             >
               All Posts
             </Link>
@@ -111,15 +146,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                 <Link
                   key={category._id}
                   href={`/category/${category.slug.current}`}
-                  className={`px-4 py-2 rounded-full transition-colors
-                    ${category.color === 'blue' ? 'bg-blue-100 text-blue-800 hover:bg-blue-200' : ''}
-                    ${category.color === 'green' ? 'bg-green-100 text-green-800 hover:bg-green-200' : ''}
-                    ${category.color === 'red' ? 'bg-red-100 text-red-800 hover:bg-red-200' : ''}
-                    ${category.color === 'yellow' ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' : ''}
-                    ${category.color === 'purple' ? 'bg-purple-100 text-purple-800 hover:bg-purple-200' : ''}
-                    ${category.color === 'pink' ? 'bg-pink-100 text-pink-800 hover:bg-pink-200' : ''}
-                    ${category.color === 'gray' ? 'bg-gray-100 text-gray-800 hover:bg-gray-200' : ''}
-                  `}
+                  className={categoryChipClass(category.color)}
                 >
                   {category.title}
                 </Link>
@@ -129,27 +156,27 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
         {/* Posts Grid */}
         {posts.length > 0 ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className={styles.grid}>
             {posts.map((post) => (
               <PostCard key={post._id} post={post} />
             ))}
           </div>
         ) : (
-          <div className="text-center py-12">
-            <div className="text-gray-600 mb-4">
-              <svg className="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className={styles.empty}>
+            <div className={styles.emptyIcon}>
+              <svg className="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No posts in this category yet</h3>
-            <p className="text-gray-600 mb-6">
+            <h3 className={styles.emptyTitle}>No posts in this category yet</h3>
+            <p className={styles.emptyText}>
               Check back soon for new content in the {currentCategory.title} category.
             </p>
             <Link
               href="/journal"
-              className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
+              className={styles.backLink}
             >
-              <svg className="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className={styles.backIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
               Browse All Posts

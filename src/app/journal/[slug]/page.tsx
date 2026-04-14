@@ -7,6 +7,7 @@ import { Post } from '@/lib/types'
 import { getImageUrl } from '@/lib/sanity'
 import PortableText from '@/components/molecules/PortableText'
 import ArticleScrollProgress from '@/components/ArticleScrollProgress'
+import styles from './page.module.css'
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>
@@ -84,27 +85,40 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     day: 'numeric',
   })
 
+  const categoryChipClass = (color?: string) => {
+    const base = styles.chip
+    switch (color) {
+      case 'blue':
+        return `${base} ${styles.chipBlue}`
+      case 'green':
+        return `${base} ${styles.chipGreen}`
+      case 'red':
+        return `${base} ${styles.chipRed}`
+      case 'yellow':
+        return `${base} ${styles.chipYellow}`
+      case 'purple':
+        return `${base} ${styles.chipPurple}`
+      case 'pink':
+        return `${base} ${styles.chipPink}`
+      case 'gray':
+      default:
+        return `${base} ${styles.chipGray}`
+    }
+  }
+
   return (
-    <article id="journal-post" className="min-h-screen">
+    <article id="journal-post" className={styles.article}>
       {/* Hero Section */}
-      <header className="bg-gray-50 py-12">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <header className={styles.hero}>
+        <div className={styles.heroInner}>
           {/* Categories */}
           {post.categories && post.categories.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-6">
+            <div className={styles.categoriesRow}>
               {post.categories.map((category) => (
                 <Link
                   key={category._id}
                   href={`/category/${category.slug.current}`}
-                  className={`inline-block px-3 py-1 rounded-full text-sm font-medium transition-colors
-                    ${category.color === 'blue' ? 'bg-blue-100 text-blue-800 hover:bg-blue-200' : ''}
-                    ${category.color === 'green' ? 'bg-green-100 text-green-800 hover:bg-green-200' : ''}
-                    ${category.color === 'red' ? 'bg-red-100 text-red-800 hover:bg-red-200' : ''}
-                    ${category.color === 'yellow' ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' : ''}
-                    ${category.color === 'purple' ? 'bg-purple-100 text-purple-800 hover:bg-purple-200' : ''}
-                    ${category.color === 'pink' ? 'bg-pink-100 text-pink-800 hover:bg-pink-200' : ''}
-                    ${category.color === 'gray' ? 'bg-gray-100 text-gray-800 hover:bg-gray-200' : ''}
-                  `}
+                  className={categoryChipClass(category.color)}
                 >
                   {category.title}
                 </Link>
@@ -113,19 +127,19 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           )}
 
           {/* Title */}
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+          <h1 className={styles.title}>
             {post.title}
           </h1>
 
           {/* Excerpt */}
           {post.excerpt && (
-            <p className="text-xl text-gray-600 mb-8">
+            <p className={styles.excerpt}>
               {post.excerpt}
             </p>
           )}
 
           {/* Author and Date */}
-          <div className="flex items-center space-x-4 text-gray-600">
+          <div className={styles.metaRow}>
             {post.author && (
               <>
                 {post.author.image && (
@@ -134,17 +148,17 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                     alt={post.author.image.alt || post.author.name}
                     width={48}
                     height={48}
-                    className="rounded-full"
+                    className={styles.authorAvatar}
                   />
                 )}
                 <div>
                   <Link
                     href={`/author/${post.author.slug.current}`}
-                    className="font-medium text-gray-900 hover:text-blue-600 transition-colors"
+                    className={styles.authorLink}
                   >
                     {post.author.name}
                   </Link>
-                  <p className="text-sm text-gray-700">
+                  <p className={styles.published}>
                     Published on {formattedDate}
                   </p>
                 </div>
@@ -156,26 +170,26 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
       {/* Featured Image */}
       {post.mainImage && post.mainImage.asset && (
-        <div className="relative h-96 md:h-[500px] bg-gray-100">
+        <div className={styles.featuredImageWrap}>
           <Image
             src={getImageUrl(post.mainImage, 1200, 600)}
             alt={post.mainImage.alt || post.title}
             fill
-            className="object-cover"
+            className={styles.featuredImage}
             priority
           />
         </div>
       )}
 
       {/* Body + sticky scroll progress (desktop) */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col gap-8 lg:flex-row lg:gap-10">
-          <aside className="hidden shrink-0 justify-center lg:flex lg:w-12">
-            <div className="lg:sticky lg:top-28 lg:self-start lg:pt-2">
+      <div className={styles.bodyOuter}>
+        <div className={styles.bodyGrid}>
+          <aside className={styles.progressAside}>
+            <div className={styles.progressSticky}>
               <ArticleScrollProgress articleId="journal-post" />
             </div>
           </aside>
-          <div className="min-w-0 flex-1 max-w-4xl py-12 lg:mx-auto">
+          <div className={styles.body}>
             {post.body && (
               <PortableText value={post.body} />
             )}
@@ -185,32 +199,32 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
       {/* Author Bio */}
       {post.author && post.author.bio && (
-        <section className="bg-gray-50 py-12">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="bg-white rounded-lg p-8 shadow-sm">
-              <div className="flex items-start space-x-4">
+        <section className={styles.authorBioSection}>
+          <div className={styles.heroInner}>
+            <div className={styles.authorBioCard}>
+              <div className={styles.authorBioRow}>
                 {post.author.image && (
                   <Image
                     src={getImageUrl(post.author.image, 80, 80)}
                     alt={post.author.image.alt || post.author.name}
                     width={80}
                     height={80}
-                    className="rounded-full"
+                    className={styles.authorBioAvatar}
                   />
                 )}
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  <h3 className={styles.authorBioTitle}>
                     About {post.author.name}
                   </h3>
                   <PortableText value={post.author.bio} />
                   {post.author.social && (
-                    <div className="flex space-x-4 mt-4">
+                    <div className={styles.authorSocialRow}>
                       {post.author.social.twitter && (
                         <a
                           href={`https://twitter.com/${post.author.social.twitter}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-500 hover:text-blue-600"
+                          className={styles.authorSocialLink}
                           aria-label={`Twitter @${post.author.social.twitter} (opens in new tab)`}
                         >
                           Twitter
@@ -221,7 +235,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                           href={`https://linkedin.com/in/${post.author.social.linkedin}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-700"
+                          className={styles.authorSocialLink}
                           aria-label={`LinkedIn ${post.author.social.linkedin} (opens in new tab)`}
                         >
                           LinkedIn
@@ -232,7 +246,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                           href={`https://github.com/${post.author.social.github}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-gray-700 hover:text-gray-900"
+                          className={styles.authorSocialLink}
                           aria-label={`GitHub ${post.author.social.github} (opens in new tab)`}
                         >
                           GitHub
