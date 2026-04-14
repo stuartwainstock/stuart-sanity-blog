@@ -6,24 +6,12 @@ import {usePathname} from 'next/navigation'
 import {useState, useRef, useEffect} from 'react'
 import {SiteSettings, Page} from '@/lib/types'
 import {getImageUrl} from '@/lib/sanity'
+import styles from './Navigation.module.css'
 
 interface NavigationProps {
   siteSettings?: SiteSettings
   navigationPages?: Page[]
 }
-
-/** Tailwind text-* overrides base `a` link token — use tokens explicitly (see globals.css). */
-const navLinkClass =
-  'text-[var(--color-link)] hover:text-[var(--color-link-hover)] focus:text-[var(--color-link-hover)] px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md'
-
-const navLinkClassMobile =
-  'block text-[var(--color-link)] hover:text-[var(--color-link-hover)] focus:text-[var(--color-link-hover)] px-3 py-2 text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md'
-
-const navDropdownLinkClass =
-  'block px-4 py-2 text-sm text-[var(--color-link)] hover:bg-gray-50 hover:text-[var(--color-link-hover)] focus:bg-gray-50 focus:text-[var(--color-link-hover)] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-300'
-
-const navIconButtonClass =
-  'text-[var(--color-link)] hover:text-[var(--color-link-hover)] focus:text-[var(--color-link-hover)] focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 p-2 rounded-md'
 
 function useProjectsMenu(siteSettings?: SiteSettings) {
   const raw = siteSettings?.projectsMenu?.items ?? []
@@ -108,16 +96,16 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
 
   return (
     <nav
-      className="bg-[#e8e8e8] border-b border-gray-200"
+      className={styles.nav}
       role="navigation"
       aria-label="Main navigation"
     >
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="flex justify-between h-20">
-          <div className="flex items-center">
+      <div className={styles.container}>
+        <div className={styles.bar}>
+          <div className={styles.brand}>
             <Link
               href="/"
-              className="flex items-center focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md"
+              className={styles.brandLink}
               aria-label={`${siteSettings?.title || 'Blog'} - Go to homepage`}
             >
               {siteSettings?.logo && (
@@ -126,28 +114,28 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
                   alt={siteSettings.logo.alt || `${siteSettings?.title || 'Blog'} logo`}
                   width={32}
                   height={32}
-                  className="rounded mr-3"
+                  className={styles.logo}
                 />
               )}
-              <span className="font-medium text-lg text-gray-900">
+              <span className={styles.brandTitle}>
                 {siteSettings?.title || 'Blog'}
               </span>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <Link href="/" className={navLinkClass}>
+          <div className={styles.desktopNav}>
+            <Link href="/" className={styles.link}>
               Home
             </Link>
-            <Link href="/journal" className={navLinkClass}>
+            <Link href="/journal" className={styles.link}>
               Journal
             </Link>
             {projectItems.length > 0 ? (
-              <div className="relative" ref={projectsDropdownRef}>
+              <div className={styles.projectsWrap} ref={projectsDropdownRef}>
                 <button
                   type="button"
-                  className={`${navLinkClass} inline-flex items-center gap-1`}
+                  className={`${styles.link} ${styles.projectsButton}`}
                   aria-expanded={projectsOpen}
                   aria-haspopup="true"
                   aria-controls="nav-projects-panel"
@@ -156,7 +144,7 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
                 >
                   {projectsLabel}
                   <svg
-                    className={`h-4 w-4 shrink-0 transition-transform ${projectsOpen ? 'rotate-180' : ''}`}
+                    className={`${styles.projectsChevron} ${projectsOpen ? styles.projectsChevronOpen : ''}`}
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -173,16 +161,16 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
                 {projectsOpen ? (
                   <div
                     id="nav-projects-panel"
-                    className="absolute right-0 top-full z-100 mt-1 min-w-48 rounded-lg border border-gray-200 bg-white py-2 shadow-lg"
+                    className={styles.projectsPanel}
                     role="region"
                     aria-label={`${projectsLabel} links`}
                   >
-                    <ul className="m-0 list-none p-0" role="list">
+                    <ul className={styles.projectsList} role="list">
                       {projectItems.map((item) => (
                         <li key={item._key}>
                           <Link
                             href={item.href}
-                            className={navDropdownLinkClass}
+                            className={styles.projectsItemLink}
                             onClick={() => setProjectsOpen(false)}
                           >
                             {item.title}
@@ -198,7 +186,7 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
               <Link
                 key={page._id}
                 href={`/${page.slug.current}`}
-                className={navLinkClass}
+                className={styles.link}
               >
                 {page.title}
               </Link>
@@ -206,7 +194,7 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
+          <div className={styles.mobileButtonWrap}>
             <button
               ref={buttonRef}
               onClick={toggleMenu}
@@ -216,7 +204,7 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
                   toggleMenu()
                 }
               }}
-              className={navIconButtonClass}
+              className={styles.iconButton}
               aria-expanded={isMenuOpen}
               aria-controls="mobile-menu"
               aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
@@ -237,22 +225,22 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
           <div
             ref={menuRef}
             id="mobile-menu"
-            className="md:hidden border-t border-gray-200 bg-[#e8e8e8]"
+            className={styles.mobileMenu}
             aria-label="Mobile navigation"
           >
-            <ul className="list-none px-6 pt-4 pb-6 space-y-2 m-0">
+            <ul className={styles.mobileList}>
               <li>
                 <Link
                   ref={firstLinkRef}
                   href="/"
-                  className={navLinkClassMobile}
+                  className={styles.mobileLink}
                   onClick={closeMenu}
                 >
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/journal" className={navLinkClassMobile} onClick={closeMenu}>
+                <Link href="/journal" className={styles.mobileLink} onClick={closeMenu}>
                   Journal
                 </Link>
               </li>
@@ -260,7 +248,7 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
                 <li>
                   <button
                     type="button"
-                    className={`${navLinkClassMobile} w-full text-left`}
+                    className={`${styles.mobileLink} ${styles.mobileProjectsButton}`}
                     aria-expanded={mobileProjectsOpen}
                     aria-controls="mobile-projects-sublist"
                     id="mobile-projects-trigger"
@@ -269,7 +257,7 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
                     <span className="inline-flex w-full items-center justify-between gap-2">
                       {projectsLabel}
                       <svg
-                        className={`h-4 w-4 shrink-0 transition-transform ${mobileProjectsOpen ? 'rotate-180' : ''}`}
+                        className={`${styles.projectsChevron} ${mobileProjectsOpen ? styles.projectsChevronOpen : ''}`}
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -288,14 +276,14 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
                     <ul
                       id="mobile-projects-sublist"
                       role="list"
-                      className="m-0 mt-2 list-none space-y-1 border-l border-gray-300 pl-4"
+                      className={styles.mobileProjectsSublist}
                       aria-labelledby="mobile-projects-trigger"
                     >
                       {projectItems.map((item) => (
                         <li key={item._key}>
                           <Link
                             href={item.href}
-                            className={navLinkClassMobile}
+                            className={styles.mobileLink}
                             onClick={closeMenu}
                           >
                             {item.title}
@@ -310,7 +298,7 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
                 <li key={page._id}>
                   <Link
                     href={`/${page.slug.current}`}
-                    className={navLinkClassMobile}
+                    className={styles.mobileLink}
                     onClick={closeMenu}
                   >
                     {page.title}

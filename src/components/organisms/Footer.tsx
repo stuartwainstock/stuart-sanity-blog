@@ -1,43 +1,38 @@
 import Link from 'next/link'
 import { SiteSettings } from '@/lib/types'
+import styles from './Footer.module.css'
 
 interface FooterProps {
   siteSettings?: SiteSettings
 }
-
-const footerLinkClass =
-  'text-[var(--color-link)] hover:text-[var(--color-link-hover)] focus:text-[var(--color-link-hover)] transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md px-1 py-0.5'
-
-const footerSocialLinkClass =
-  'text-[var(--color-link)] hover:text-[var(--color-link-hover)] focus:text-[var(--color-link-hover)] transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md p-1'
 
 export default function Footer({ siteSettings }: FooterProps) {
   const currentYear = new Date().getFullYear()
 
   return (
     <footer 
-      className="bg-[#e8e8e8] border-t border-gray-200" 
+      className={styles.footer}
       role="contentinfo"
       aria-label="Site footer"
     >
-      <div className="max-w-6xl mx-auto px-6 pt-10 pb-12 md:pt-12 md:pb-16">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+      <div className={styles.container}>
+        <div className={styles.grid}>
           {/* Site Info - Always first column */}
           <div>
-            <h3 className="text-lg font-medium mb-4 text-gray-900">
+            <h3 className={styles.heading}>
               {siteSettings?.title || 'Blog'}
             </h3>
-            <p className="text-gray-600 mb-6 leading-relaxed">
+            <p className={styles.description}>
               {siteSettings?.description || 'A modern blog built with Next.js and Sanity.'}
             </p>
             {siteSettings?.social && (
-              <nav className="flex space-x-6" aria-label="Social media links">
+              <nav className={styles.socialNav} aria-label="Social media links">
                 {siteSettings.social.twitter && (
                   <a
                     href={`https://twitter.com/${siteSettings.social.twitter}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={footerSocialLinkClass}
+                    className={styles.socialLink}
                     aria-label={`Follow us on Twitter: @${siteSettings.social.twitter} (opens in new tab)`}
                   >
                     <span className="sr-only">Twitter</span>
@@ -51,7 +46,7 @@ export default function Footer({ siteSettings }: FooterProps) {
                     href={`https://github.com/${siteSettings.social.github}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={footerSocialLinkClass}
+                    className={styles.socialLink}
                     aria-label={`View our GitHub profile: ${siteSettings.social.github} (opens in new tab)`}
                   >
                     <span className="sr-only">GitHub</span>
@@ -65,7 +60,7 @@ export default function Footer({ siteSettings }: FooterProps) {
                     href={`https://linkedin.com/in/${siteSettings.social.linkedin}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={footerSocialLinkClass}
+                    className={styles.socialLink}
                     aria-label={`Connect with us on LinkedIn: ${siteSettings.social.linkedin} (opens in new tab)`}
                   >
                     <span className="sr-only">LinkedIn</span>
@@ -81,11 +76,11 @@ export default function Footer({ siteSettings }: FooterProps) {
           {/* Configurable Footer Sections */}
           {siteSettings?.footer?.sections?.map((section, sectionIndex) => (
             <div key={sectionIndex}>
-              <h3 className="text-lg font-medium mb-4 text-gray-900">
+              <h3 className={styles.heading}>
                 {section.title}
               </h3>
               <nav aria-label={`${section.title} navigation`}>
-                <ul className="space-y-3">
+                <ul className={styles.linksList}>
                   {section.links?.map((link, linkIndex) => (
                     <li key={linkIndex}>
                       {link.external ? (
@@ -93,7 +88,7 @@ export default function Footer({ siteSettings }: FooterProps) {
                           href={link.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className={footerLinkClass}
+                          className={styles.link}
                           aria-label={`${link.title} (opens in new tab)`}
                         >
                           {link.title}
@@ -101,7 +96,7 @@ export default function Footer({ siteSettings }: FooterProps) {
                       ) : (
                         <Link
                           href={link.url}
-                          className={footerLinkClass}
+                          className={styles.link}
                         >
                           {link.title}
                         </Link>
@@ -114,8 +109,8 @@ export default function Footer({ siteSettings }: FooterProps) {
           ))}
         </div>
 
-        <div className="mt-12 pt-8 border-t border-gray-200">
-          <p className="text-center text-gray-700 text-sm">
+        <div className={styles.bottom}>
+          <p className={styles.copyright}>
             {siteSettings?.footer?.copyright || `© ${currentYear} ${siteSettings?.title || 'Blog'}. All rights reserved.`}
           </p>
         </div>
