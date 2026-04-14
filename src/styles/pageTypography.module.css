@@ -1,0 +1,97 @@
+.pageShellBg {
+  min-height: 100vh;
+  background-color: var(--color-background);
+}
+
+.pageBanner {
+  padding-top: 6rem; /* pt-24 */
+  padding-bottom: 1rem; /* pb-4 */
+  padding-left: 2rem; /* px-8 */
+  padding-right: 2rem;
+}
+
+.pageInner {
+  max-width: 64rem; /* max-w-5xl */
+  margin: 0 auto;
+}
+
+.pageTitleH1 {
+  font-size: 2.25rem; /* text-4xl */
+  font-weight: 600;
+  margin-bottom: 3rem; /* mb-12 */
+  color: #111827;
+  line-height: 1.25;
+}
+
+.pageTitleH1DataPage {
+  composes: pageTitleH1;
+  margin-bottom: 1rem; /* mb-4 */
+}
+
+.pageDataSourceCredit {
+  font-size: 0.875rem; /* text-sm */
+  color: #4b5563;
+  margin-bottom: 2.5rem; /* mb-10 */
+  max-width: 56rem; /* max-w-4xl */
+}
+
+.pageDataSourceCredit > * + * {
+  margin-top: 0.5rem; /* space-y-2 */
+}
+
+.pageDataSourceLink {
+  color: var(--color-link);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.pageDataSourceLink:hover {
+  color: var(--color-link-hover);
+}
+
+.pageExcerpt {
+  font-size: 1.875rem; /* 30px */
+  font-weight: 300;
+  letter-spacing: 2px;
+  line-height: 1.6;
+  margin-bottom: 0.5rem;
+  color: #4b5563;
+  max-width: 56rem;
+}
+
+.pageContent {
+  max-width: 64rem; /* max-w-5xl */
+  margin: 0 auto;
+  padding-left: 2rem; /* px-8 */
+  padding-right: 2rem;
+  padding-top: 0.5rem; /* pt-2 */
+  padding-bottom: 4rem; /* pb-16 */
+}
+
+.pageBodyTypography {
+  font-size: 1.875rem; /* 30px */
+  font-weight: 300;
+  letter-spacing: 2px;
+  line-height: 1.6;
+  color: #4b5563;
+}
+
+.pageBodyParagraph {
+  composes: pageBodyTypography;
+  max-width: 56rem; /* max-w-4xl */
+}
+
+.pageSectionHeading {
+  font-size: 1.875rem; /* text-3xl */
+  font-weight: 700;
+  color: #111827;
+  margin-top: 2.5rem; /* mt-10 */
+  margin-bottom: 1.25rem; /* mb-5 */
+}
+
+.pageKicker {
+  font-size: 0.875rem;
+  color: #4b5563;
+  margin-bottom: 1rem;
+}
+
