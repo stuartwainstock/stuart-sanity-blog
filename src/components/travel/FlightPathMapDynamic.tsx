@@ -16,6 +16,8 @@ type Props = {
   flights: FlightLeg[]
   airports: AirportCoords
   className?: string
+  /** Hex strings cycled per route; omit to use `color.link` (`--color-link`). */
+  lineColors?: string[]
 }
 
 /** MapLibre loads client-only in Next.js App Router. */

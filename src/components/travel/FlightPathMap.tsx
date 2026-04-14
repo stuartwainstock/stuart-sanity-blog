@@ -1,25 +1,21 @@
 'use client'
 
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react'
 import Map, {Layer, NavigationControl, Source, type MapRef} from 'react-map-gl/maplibre'
 import {LngLatBounds} from 'maplibre-gl'
 import type {Feature, FeatureCollection} from 'geojson'
 import {maplibregl} from '@/lib/maplibreClient'
 import {SITE_MAP_STYLE} from '@/lib/maps/cartoStyle'
+import {readCssVarColor} from '@/lib/tokens/readCssVarColor'
 import {greatCircleSegmentsGeoJson, haversineKm} from '@/lib/travel/greatCircle'
 import type {AirportCoords, FlightLeg} from '@/lib/travel/types'
+import colorSource from '../../../tokens/color.json'
 
 const FLIGHT_LINE_LAYER_ID = 'flight-paths-lines'
 
-const LINE_COLORS = [
-  '#2563eb',
-  '#dc2626',
-  '#16a34a',
-  '#9333ea',
-  '#ea580c',
-  '#0891b2',
-  '#c026d3',
-]
+const LINK_COLOR_FALLBACK = (
+  colorSource as {color: {link: {'$value': string}}}
+).color.link['$value']
 
 function formatDisplayDate(isoDate: string): string {
   const d = new Date(`${isoDate}T12:00:00Z`)
@@ -33,6 +29,7 @@ function formatDisplayDate(isoDate: string): string {
 function buildFlightGeoJson(
   flights: FlightLeg[],
   airports: AirportCoords,
+  palette: string[],
 ): FeatureCollection {
   const features: FeatureCollection['features'] = []
 
@@ -51,7 +48,7 @@ function buildFlightGeoJson(
 
     const distanceKm = haversineKm(o.lat, o.lng, d.lat, d.lng)
     const segments = greatCircleSegmentsGeoJson(o, d, 72)
-    const color = LINE_COLORS[index % LINE_COLORS.length]!
+    const color = palette[index % palette.length]!
 
     segments.forEach((coordinates, segIdx) => {
       if (coordinates.length < 2) return
@@ -128,11 +125,22 @@ export type FlightPathMapProps = {
   flights: FlightLeg[]
   airports: AirportCoords
   className?: string
+  /**
+   * Optional palette (cycled by flight order). If omitted, routes use the `color.link` token
+   * (`--color-link`), resolved for MapLibre since line paint cannot use CSS `var()`.
+   */
+  lineColors?: string[]
 }
 
-export default function FlightPathMap({flights, airports, className}: FlightPathMapProps) {
+export default function FlightPathMap({
+  flights,
+  airports,
+  className,
+  lineColors,
+}: FlightPathMapProps) {
   const mapRef = useRef<MapRef>(null)
   const [mapReady, setMapReady] = useState(false)
+  const [linkLineColor, setLinkLineColor] = useState(LINK_COLOR_FALLBACK)
   const [hover, setHover] = useState<null | {
     x: number
     y: number
@@ -141,7 +149,19 @@ export default function FlightPathMap({flights, airports, className}: FlightPath
     distance: string
   }>(null)
 
-  const geojson = useMemo(() => buildFlightGeoJson(flights, airports), [flights, airports])
+  useLayoutEffect(() => {
+    setLinkLineColor(readCssVarColor('--color-link', LINK_COLOR_FALLBACK))
+  }, [])
+
+  const palette = useMemo(() => {
+    if (lineColors && lineColors.length > 0) return lineColors
+    return [linkLineColor]
+  }, [lineColors, linkLineColor])
+
+  const geojson = useMemo(
+    () => buildFlightGeoJson(flights, airports, palette),
+    [flights, airports, palette],
+  )
   const hasRoutes = geojson.features.length > 0
 
   const fitToFlights = useCallback(() => {
