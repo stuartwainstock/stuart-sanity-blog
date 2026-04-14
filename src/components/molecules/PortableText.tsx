@@ -4,6 +4,7 @@ import type {TypedObject} from '@portabletext/types'
 import Image from 'next/image'
 import { getImageUrl } from '@/lib/sanity'
 import type {SanityImage} from '@/lib/types'
+import styles from './PortableText.module.css'
 
 type PortableTextMarkLink = {href?: string}
 type PortableTextImageValue = SanityImage
@@ -20,46 +21,38 @@ interface PortableTextProps {
 }
 
 function buildComponents(pageBody: boolean): PortableTextComponents {
-  const normalClass = pageBody
-    ? 'mb-6 text-inherit'
-    : 'text-gray-700 mb-6 leading-relaxed'
-  const listClass = pageBody
-    ? 'list-disc list-inside mb-6 space-y-2 text-inherit'
-    : 'list-disc list-inside mb-6 space-y-2 text-gray-700'
-  const olClass = pageBody
-    ? 'list-decimal list-inside mb-6 space-y-2 text-inherit'
-    : 'list-decimal list-inside mb-6 space-y-2 text-gray-700'
-  const blockquoteClass = pageBody
-    ? 'border-l-4 border-blue-500 pl-6 my-8 italic text-inherit bg-gray-50 py-4'
-    : 'border-l-4 border-blue-500 pl-6 my-8 italic text-gray-600 bg-gray-50 py-4'
+  const normalClass = pageBody ? styles.normalPageBody : styles.normalDefault
+  const ulClass = `${pageBody ? styles.listPageBody : styles.listDefault} ${styles.ulDisc}`
+  const olClass = `${pageBody ? styles.listPageBody : styles.listDefault} ${styles.olDecimal}`
+  const blockquoteClass = pageBody ? styles.blockquotePageBody : styles.blockquoteDefault
 
   return {
   types: {
     image: ({value}: {value: PortableTextImageValue}) => (
-      <div className="my-8">
+      <div className={styles.imageBlock}>
         <Image
           src={getImageUrl(value, 800, 600)}
           alt={value.alt || 'Blog image'}
           width={800}
           height={600}
-          className="rounded-lg"
+          className={styles.image}
         />
         {value.caption && (
-          <p className="text-sm text-gray-600 text-center mt-2 italic">
+          <p className={styles.caption}>
             {value.caption}
           </p>
         )}
         {value.credit && (
-          <p className="text-xs text-gray-700 text-center mt-1">
+          <p className={styles.credit}>
             Photo by {value.credit}
           </p>
         )}
       </div>
     ),
     codeBlock: ({value}: {value: PortableTextCodeValue}) => (
-      <div className="my-8">
+      <div className={styles.codeBlockWrap}>
         <pre 
-          className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"
+          className={styles.codePre}
           role="region"
           aria-label={`Code block: ${value.language || 'text'}`}
           tabIndex={0}
@@ -73,22 +66,22 @@ function buildComponents(pageBody: boolean): PortableTextComponents {
   },
   block: {
     h1: ({children}: {children?: ReactNode}) => (
-      <h1 className="text-4xl font-bold text-gray-900 mt-12 mb-6 first:mt-0">
+      <h1 className={styles.h1}>
         {children}
       </h1>
     ),
     h2: ({children}: {children?: ReactNode}) => (
-      <h2 className="text-3xl font-bold text-gray-900 mt-10 mb-5 first:mt-0">
+      <h2 className={styles.h2}>
         {children}
       </h2>
     ),
     h3: ({children}: {children?: ReactNode}) => (
-      <h3 className="text-2xl font-bold text-gray-900 mt-8 mb-4 first:mt-0">
+      <h3 className={styles.h3}>
         {children}
       </h3>
     ),
     h4: ({children}: {children?: ReactNode}) => (
-      <h4 className="text-xl font-bold text-gray-900 mt-6 mb-3 first:mt-0">
+      <h4 className={styles.h4}>
         {children}
       </h4>
     ),
@@ -105,7 +98,7 @@ function buildComponents(pageBody: boolean): PortableTextComponents {
   },
   list: {
     bullet: ({children}: {children?: ReactNode}) => (
-      <ul className={listClass}>
+      <ul className={ulClass}>
         {children}
       </ul>
     ),
@@ -121,13 +114,13 @@ function buildComponents(pageBody: boolean): PortableTextComponents {
   },
   marks: {
     strong: ({children}: {children?: ReactNode}) => (
-      <strong className="font-semibold text-gray-900">{children}</strong>
+      <strong className={styles.strong}>{children}</strong>
     ),
     em: ({children}: {children?: ReactNode}) => (
       <em className="italic">{children}</em>
     ),
     code: ({children}: {children?: ReactNode}) => (
-      <code className="bg-gray-100 text-gray-900 px-2 py-1 rounded text-sm font-mono">
+      <code className={styles.inlineCode}>
         {children}
       </code>
     ),
@@ -137,7 +130,7 @@ function buildComponents(pageBody: boolean): PortableTextComponents {
       return (
         <a
           href={href}
-          className="link-custom underline underline-offset-2"
+          className={styles.link}
           target={isExternal ? '_blank' : undefined}
           rel={isExternal ? 'noopener noreferrer' : undefined}
         >
@@ -159,9 +152,7 @@ export default function PortableText({
   pageBodyTypography: pageBody = false,
 }: PortableTextProps) {
   const components = pageBody ? pageBodyComponents : defaultComponents
-  const wrapper = pageBody
-    ? `max-w-none ${className}`.trim()
-    : `prose prose-lg max-w-none ${className}`.trim()
+  const wrapper = `${styles.wrapper} ${className}`.trim()
   return (
     <div className={wrapper}>
       <BasePortableText value={value} components={components} />
