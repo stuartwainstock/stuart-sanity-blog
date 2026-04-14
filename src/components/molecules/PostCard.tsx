@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Post } from '@/lib/types'
 import { getImageUrl } from '@/lib/sanity'
+import styles from './PostCard.module.css'
 
 interface PostCardProps {
   post: Post
@@ -15,42 +16,57 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
     day: 'numeric',
   })
 
+  const categoryChipClass = (color?: string) => {
+    const base = styles.chip
+    switch (color) {
+      case 'blue':
+        return `${base} ${styles.chipBlue}`
+      case 'green':
+        return `${base} ${styles.chipGreen}`
+      case 'red':
+        return `${base} ${styles.chipRed}`
+      case 'yellow':
+        return `${base} ${styles.chipYellow}`
+      case 'purple':
+        return `${base} ${styles.chipPurple}`
+      case 'pink':
+        return `${base} ${styles.chipPink}`
+      case 'gray':
+      default:
+        return `${base} ${styles.chipGray}`
+    }
+  }
+
   return (
-    <article className={`bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow ${featured ? 'md:flex' : ''}`}>
+    <article className={`${styles.card} ${featured ? styles.featured : ''}`}>
       {post.mainImage && (
-        <div className={`relative ${featured ? 'md:w-1/2' : 'w-full h-48'}`}>
+        <div
+          className={`${styles.media} ${featured ? styles.mediaFeatured : styles.mediaStandard}`}
+        >
           <Link href={`/journal/${post.slug.current}`}>
             <Image
               src={getImageUrl(post.mainImage, featured ? 600 : 400, featured ? 400 : 250)}
               alt={post.mainImage.alt || post.title}
               fill
-              className="object-cover hover:scale-105 transition-transform duration-300"
+              className={styles.image}
             />
           </Link>
           {post.mainImage.credit && (
-            <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+            <div className={styles.credit}>
               Photo by {post.mainImage.credit}
             </div>
           )}
         </div>
       )}
       
-      <div className={`p-6 ${featured ? 'md:w-1/2' : ''}`}>
+      <div className={`${styles.body} ${featured ? styles.bodyFeatured : ''}`}>
         {post.categories && post.categories.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-3">
+          <div className={styles.categories}>
             {post.categories.map((category) => (
               <Link
                 key={category._id}
                 href={`/category/${category.slug.current}`}
-                className={`inline-block px-3 py-1 rounded-full text-xs font-medium transition-colors
-                  ${category.color === 'blue' ? 'bg-blue-100 text-blue-800 hover:bg-blue-200' : ''}
-                  ${category.color === 'green' ? 'bg-green-100 text-green-800 hover:bg-green-200' : ''}
-                  ${category.color === 'red' ? 'bg-red-100 text-red-800 hover:bg-red-200' : ''}
-                  ${category.color === 'yellow' ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' : ''}
-                  ${category.color === 'purple' ? 'bg-purple-100 text-purple-800 hover:bg-purple-200' : ''}
-                  ${category.color === 'pink' ? 'bg-pink-100 text-pink-800 hover:bg-pink-200' : ''}
-                  ${category.color === 'gray' ? 'bg-gray-100 text-gray-800 hover:bg-gray-200' : ''}
-                `}
+                className={categoryChipClass(category.color)}
               >
                 {category.title}
               </Link>
@@ -58,20 +74,22 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
           </div>
         )}
         
-        <h2 className={`font-bold text-gray-900 mb-3 ${featured ? 'text-2xl' : 'text-xl'}`}>
-          <Link href={`/journal/${post.slug.current}`} className="!text-[rgb(79,79,79)] hover:!text-[rgb(79,79,79)] transition-colors">
+        <h2
+          className={`${styles.title} ${featured ? styles.titleFeatured : styles.titleStandard}`}
+        >
+          <Link href={`/journal/${post.slug.current}`} className={styles.titleLink}>
             {post.title}
           </Link>
         </h2>
         
         {post.excerpt && (
-          <p className="text-gray-600 mb-4 line-clamp-3">
+          <p className={`${styles.excerpt} line-clamp-3`}>
             {post.excerpt}
           </p>
         )}
         
-        <div className="flex items-center justify-between text-sm text-gray-700">
-          <div className="flex items-center space-x-3">
+        <div className={styles.meta}>
+          <div className={styles.authorRow}>
             {post.author && (
               <>
                 {post.author.image && (
@@ -80,12 +98,12 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
                     alt={post.author.image.alt || post.author.name}
                     width={32}
                     height={32}
-                    className="rounded-full"
+                    className={styles.authorAvatar}
                   />
                 )}
                 <Link
                   href={`/author/${post.author.slug.current}`}
-                  className="!text-[rgb(79,79,79)] hover:!text-[rgb(79,79,79)] transition-colors"
+                  className={styles.authorLink}
                 >
                   {post.author.name}
                 </Link>
@@ -96,13 +114,13 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
         </div>
         
         {featured && (
-          <div className="mt-4">
+          <div className={styles.readMoreWrap}>
             <Link
               href={`/journal/${post.slug.current}`}
-              className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
+              className={styles.readMore}
             >
               Read more
-              <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className={styles.readMoreIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </Link>

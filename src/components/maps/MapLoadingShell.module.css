@@ -1,0 +1,46 @@
+.wrapSmallGap {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.wrapMediumGap {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.label {
+  font-size: 0.875rem;
+  color: #4b5563;
+  max-width: 56rem;
+}
+
+.shell {
+  width: 100%;
+  height: min(70vh, 520px);
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  background: #f3f4f6;
+}
+
+.shellTall {
+  height: min(70vh, 560px);
+}
+
+.pulse {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4b5563;
+  font-size: 0.875rem;
+}
+
