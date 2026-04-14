@@ -2,6 +2,7 @@ import type {Metadata} from 'next'
 import Link from 'next/link'
 import {isStravaAdminAuthConfigured, safeRelativeRedirectPath} from '@/lib/admin/session'
 import {pageContent, pageShellBg} from '@/lib/pageTypography'
+import styles from './page.module.css'
 
 export const metadata: Metadata = {
   title: 'Sign in',
@@ -20,12 +21,12 @@ export default async function AdminLoginPage({
     return (
       <div className={pageShellBg}>
         <div className={pageContent}>
-          <h1 className="text-2xl font-semibold text-gray-900 mb-4">Admin sign-in unavailable</h1>
-          <p className="text-gray-700 mb-6">
-            Set <code className="text-sm bg-gray-100 px-1 rounded">ADMIN_PASSWORD</code> in the environment
+          <h1 className={styles.title}>Admin sign-in unavailable</h1>
+          <p className={styles.lead}>
+            Set <code className={styles.code}>ADMIN_PASSWORD</code> in the environment
             to enable protected Strava OAuth.
           </p>
-          <Link href="/" className="text-orange-600 hover:text-orange-700 font-medium">
+          <Link href="/" className={styles.navLink}>
             Home
           </Link>
         </div>
@@ -36,19 +37,19 @@ export default async function AdminLoginPage({
   return (
     <div className={pageShellBg}>
       <div className={pageContent}>
-        <h1 className="text-2xl font-semibold text-gray-900 mb-2">Site admin sign-in</h1>
-        <p className="text-gray-600 mb-6 max-w-lg">
-          Enter the password configured as <code className="text-sm bg-gray-100 px-1 rounded">ADMIN_PASSWORD</code>{' '}
+        <h1 className={`${styles.title} ${styles.titleTight}`}>Site admin sign-in</h1>
+        <p className={styles.leadNarrow}>
+          Enter the password configured as <code className={styles.code}>ADMIN_PASSWORD</code>{' '}
           in your deployment. This is required before connecting Strava or completing the OAuth callback.
         </p>
         <form
           action="/api/admin/session"
           method="post"
-          className="max-w-sm space-y-4"
+          className={styles.form}
         >
           <input type="hidden" name="next" value={nextPath} />
-          <div>
-            <label htmlFor="admin-password" className="block text-sm font-medium text-gray-800 mb-1">
+          <div className={styles.field}>
+            <label htmlFor="admin-password" className={styles.label}>
               Password
             </label>
             <input
@@ -57,21 +58,21 @@ export default async function AdminLoginPage({
               type="password"
               required
               autoComplete="current-password"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500"
+              className={styles.input}
             />
           </div>
           <button
             type="submit"
-            className="w-full rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+            className={styles.submit}
           >
             Sign in
           </button>
         </form>
-        <p className="mt-8 text-sm text-gray-600 space-x-4">
-          <Link href="/" className="text-orange-600 hover:text-orange-700 font-medium">
+        <p className={styles.footerLinks}>
+          <Link href="/" className={styles.navLink}>
             Home
           </Link>
-          <Link href="/admin/strava" className="text-orange-600 hover:text-orange-700 font-medium">
+          <Link href="/admin/strava" className={styles.navLink}>
             Strava sync (after you sign in)
           </Link>
         </p>
