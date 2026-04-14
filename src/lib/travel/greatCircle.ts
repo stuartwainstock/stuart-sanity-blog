@@ -52,8 +52,34 @@ function vecToLngLat(v: [number, number, number]): [number, number] {
 }
 
 /**
+ * `vecToLngLat` returns principal longitudes in (-180, 180]. Along a Pacific great circle,
+ * consecutive samples can jump from ~-170° to ~+170°; MapLibre then draws a straight segment
+ * across the whole map. Shift longitudes by ±360° so each step is the short turn, matching
+ * the continuous arc (MapLibre accepts |lng| > 180 for this purpose).
+ */
+export function unwrapGreatCircleLongitudes(coords: [number, number][]): [number, number][] {
+  if (coords.length < 2) return coords
+  const out: [number, number][] = coords.map((c) => [c[0], c[1]])
+  for (let i = 1; i < out.length; i++) {
+    let lng = out[i][0]
+    const prevLng = out[i - 1][0]
+    let delta = lng - prevLng
+    while (delta > 180) {
+      lng -= 360
+      delta = lng - prevLng
+    }
+    while (delta < -180) {
+      lng += 360
+      delta = lng - prevLng
+    }
+    out[i][0] = lng
+  }
+  return out
+}
+
+/**
  * Sample a great circle from `start` to `end` as one GeoJSON LineString ring.
- * (Single segment; dateline edge cases are acceptable for itinerary visualization.)
+ * Longitudes are unwrapped across the antimeridian so lines render as smooth arcs.
  */
 function greatCircleLineStringCoords(
   start: {lat: number; lng: number},
@@ -69,7 +95,7 @@ function greatCircleLineStringCoords(
     const p = normalizeVec(slerp(a, b, t))
     coords.push(vecToLngLat(p))
   }
-  return coords
+  return unwrapGreatCircleLongitudes(coords)
 }
 
 /**

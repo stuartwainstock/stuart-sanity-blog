@@ -104,13 +104,18 @@ function propsFromFeature(
   return {dateLabel, origin, destination, distanceKm}
 }
 
-function fitMapToGeoJson(map: maplibregl.Map, data: FeatureCollection) {
+/** Fit to airport endpoints only — line vertices may use lng outside ±180° after antimeridian unwrap. */
+function fitMapToRouteEndpoints(
+  map: maplibregl.Map,
+  flights: FlightLeg[],
+  airports: AirportCoords,
+) {
   const bounds = new LngLatBounds()
-  for (const f of data.features) {
-    if (f.geometry.type !== 'LineString') continue
-    for (const c of f.geometry.coordinates) {
-      bounds.extend(c as [number, number])
-    }
+  for (const flight of flights) {
+    const o = airports[flight.origin]
+    const d = airports[flight.destination]
+    if (o && flight.origin !== flight.destination) bounds.extend([o.lng, o.lat])
+    if (d && flight.origin !== flight.destination) bounds.extend([d.lng, d.lat])
   }
   try {
     map.fitBounds(bounds, {padding: 56, maxZoom: 7, duration: 0})
@@ -142,8 +147,8 @@ export default function FlightPathMap({flights, airports, className}: FlightPath
   const fitToFlights = useCallback(() => {
     const map = mapRef.current?.getMap()
     if (!map || !hasRoutes) return
-    fitMapToGeoJson(map, geojson)
-  }, [geojson, hasRoutes])
+    fitMapToRouteEndpoints(map, flights, airports)
+  }, [airports, flights, hasRoutes])
 
   useEffect(() => {
     if (!mapReady) return
