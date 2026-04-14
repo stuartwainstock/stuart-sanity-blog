@@ -1,0 +1,16 @@
+.dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 1rem;
+  row-gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.dt {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: #4b5563;
+}
+
+.dd {
+  color: #111827;
+}

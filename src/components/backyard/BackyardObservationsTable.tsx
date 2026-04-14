@@ -1,5 +1,6 @@
 import type {BirdObservation} from '@/lib/ebird/types'
-import {pageBodyParagraph, pageSectionHeading} from '@/lib/pageTypography'
+import {pageBodyGap, pageBodyParagraph, pageSectionHeading} from '@/lib/pageTypography'
+import dt from '@/components/ui/DataTable.module.css'
 
 type Props = {
   observations: BirdObservation[]
@@ -24,61 +25,57 @@ export default function BackyardObservationsTable({
   const colCount = 7
 
   return (
-    <section
-      id={sectionId}
-      className="scroll-mt-24"
-      aria-labelledby={headingId}
-    >
+    <section id={sectionId} className="scroll-mt-24" aria-labelledby={headingId}>
       <h2 id={headingId} className={pageSectionHeading}>
         {heading}
       </h2>
       {typeof intro === 'string' ? (
-        <p className={`${pageBodyParagraph} mb-6`}>{intro}</p>
+        <p className={`${pageBodyParagraph} ${pageBodyGap}`}>{intro}</p>
       ) : (
-        <div className={`${pageBodyParagraph} mb-6`}>{intro}</div>
+        <div className={`${pageBodyParagraph} ${pageBodyGap}`}>{intro}</div>
       )}
-      <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
-        <table className="min-w-full text-left text-sm border-collapse">
+      <div className={dt.wrap}>
+        <table className={dt.table}>
           <caption className="sr-only">
             Recent eBird sightings: date, species, location, observer, coordinates,
             checklist link
           </caption>
-          <thead className="bg-gray-100 text-gray-800">
+          <thead className={dt.thead}>
             <tr>
-              <th scope="col" className="px-4 py-3 font-medium">
+              <th scope="col" className={dt.th}>
                 Date
               </th>
-              <th scope="col" className="px-4 py-3 font-medium">
+              <th scope="col" className={dt.th}>
                 Species
               </th>
-              <th scope="col" className="px-4 py-3 font-medium">
+              <th scope="col" className={dt.th}>
                 Location
               </th>
-              <th scope="col" className="px-4 py-3 font-medium">
+              <th scope="col" className={dt.th}>
                 Observer
               </th>
-              <th scope="col" className="px-4 py-3 font-medium">
+              <th scope="col" className={dt.th}>
                 Latitude
               </th>
-              <th scope="col" className="px-4 py-3 font-medium">
+              <th scope="col" className={dt.th}>
                 Longitude
               </th>
-              <th scope="col" className="px-4 py-3 font-medium">
+              <th scope="col" className={dt.th}>
                 eBird
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200 bg-white">
+          <tbody className={dt.tbody}>
             {observations.length === 0 ? (
               <tr>
-                <td colSpan={colCount} className="px-4 py-8 text-center text-gray-600">
+                <td colSpan={colCount} className={dt.tdCenter}>
                   {emptyMessage}
                 </td>
               </tr>
             ) : (
               observations.map((o) => (
-                <tr key={o.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 whitespace-nowrap text-gray-800">
+                <tr key={o.id} className={dt.rowHover}>
+                  <td className={`${dt.td} ${dt.nowrap} ${dt.tdMuted}`}>
                     {o.observedOn
                       ? new Date(o.observedOn).toLocaleDateString(undefined, {
                           year: 'numeric',
@@ -87,25 +84,25 @@ export default function BackyardObservationsTable({
                         })
                       : '—'}
                   </td>
-                  <td className="px-4 py-3 text-gray-900">{o.speciesName}</td>
-                  <td className="px-4 py-3 text-gray-700 max-w-[12rem] truncate">
+                  <td className={`${dt.td} ${dt.tdStrong}`}>{o.speciesName}</td>
+                  <td className={`${dt.td} ${dt.tdMuted} ${dt.maxW12} ${dt.truncate}`}>
                     {o.locationLabel || '—'}
                   </td>
-                  <td className="px-4 py-3 text-gray-700 max-w-[10rem] truncate">
+                  <td className={`${dt.td} ${dt.tdMuted} ${dt.maxW10} ${dt.truncate}`}>
                     {o.observerDisplayName || '—'}
                   </td>
-                  <td className="px-4 py-3 font-mono text-gray-700 tabular-nums">
+                  <td className={`${dt.td} ${dt.mono} ${dt.tdMuted} ${dt.tabular}`}>
                     {o.latitude.toFixed(5)}
                   </td>
-                  <td className="px-4 py-3 font-mono text-gray-700 tabular-nums">
+                  <td className={`${dt.td} ${dt.mono} ${dt.tdMuted} ${dt.tabular}`}>
                     {o.longitude.toFixed(5)}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className={dt.td}>
                     <a
                       href={o.checklistUri}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-emerald-800 underline underline-offset-2 hover:text-emerald-950 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 rounded-sm"
+                      className={dt.linkEmerald}
                     >
                       Checklist
                       <span className="sr-only"> for {o.speciesName}</span>

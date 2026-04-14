@@ -209,7 +209,7 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
               aria-controls="mobile-menu"
               aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
             >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <svg className={styles.menuIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 {isMenuOpen ? (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
                 ) : (
@@ -254,7 +254,7 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
                     id="mobile-projects-trigger"
                     onClick={() => setMobileProjectsOpen((o) => !o)}
                   >
-                    <span className="inline-flex w-full items-center justify-between gap-2">
+                    <span className={styles.projectsTriggerRow}>
                       {projectsLabel}
                       <svg
                         className={`${styles.projectsChevron} ${mobileProjectsOpen ? styles.projectsChevronOpen : ''}`}

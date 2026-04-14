@@ -1,5 +1,6 @@
 import type {Meta, StoryObj} from '@storybook/nextjs-vite'
 import Button from '@/components/atoms/Button'
+import s from './Button.stories.module.css'
 
 const meta = {
   title: 'Atoms/Button',
@@ -28,7 +29,7 @@ export const Playground: Story = {}
 
 export const Neutral: Story = {
   render: (args) => (
-    <div className="flex flex-wrap gap-3">
+    <div className={s.row}>
       <Button {...args} tone="neutral" variant="primary">
         Primary
       </Button>
@@ -44,7 +45,7 @@ export const Neutral: Story = {
 
 export const Brand: Story = {
   render: (args) => (
-    <div className="flex flex-wrap gap-3">
+    <div className={s.row}>
       <Button {...args} tone="brand" variant="primary">
         Primary
       </Button>

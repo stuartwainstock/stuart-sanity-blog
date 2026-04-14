@@ -179,6 +179,13 @@
   margin-bottom: 1rem;
 }
 
+.emptySvg {
+  display: block;
+  margin: 0 auto;
+  width: 3rem;
+  height: 3rem;
+}
+
 .emptyTitle {
   font-size: 1.125rem;
   font-weight: 500;

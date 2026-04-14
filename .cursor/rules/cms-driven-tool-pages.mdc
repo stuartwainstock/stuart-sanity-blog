@@ -18,6 +18,7 @@ When adding **new “Projects” pages** (routes like `/runs`, `/pileated-watch`
 - **Render Portable Text** for copy blocks via `src/components/molecules/PortableText.tsx`.
 - **Keep attribution/terms in code** when required (e.g. “Data from Strava”, OSM/ODbL credit).
 - **Provide fallbacks** in code when CMS docs/fields are missing (safe defaults; never crash the page).
+- **Style with tokens and CSS Modules** (see **`.cursor/rules/styling-and-tokens.mdc`**): use `pageTypography` helpers, `var(--color-…)`, and colocated `*.module.css`—not Tailwind or ad-hoc utility strings.
 
 ## Performance note (important)
 

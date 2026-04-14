@@ -16,9 +16,9 @@
   --color-custom-700: #6d6d6d;
   --color-custom-800: #545454;
   --color-custom-900: #3b3b3b;
-  --color-page-bg: #e8e8e8; /* Tailwind semantic page-bg */
-  --color-section-bg: #f5f5f5; /* Tailwind semantic section-bg */
-  --color-card-bg: #ffffff; /* Tailwind semantic card-bg */
+  --color-page-bg: #e8e8e8; /* Semantic page background (e.g. `.bg-page`) */
+  --color-section-bg: #f5f5f5; /* Semantic section background (e.g. `.bg-section`) */
+  --color-card-bg: #ffffff; /* Semantic card/surface background (e.g. `.bg-card`) */
   --color-heading: #4f4f4f; /* h1–h6 default in globals */
   --color-documented-body: #000000;
   --color-documented-prose-body: #374151;

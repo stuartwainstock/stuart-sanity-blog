@@ -1,0 +1,61 @@
+.section {
+  margin-bottom: 3.5rem;
+}
+
+.titleBar {
+  margin-top: 2.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.titleShimmer {
+  display: inline-block;
+  height: 2.25rem;
+  width: 6rem;
+  border-radius: 0.25rem;
+  background: #e5e7eb;
+}
+
+.textBlock {
+  max-width: 56rem;
+  margin-bottom: 1.5rem;
+}
+
+.line {
+  display: block;
+  height: 1rem;
+  border-radius: 0.25rem;
+  background: #e5e7eb;
+  margin-bottom: 0.5rem;
+}
+
+.lineWide {
+  width: 100%;
+  max-width: 42rem;
+}
+
+.lineNarrow {
+  width: 100%;
+  max-width: 36rem;
+}
+
+.mapPlaceholder {
+  width: 100%;
+  height: min(70vh, 520px);
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  background: #f3f4f6;
+}
+
+.tablePlaceholder {
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  height: 12rem;
+}
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 3.5rem;
+  margin-bottom: 3.5rem;
+}

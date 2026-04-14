@@ -1,0 +1,9 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.bodyLead {
+  margin-bottom: 1.5rem;
+}

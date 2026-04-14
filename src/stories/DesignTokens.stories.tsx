@@ -4,11 +4,10 @@ import {
   allJsonTokenLeaves,
   cssCustomProperties,
   documentedHexInGlobals,
+  extendedPaletteColors,
   semanticBackgroundClasses,
   spacingSteps,
-  tailwindExtendedColors,
   tokenPathToCssVar,
-  typeScaleSteps,
 } from '@/stories/designTokens.data'
 import {
   pageBanner,
@@ -25,6 +24,7 @@ import {
   pageTitleH1,
   pageTitleH1DataPage,
 } from '@/lib/pageTypography'
+import s from './DesignTokens.module.css'
 
 const meta = {
   title: 'Foundations/Design Tokens',
@@ -33,7 +33,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Visual reference for tokens: `tokens/*.json` → Style Dictionary → `src/styles/generated/tokens.css`, Tailwind extensions + `pageTypography.ts`. Run `npm run tokens:build` after editing JSON.',
+          'Visual reference for tokens: `tokens/*.json` → Style Dictionary → `src/styles/generated/tokens.css`, plus shared `pageTypography` classes. Run `npm run tokens:build` after editing JSON.',
       },
     },
   },
@@ -42,6 +42,29 @@ const meta = {
 
 export default meta
 type Story = StoryObj<typeof meta>
+
+const TYPE_SCALE: {label: string; className: string}[] = [
+  {label: '0.75rem (text-xs)', className: s.scaleXs},
+  {label: '0.875rem (text-sm)', className: s.scaleSm},
+  {label: '1rem (text-base)', className: s.scaleBase},
+  {label: '1.125rem (text-lg)', className: s.scaleLg},
+  {label: '1.25rem (text-xl)', className: s.scaleXl},
+  {label: '1.5rem (text-2xl)', className: s.scale2xl},
+  {label: '1.875rem (text-3xl)', className: s.scale3xl},
+  {label: '2.25rem (text-4xl)', className: s.scale4xl},
+]
+
+const GRAY_HEX = [
+  {name: '100', hex: '#f3f4f6'},
+  {name: '200', hex: '#e5e7eb'},
+  {name: '300', hex: '#d1d5db'},
+  {name: '400', hex: '#9ca3af'},
+  {name: '500', hex: '#6b7280'},
+  {name: '600', hex: '#4b5563'},
+  {name: '700', hex: '#374151'},
+  {name: '800', hex: '#1f2937'},
+  {name: '900', hex: '#111827'},
+]
 
 function Section({
   id,
@@ -53,8 +76,8 @@ function Section({
   children: ReactNode
 }) {
   return (
-    <section className="mb-14 scroll-mt-8" aria-labelledby={id}>
-      <h2 id={id} className="text-2xl font-semibold text-gray-900 border-b border-gray-300 pb-2 mb-6">
+    <section className={s.section} aria-labelledby={id}>
+      <h2 id={id} className={s.sectionTitle}>
         {title}
       </h2>
       {children}
@@ -63,53 +86,53 @@ function Section({
 }
 
 function Mono({children}: {children: ReactNode}) {
-  return <code className="text-xs font-mono text-gray-700 bg-gray-100 px-1.5 py-0.5 rounded">{children}</code>
+  return <code className={s.mono}>{children}</code>
 }
 
 export const Reference: Story = {
   render: () => (
-    <article className="text-gray-900">
-      <header className="mb-10">
-        <p className="text-sm text-gray-600 mb-1">Foundations</p>
-        <h1 className="text-3xl font-bold text-gray-900">Design tokens</h1>
-        <p className="mt-3 text-base text-gray-600 max-w-3xl">
-          JSON sources (Style Dictionary), generated CSS variables, Tailwind extensions, and shared
-          typography classes.
+    <article className={s.article}>
+      <header className={s.header}>
+        <p className={s.kicker}>Foundations</p>
+        <h1 className={s.title}>Design tokens</h1>
+        <p className={s.lead}>
+          JSON sources (Style Dictionary), generated CSS variables, semantic helpers in <Mono>globals.css</Mono>, and
+          shared typography classes from <Mono>pageTypography.ts</Mono>.
         </p>
       </header>
 
       <Section id="section-css-vars" title="CSS custom properties (:root)">
-        <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
-          <table className="w-full text-left text-sm">
+        <div className={s.tableScroll}>
+          <table className={s.table}>
             <thead>
-              <tr className="border-b border-gray-200 bg-gray-50">
-                <th className="p-3 font-medium">Variable</th>
-                <th className="p-3 font-medium">Value</th>
-                <th className="p-3 font-medium">Preview</th>
-                <th className="p-3 font-medium">Note</th>
+              <tr className={s.thRow}>
+                <th className={s.th}>Variable</th>
+                <th className={s.th}>Value</th>
+                <th className={s.th}>Preview</th>
+                <th className={s.th}>Note</th>
               </tr>
             </thead>
             <tbody>
               {cssCustomProperties.map((row) => (
-                <tr key={row.name} className="border-b border-gray-100 last:border-0">
-                  <td className="p-3 font-mono text-xs">{row.name}</td>
-                  <td className="p-3 font-mono text-xs">{row.value}</td>
-                  <td className="p-3">
+                <tr key={row.name} className={s.tr}>
+                  <td className={s.tdMono}>{row.name}</td>
+                  <td className={s.tdMono}>{row.value}</td>
+                  <td className={s.td}>
                     {row.name.includes('color') && row.value.startsWith('#') ? (
                       <span
-                        className="inline-block h-8 w-14 rounded border border-gray-200 shadow-inner"
+                        className={s.swatch}
                         style={{backgroundColor: row.value}}
                         title={row.value}
                       />
                     ) : row.name.includes('font') ? (
-                      <span style={{fontFamily: 'var(--font-work-sans)'}} className="text-lg">
+                      <span style={{fontFamily: 'var(--font-work-sans)'}} className={s.fontPreview}>
                         Work Sans preview
                       </span>
                     ) : (
                       '—'
                     )}
                   </td>
-                  <td className="p-3 text-gray-600">{row.description}</td>
+                  <td className={s.tdNote}>{row.description}</td>
                 </tr>
               ))}
             </tbody>
@@ -118,18 +141,18 @@ export const Reference: Story = {
       </Section>
 
       <Section id="section-sd-json" title="Style Dictionary — all leaves from tokens/*.json">
-        <p className="text-sm text-gray-600 mb-4">
+        <p className={s.muted}>
           Paths are token paths; CSS names match the generated file (e.g.{' '}
           <Mono>color.background</Mono> → <Mono>{tokenPathToCssVar('color.background')}</Mono>).
         </p>
-        <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
-          <table className="w-full text-left text-sm">
+        <div className={s.tableScroll}>
+          <table className={s.table}>
             <thead>
-              <tr className="border-b border-gray-200 bg-gray-50">
-                <th className="p-3 font-medium">Token path</th>
-                <th className="p-3 font-medium">CSS variable</th>
-                <th className="p-3 font-medium">Value</th>
-                <th className="p-3 font-medium">Preview</th>
+              <tr className={s.thRow}>
+                <th className={s.th}>Token path</th>
+                <th className={s.th}>CSS variable</th>
+                <th className={s.th}>Value</th>
+                <th className={s.th}>Preview</th>
               </tr>
             </thead>
             <tbody>
@@ -137,25 +160,23 @@ export const Reference: Story = {
                 const cssName = tokenPathToCssVar(row.path)
                 const isHex = row.$value.startsWith('#')
                 return (
-                  <tr key={row.path} className="border-b border-gray-100 last:border-0">
-                    <td className="p-3 font-mono text-xs">{row.path}</td>
-                    <td className="p-3 font-mono text-xs">{cssName}</td>
-                    <td className="p-3 font-mono text-xs">{row.$value}</td>
-                    <td className="p-3">
+                  <tr key={row.path} className={s.tr}>
+                    <td className={s.tdMono}>{row.path}</td>
+                    <td className={s.tdMono}>{cssName}</td>
+                    <td className={s.tdMono}>{row.$value}</td>
+                    <td className={s.td}>
                       {isHex ? (
                         <span
-                          className="inline-block h-8 w-14 rounded border border-gray-200 shadow-inner"
+                          className={s.swatch}
                           style={{backgroundColor: row.$value}}
                           title={row.$value}
                         />
                       ) : (
-                        <span className="text-lg" style={{fontFamily: row.$value}}>
+                        <span className={s.fontPreview} style={{fontFamily: row.$value}}>
                           Aa Work Sans
                         </span>
                       )}
-                      {row.$description ? (
-                        <p className="mt-1 text-xs text-gray-700">{row.$description}</p>
-                      ) : null}
+                      {row.$description ? <p className={s.tokenDesc}>{row.$description}</p> : null}
                     </td>
                   </tr>
                 )
@@ -165,24 +186,18 @@ export const Reference: Story = {
         </div>
       </Section>
 
-      <Section id="section-tailwind-colors" title="Tailwind extended colors">
-        <p className="text-sm text-gray-600 mb-4">
-          Use <Mono>bg-{'{token}'}</Mono>, <Mono>text-{'{token}'}</Mono>, etc. (see{' '}
-          <Mono>tailwind.config.js</Mono>).
+      <Section id="section-extended-palette" title="Extended palette (custom + semantic)">
+        <p className={s.muted}>
+          Values from <Mono>tokens/color.json</Mono>; use via <Mono>var(--color-…)</Mono> in CSS or the semantic{' '}
+          <Mono>.bg-*</Mono> helpers in <Mono>globals.css</Mono>.
         </p>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-          {tailwindExtendedColors.map(({token, hex}) => (
-            <div
-              key={token}
-              className="rounded-lg border border-gray-200 overflow-hidden bg-white shadow-sm"
-            >
-              <div
-                className="h-16 w-full border-b border-gray-100"
-                style={{backgroundColor: hex}}
-              />
-              <div className="p-2">
-                <div className="font-mono text-xs font-medium text-gray-900">{token}</div>
-                <div className="font-mono text-[10px] text-gray-700">{hex}</div>
+        <div className={s.paletteGrid}>
+          {extendedPaletteColors.map(({token, hex}) => (
+            <div key={token} className={s.paletteCard}>
+              <div className={s.paletteSwatch} style={{backgroundColor: hex}} />
+              <div className={s.paletteMeta}>
+                <div className={s.paletteToken}>{token}</div>
+                <div className={s.paletteHex}>{hex}</div>
               </div>
             </div>
           ))}
@@ -190,37 +205,28 @@ export const Reference: Story = {
       </Section>
 
       <Section id="section-semantic-bg" title="Semantic background classes">
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className={s.semanticGrid}>
           {semanticBackgroundClasses.map(({className, note}) => (
-            <div
-              key={className}
-              className={`flex items-center justify-between rounded-lg border border-gray-200 px-4 py-4 ${className}`}
-            >
+            <div key={className} className={`${s.semanticCard} ${className}`}>
               <Mono>{className}</Mono>
-              <span className="text-xs text-gray-600">{note}</span>
+              <span className={s.semanticNote}>{note}</span>
             </div>
           ))}
         </div>
       </Section>
 
       <Section id="section-globals-hex" title="Documented colors (prose, body, selection)">
-        <p className="text-sm text-gray-600 mb-4">
-          Sourced from <Mono>tokens/color.json</Mono> → <Mono>color.documented.*</Mono>; referenced in
+        <p className={s.muted}>
+          Sourced from <Mono>tokens/color.json</Mono> → <Mono>color.documented.*</Mono>; referenced in{' '}
           <Mono>globals.css</Mono> prose and base styles.
         </p>
-        <div className="flex flex-wrap gap-3">
+        <div className={s.docHexRow}>
           {documentedHexInGlobals.map(({label, hex}) => (
-            <div
-              key={label}
-              className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm"
-            >
-              <span
-                className="h-6 w-6 shrink-0 rounded border border-gray-200"
-                style={{backgroundColor: hex}}
-              />
+            <div key={label} className={s.docHexCard}>
+              <span className={s.docHexDot} style={{backgroundColor: hex}} />
               <div>
-                <div className="font-medium text-gray-900">{label}</div>
-                <div className="font-mono text-xs text-gray-700">{hex}</div>
+                <div className={s.docHexLabel}>{label}</div>
+                <div className={s.docHexValue}>{hex}</div>
               </div>
             </div>
           ))}
@@ -228,82 +234,72 @@ export const Reference: Story = {
       </Section>
 
       <Section id="section-typography-exports" title="Typography — pageTypography.ts">
-        <p className="text-sm text-gray-600 mb-6">
-          Import these strings and spread onto <Mono>className</Mono>. Shell / layout helpers are
-          included for reference.
+        <p className={s.muted}>
+          Import these strings and spread onto <Mono>className</Mono>. Shell / layout helpers are included for
+          reference.
         </p>
-        <div className="space-y-8">
-          <div>
-            <div className="mb-2 flex flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-gray-700">
-                pageShellBg
-              </span>
+        <div className={s.typographyStack}>
+          <div className={s.typographyBlock}>
+            <div className={s.typographyLabelRow}>
+              <span className={s.typographyTag}>pageShellBg</span>
               <Mono>{pageShellBg}</Mono>
             </div>
-            <div className={`rounded border border-dashed border-gray-300 p-4 ${pageShellBg}`}>
-              Shell background sample
-            </div>
+            <div className={`${s.shellSample} ${pageShellBg}`}>Shell background sample</div>
           </div>
-          <div>
-            <div className="mb-2 flex flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-gray-700">
-                pageBanner / pageContent
-              </span>
+          <div className={s.typographyBlock}>
+            <div className={s.typographyLabelRow}>
+              <span className={s.typographyTag}>pageBanner / pageContent</span>
             </div>
-            <ul className="list-inside list-disc space-y-1 text-sm text-gray-700">
+            <ul className={s.list}>
               <li>
-                <Mono>pageBanner</Mono> — <span className="font-mono text-xs">{pageBanner}</span>
+                <Mono>pageBanner</Mono> — <span className={s.tdMono}>{pageBanner}</span>
               </li>
               <li>
-                <Mono>pageContent</Mono> — <span className="font-mono text-xs">{pageContent}</span>
+                <Mono>pageContent</Mono> — <span className={s.tdMono}>{pageContent}</span>
               </li>
             </ul>
           </div>
-          <div>
-            <div className="mb-2 flex flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-gray-700">
-                pageInner
-              </span>
+          <div className={s.typographyBlock}>
+            <div className={s.typographyLabelRow}>
+              <span className={s.typographyTag}>pageInner</span>
               <Mono>{pageInner}</Mono>
             </div>
-            <div className={`rounded border border-gray-200 bg-white p-4 ${pageInner}`}>
+            <div className={`${s.innerSample} ${pageInner}`}>
               <div className={pageKicker}>pageKicker</div>
               <div className={pageTitleH1}>pageTitleH1</div>
               <div className={pageTitleH1DataPage}>pageTitleH1DataPage</div>
             </div>
           </div>
-          <div>
-            <div className="mb-2 flex flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-gray-700">
-                pageDataSourceCredit / pageDataSourceLink
-              </span>
+          <div className={s.typographyBlock}>
+            <div className={s.typographyLabelRow}>
+              <span className={s.typographyTag}>pageDataSourceCredit / pageDataSourceLink</span>
             </div>
             <div className={pageDataSourceCredit}>
               Credit line with <span className={pageDataSourceLink}>pageDataSourceLink</span>.
             </div>
           </div>
-          <div>
-            <div className="mb-2">
+          <div className={s.typographyBlock}>
+            <div className={s.typographyLabelRow}>
               <Mono>pageExcerpt</Mono>
             </div>
             <div className={pageExcerpt}>Excerpt — 30px, light, letter-spaced.</div>
           </div>
-          <div>
-            <div className="mb-2">
+          <div className={s.typographyBlock}>
+            <div className={s.typographyLabelRow}>
               <Mono>pageSectionHeading</Mono>
             </div>
             <h2 className={pageSectionHeading}>Section heading sample</h2>
           </div>
-          <div>
-            <div className="mb-2">
+          <div className={s.typographyBlock}>
+            <div className={s.typographyLabelRow}>
               <Mono>pageBodyTypography</Mono>
             </div>
             <div className={pageBodyTypography}>
               Body block — same scale as long-form CMS pages (30px, light, tracking).
             </div>
           </div>
-          <div>
-            <div className="mb-2">
+          <div className={s.typographyBlock}>
+            <div className={s.typographyLabelRow}>
               <Mono>pageBodyParagraph</Mono>
             </div>
             <p className={pageBodyParagraph}>
@@ -313,50 +309,39 @@ export const Reference: Story = {
         </div>
       </Section>
 
-      <Section id="section-type-scale" title="Tailwind type scale (representative)">
-        <p className="text-sm text-gray-600 mb-4">
-          Default Tailwind font-size utilities; combine with <Mono>font-weight</Mono>,{' '}
-          <Mono>text-gray-*</Mono>, etc.
-        </p>
-        <div className="space-y-3 rounded-lg border border-gray-200 bg-white p-4">
-          {typeScaleSteps.map((cls) => (
-            <div key={cls} className="flex flex-wrap items-baseline gap-4">
-              <Mono>{cls}</Mono>
-              <span className={cls}>The quick brown fox</span>
+      <Section id="section-type-scale" title="Type scale (representative rem steps)">
+        <p className={s.muted}>Common display sizes; pair with weight and color tokens as needed.</p>
+        <div className={s.typeScalePanel}>
+          {TYPE_SCALE.map(({label, className}) => (
+            <div key={label} className={s.typeRow}>
+              <Mono>{label}</Mono>
+              <span className={className}>The quick brown fox</span>
             </div>
           ))}
-          <div className="flex flex-wrap items-baseline gap-4 border-t border-gray-100 pt-3">
-            <Mono>text-[30px] (page body)</Mono>
-            <span className="text-[30px] font-light tracking-[2px] leading-[1.6] text-gray-600">
-              The quick brown fox
-            </span>
+          <div className={s.typeRowBorder}>
+            <Mono>30px (page body)</Mono>
+            <span className={s.body30}>The quick brown fox</span>
           </div>
         </div>
       </Section>
 
-      <Section id="section-gray-palette" title="Tailwind gray scale (common text)">
-        <p className="text-sm text-gray-600 mb-4">
-          Default palette — often <Mono>text-gray-600</Mono>, <Mono>text-gray-900</Mono>, etc.
-        </p>
+      <Section id="section-gray-palette" title="Neutral gray scale (reference)">
+        <p className={s.muted}>Common UI neutrals for borders, text, and surfaces.</p>
         <GraySwatches />
       </Section>
 
-      <Section id="section-spacing" title="Spacing scale (Tailwind default)">
-        <p className="text-sm text-gray-600 mb-4">
-          <Mono>1</Mono> = 0.25rem (4px at default root). Site uses padding like <Mono>px-8</Mono>,{' '}
-          <Mono>py-10</Mono>, <Mono>mb-12</Mono> frequently.
+      <Section id="section-spacing" title="Spacing scale (0.25rem step)">
+        <p className={s.muted}>
+          <Mono>1</Mono> = 0.25rem (4px at default root). Layout padding often uses multiples (e.g. 2rem horizontal).
         </p>
-        <div className="space-y-2">
+        <div className={s.spacingStack}>
           {spacingSteps.map((n) => (
-            <div key={n} className="flex items-center gap-4">
-              <div className="w-24 shrink-0 font-mono text-xs text-gray-700">{n}</div>
-              <div className="flex h-8 flex-1 items-center bg-gray-100">
-              <div
-                className="h-4 bg-orange-500/80"
-                style={{width: `${n * 0.25}rem`}}
-              />
+            <div key={n} className={s.spacingRow}>
+              <div className={s.spacingKey}>{n}</div>
+              <div className={s.spacingTrack}>
+                <div className={s.spacingBar} style={{width: `${n * 0.25}rem`}} />
               </div>
-              <div className="w-20 shrink-0 font-mono text-xs text-gray-700">{n * 4}px</div>
+              <div className={s.spacingPx}>{n * 4}px</div>
             </div>
           ))}
         </div>
@@ -365,27 +350,13 @@ export const Reference: Story = {
   ),
 }
 
-/** Tailwind cannot infer dynamic gray class names — explicit swatches */
 function GraySwatches() {
-  const classes = [
-    'bg-gray-100',
-    'bg-gray-200',
-    'bg-gray-300',
-    'bg-gray-400',
-    'bg-gray-500',
-    'bg-gray-600',
-    'bg-gray-700',
-    'bg-gray-800',
-    'bg-gray-900',
-  ] as const
   return (
-    <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-9">
-      {classes.map((c) => (
-        <div key={c} className="text-center">
-          <div className={`h-12 w-full rounded-t border border-gray-200 ${c}`} />
-          <div className="rounded-b border border-t-0 border-gray-200 bg-white px-1 py-1 font-mono text-[10px] text-gray-700">
-            {c.replace('bg-', '')}
-          </div>
+    <div className={s.grayGrid}>
+      {GRAY_HEX.map(({name, hex}) => (
+        <div key={name} className={s.grayCell}>
+          <div className={s.grayBar} style={{backgroundColor: hex}} />
+          <div className={s.grayLabel}>{name}</div>
         </div>
       ))}
     </div>

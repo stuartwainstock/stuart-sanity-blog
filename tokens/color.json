@@ -32,17 +32,17 @@
     "page-bg": {
       "$type": "color",
       "$value": "#e8e8e8",
-      "$description": "Tailwind semantic page-bg"
+      "$description": "Semantic page background (e.g. `.bg-page`)"
     },
     "section-bg": {
       "$type": "color",
       "$value": "#f5f5f5",
-      "$description": "Tailwind semantic section-bg"
+      "$description": "Semantic section background (e.g. `.bg-section`)"
     },
     "card-bg": {
       "$type": "color",
       "$value": "#ffffff",
-      "$description": "Tailwind semantic card-bg"
+      "$description": "Semantic card/surface background (e.g. `.bg-card`)"
     },
     "heading": {
       "$type": "color",

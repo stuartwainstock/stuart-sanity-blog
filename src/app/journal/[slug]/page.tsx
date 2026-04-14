@@ -212,7 +212,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                     className={styles.authorBioAvatar}
                   />
                 )}
-                <div className="flex-1">
+                <div className={styles.authorBioGrow}>
                   <h3 className={styles.authorBioTitle}>
                     About {post.author.name}
                   </h3>
@@ -262,12 +262,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       )}
 
       {/* Back to Journal */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-        <Link
-          href="/journal"
-          className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
-        >
-          <svg className="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className={styles.backNav}>
+        <Link href="/journal" className={styles.backLink}>
+          <svg className={styles.backIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
           Back to Journal

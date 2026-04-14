@@ -1,4 +1,5 @@
 import type {ButtonHTMLAttributes, ReactNode} from 'react'
+import styles from './Button.module.css'
 
 type Variant = 'primary' | 'secondary' | 'ghost'
 type Tone = 'neutral' | 'brand'
@@ -11,25 +12,21 @@ export type ButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'childre
   size?: Size
 }
 
-const base =
-  'inline-flex items-center rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
-
 const sizes: Record<Size, string> = {
-  sm: 'px-3 py-1.5 text-sm',
-  md: 'px-4 py-2 text-sm',
+  sm: styles.sizeSm,
+  md: styles.sizeMd,
 }
 
-const styles: Record<Tone, Record<Variant, string>> = {
+const variantClasses: Record<Tone, Record<Variant, string>> = {
   brand: {
-    primary: 'bg-orange-700 text-white hover:bg-orange-800 focus:ring-orange-500',
-    secondary:
-      'border border-orange-300 bg-white text-orange-900 hover:bg-orange-50 focus:ring-orange-500',
-    ghost: 'bg-transparent text-orange-900 hover:bg-orange-50 focus:ring-orange-500',
+    primary: styles.brandPrimary,
+    secondary: styles.brandSecondary,
+    ghost: styles.brandGhost,
   },
   neutral: {
-    primary: 'bg-gray-900 text-white hover:bg-gray-800 focus:ring-gray-400',
-    secondary: 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-gray-300',
-    ghost: 'bg-transparent text-gray-900 hover:bg-gray-100 focus:ring-gray-300',
+    primary: styles.neutralPrimary,
+    secondary: styles.neutralSecondary,
+    ghost: styles.neutralGhost,
   },
 }
 
@@ -42,11 +39,12 @@ export default function Button({
   type = 'button',
   ...props
 }: ButtonProps) {
-  const cls = [base, sizes[size], styles[tone][variant], className].filter(Boolean).join(' ')
+  const cls = [styles.button, sizes[size], variantClasses[tone][variant], className]
+    .filter(Boolean)
+    .join(' ')
   return (
     <button type={type} className={cls} {...props}>
       {children}
     </button>
   )
 }
-

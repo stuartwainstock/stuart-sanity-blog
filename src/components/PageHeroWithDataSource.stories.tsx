@@ -2,6 +2,7 @@ import type {Meta, StoryObj} from '@storybook/nextjs-vite'
 import Link from 'next/link'
 import PageHeroWithDataSource from '@/components/molecules/PageHeroWithDataSource'
 import {pageBodyTypography, pageDataSourceLink} from '@/lib/pageTypography'
+import s from './PageHeroWithDataSource.stories.module.css'
 
 const meta = {
   title: 'Molecules/PageHeroWithDataSource',
@@ -31,7 +32,7 @@ export const WithIntro: Story = {
   args: {
     children: (
       <div className={pageBodyTypography}>
-        <p className="mb-0 text-inherit max-w-4xl">
+        <p className={s.intro}>
           A short intro below the attribution. Example internal link:{' '}
           <Link href="/" className={pageDataSourceLink}>
             Home

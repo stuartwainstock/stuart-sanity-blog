@@ -1,0 +1,41 @@
+.bannerInner {
+  text-align: left;
+}
+
+.featuredWrap {
+  position: relative;
+  height: 24rem;
+  background: #f3f4f6;
+}
+
+@media (min-width: 768px) {
+  .featuredWrap {
+    height: 400px;
+  }
+}
+
+.featuredImage {
+  object-fit: cover;
+}
+
+.credit {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 0.875rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+}
+
+.captionBlock {
+  padding: 1rem 2rem;
+}
+
+.caption {
+  font-size: 0.875rem;
+  color: #4b5563;
+  text-align: center;
+  font-style: italic;
+}

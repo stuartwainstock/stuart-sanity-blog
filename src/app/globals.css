@@ -1,34 +1,31 @@
 /* Generated from tokens/*.json — run `npm run tokens:build` after edits */
 @import "../styles/generated/tokens.css";
-@import "tailwindcss";
 
-/* Base layer so Tailwind utilities (e.g. text-gray-700, underline on <a>) win over element defaults */
-@layer base {
-  body {
-    background-color: var(--color-background);
-    font-family: var(--font-work-sans);
-  }
-
-  a {
-    color: var(--color-link);
-    text-decoration: none;
-    transition: color 0.2s ease;
-  }
-
-  a:hover {
-    color: var(--color-link-hover);
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    color: var(--color-heading);
-  }
-
-  p {
-    color: var(--color-documented-body);
-  }
+/* Base (replaces former Tailwind preflight + our overrides) */
+body {
+  background-color: var(--color-background);
+  font-family: var(--font-work-sans);
 }
 
-/* Custom background classes — values from Style Dictionary tokens (plain CSS avoids @apply + var quirks in PostCSS) */
+a {
+  color: var(--color-link);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--color-link-hover);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-heading);
+}
+
+p {
+  color: var(--color-documented-body);
+}
+
+/* Custom background classes — values from Style Dictionary tokens */
 .bg-custom {
   background-color: var(--color-custom-200);
 }
@@ -53,7 +50,6 @@
   background-color: var(--color-card-bg);
 }
 
-/* Custom link classes */
 .link-custom {
   color: var(--color-link);
   transition: color 0.2s ease;
@@ -63,7 +59,6 @@
   color: var(--color-link-hover);
 }
 
-/* Custom utilities for line clamping */
 .line-clamp-3 {
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -71,18 +66,65 @@
   overflow: hidden;
 }
 
-/* Smooth scrolling */
 html {
   scroll-behavior: smooth;
 }
 
-/* Focus styles for accessibility */
+/* App shell (root layout) */
+.layout-body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.layout-main {
+  width: 100%;
+  flex-shrink: 0;
+}
+
+/* Skip to main — visible on keyboard focus only */
+.skip-link {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+  z-index: 100;
+  width: auto;
+  height: auto;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  background-color: var(--color-custom-900);
+  color: #fff;
+  font-size: 0.875rem;
+  line-height: 1.25;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+  text-decoration: none;
+}
+
+.skip-link--offset:focus {
+  top: 4rem;
+}
+
 .focus\:outline-none:focus {
   outline: 2px solid transparent;
   outline-offset: 2px;
 }
 
-/* Screen reader only content */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -95,18 +137,6 @@ html {
   border: 0;
 }
 
-.sr-only:focus {
-  position: static;
-  width: auto;
-  height: auto;
-  padding: inherit;
-  margin: inherit;
-  overflow: visible;
-  clip: auto;
-  white-space: normal;
-}
-
-/* High contrast mode support */
 @media (prefers-contrast: high) {
   .focus\:ring-2:focus {
     outline: 3px solid currentColor;
@@ -114,26 +144,23 @@ html {
   }
 }
 
-/* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  
+
   html {
     scroll-behavior: auto;
   }
 }
 
-/* Focus visible for better keyboard navigation */
 .focus-visible:focus {
   outline: 2px solid currentColor;
   outline-offset: 2px;
 }
 
-/* Text selection styles - inverse colors */
 ::selection {
   background-color: var(--color-documented-selection-bg);
   color: var(--color-documented-selection-fg);
@@ -144,73 +171,88 @@ html {
   color: var(--color-documented-selection-fg);
 }
 
-/* Alternative selection style for better contrast */
 ::-webkit-selection {
   background-color: var(--color-documented-selection-bg);
   color: var(--color-documented-selection-fg);
 }
 
-/* Components layer: below utilities so explicit classes on links (e.g. in Portable Text) win */
-@layer components {
-  .prose {
-    color: var(--color-documented-prose-body);
-    max-width: none;
-    font-family: var(--font-work-sans);
+@keyframes pulse-soft {
+  50% {
+    opacity: 0.45;
   }
+}
 
-  .prose h1,
-  .prose h2,
-  .prose h3,
-  .prose h4 {
-    color: var(--color-documented-prose-heading);
-    font-weight: 700;
-    font-family: var(--font-work-sans);
-  }
+.u-animate-pulse {
+  animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
 
-  .prose a {
-    color: var(--color-link);
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s ease;
-  }
+/* Anchor scroll offset under fixed nav */
+.scroll-mt-24 {
+  scroll-margin-top: 6rem;
+}
 
-  .prose a:hover {
-    color: var(--color-link-hover);
-  }
+.u-mb-14 {
+  margin-bottom: 3.5rem;
+}
 
-  .prose code {
-    color: var(--color-documented-prose-heading);
-    background-color: #f3f4f6;
-    padding: 0.125rem 0.25rem;
-    border-radius: 0.25rem;
-    font-size: 0.875em;
-  }
+.prose {
+  color: var(--color-documented-prose-body);
+  max-width: none;
+  font-family: var(--font-work-sans);
+}
 
-  .prose pre {
-    background-color: var(--color-documented-selection-bg);
-    color: var(--color-documented-selection-fg);
-    overflow-x: auto;
-    border-radius: 0.5rem;
-  }
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  color: var(--color-documented-prose-heading);
+  font-weight: 700;
+  font-family: var(--font-work-sans);
+}
 
-  .prose pre code {
-    background-color: transparent;
-    color: inherit;
-    padding: 0;
-  }
+.prose a {
+  color: var(--color-link);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
 
-  .prose blockquote {
-    border-left: 4px solid #3b82f6;
-    padding-left: 1rem;
-    font-style: italic;
-    color: var(--color-documented-prose-body);
-    background-color: #f9fafb;
-    margin: 1.5rem 0;
-    padding: 1rem;
-  }
+.prose a:hover {
+  color: var(--color-link-hover);
+}
 
-  .prose img {
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  }
+.prose code {
+  color: var(--color-documented-prose-heading);
+  background-color: #f3f4f6;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+}
+
+.prose pre {
+  background-color: var(--color-documented-selection-bg);
+  color: var(--color-documented-selection-fg);
+  overflow-x: auto;
+  border-radius: 0.5rem;
+}
+
+.prose pre code {
+  background-color: transparent;
+  color: inherit;
+  padding: 0;
+}
+
+.prose blockquote {
+  border-left: 4px solid #3b82f6;
+  padding-left: 1rem;
+  font-style: italic;
+  color: var(--color-documented-prose-body);
+  background-color: #f9fafb;
+  margin: 1.5rem 0;
+  padding: 1rem;
+}
+
+.prose img {
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }

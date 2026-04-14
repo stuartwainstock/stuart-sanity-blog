@@ -1,0 +1,116 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.sizeSm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25;
+}
+
+.sizeMd {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.25;
+}
+
+.brandPrimary {
+  background: #c2410c;
+  color: #fff;
+}
+
+.brandPrimary:hover:not(:disabled) {
+  background: #9a3412;
+}
+
+.brandPrimary:focus-visible {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #f97316;
+}
+
+.brandSecondary {
+  border: 1px solid #fdba74;
+  background: #fff;
+  color: #7c2d12;
+}
+
+.brandSecondary:hover:not(:disabled) {
+  background: #fff7ed;
+}
+
+.brandSecondary:focus-visible {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #f97316;
+}
+
+.brandGhost {
+  background: transparent;
+  color: #7c2d12;
+}
+
+.brandGhost:hover:not(:disabled) {
+  background: #fff7ed;
+}
+
+.brandGhost:focus-visible {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #f97316;
+}
+
+.neutralPrimary {
+  background: #111827;
+  color: #fff;
+}
+
+.neutralPrimary:hover:not(:disabled) {
+  background: #1f2937;
+}
+
+.neutralPrimary:focus-visible {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #9ca3af;
+}
+
+.neutralSecondary {
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #374151;
+}
+
+.neutralSecondary:hover:not(:disabled) {
+  background: #f9fafb;
+}
+
+.neutralSecondary:focus-visible {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #d1d5db;
+}
+
+.neutralGhost {
+  background: transparent;
+  color: #111827;
+}
+
+.neutralGhost:hover:not(:disabled) {
+  background: #f3f4f6;
+}
+
+.neutralGhost:focus-visible {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #d1d5db;
+}

@@ -172,6 +172,19 @@
     0 0 0 4px var(--color-background);
 }
 
+.menuIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.projectsTriggerRow {
+  display: inline-flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
 .mobileMenu {
   border-top: 1px solid #e5e7eb;
   background-color: var(--color-background);

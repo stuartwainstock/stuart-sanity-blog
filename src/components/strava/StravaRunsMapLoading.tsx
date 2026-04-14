@@ -1,4 +1,3 @@
-import {pageBodyParagraph} from '@/lib/pageTypography'
 import {MapLoadingShell} from '@/components/maps/MapLoadingShell'
 
 export default function StravaRunsMapLoading() {

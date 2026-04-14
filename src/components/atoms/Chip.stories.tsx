@@ -2,6 +2,7 @@ import {Fragment} from 'react'
 import type {Meta, StoryObj} from '@storybook/nextjs-vite'
 import Chip from '@/components/atoms/Chip'
 import {MEDIA_TYPE_LABELS} from '@/lib/resources/labels'
+import s from './Chip.stories.module.css'
 
 const meta = {
   title: 'Atoms/Chip',
@@ -27,11 +28,11 @@ export const Capitalize: Story = {
 /** Reference for `getMediaTypeLabel` / grouped reading-list sections. */
 export const MediaTypeLabelMap: Story = {
   render: () => (
-    <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
+    <dl className={s.dl}>
       {Object.entries(MEDIA_TYPE_LABELS).map(([key, label]) => (
         <Fragment key={key}>
-          <dt className="font-mono text-gray-600">{key}</dt>
-          <dd className="text-gray-900">{label}</dd>
+          <dt className={s.dt}>{key}</dt>
+          <dd className={s.dd}>{label}</dd>
         </Fragment>
       ))}
     </dl>

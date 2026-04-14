@@ -7,10 +7,14 @@ import PageHeroWithDataSource from '@/components/molecules/PageHeroWithDataSourc
 import {RunsMapSectionSkeleton, RunsTableSectionSkeleton} from '@/components/strava/RunsMapTableSkeleton'
 import {fetchToolProjectPageRuns, getImageUrl} from '@/lib/sanity'
 import {
+  calloutAmber,
+  pageBodyGap,
   pageBodyTypography,
   pageContent,
   pageDataSourceLink,
   pageShellBg,
+  stravaAdminLink,
+  stravaAdminLinkMuted,
 } from '@/lib/pageTypography'
 import {RUNS_MAP_WINDOW_DAYS} from '@/lib/strava/constants'
 import RunsMapSection from './RunsMapSection'
@@ -66,13 +70,10 @@ export default async function RunsPage() {
       </div>
     ) : (
       <div className={pageBodyTypography}>
-        <p className="mb-6 text-inherit">
+        <p className={pageBodyGap}>
           Personal Strava runs stored in Supabase. The map and table show the last {RUNS_MAP_WINDOW_DAYS}{' '}
           days. Site owners sync data from the{' '}
-          <Link
-            href="/admin/strava"
-            className="font-medium text-orange-800 underline underline-offset-2 hover:text-orange-900"
-          >
+          <Link href="/admin/strava" className={stravaAdminLink}>
             Strava admin page
           </Link>{' '}
           (password-protected).
@@ -82,16 +83,10 @@ export default async function RunsPage() {
 
   return (
     <div className={pageShellBg}>
-      <a
-        href="#runs-map"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 bg-gray-900 text-white px-4 py-2 rounded-md text-sm"
-      >
+      <a href="#runs-map" className="skip-link">
         Skip to map
       </a>
-      <a
-        href="#runs-recent"
-        className="sr-only focus:not-sr-only focus:top-16 focus:left-4 focus:z-50 bg-gray-900 text-white px-4 py-2 rounded-md text-sm"
-      >
+      <a href="#runs-recent" className="skip-link skip-link--offset">
         Skip to recent runs
       </a>
 
@@ -141,12 +136,9 @@ export default async function RunsPage() {
 
       <div className={pageContent} aria-labelledby="runs-title">
         {connected && runCount === 0 ? (
-          <p className="mb-10 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-amber-950 text-base">
+          <p className={calloutAmber}>
             No runs in the database yet. If you manage this site, open the{' '}
-            <Link
-              href="/admin/strava"
-              className="font-medium text-orange-900 underline underline-offset-2 hover:text-orange-950"
-            >
+            <Link href="/admin/strava" className={stravaAdminLinkMuted}>
               Strava admin page
             </Link>{' '}
             to connect and sync.

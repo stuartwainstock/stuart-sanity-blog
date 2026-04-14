@@ -1,0 +1,9 @@
+.section {
+  margin-top: 4rem;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}

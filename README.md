@@ -5,7 +5,7 @@ A modern, full-featured blog built with Next.js 16 and Sanity CMS. This project 
 ## Features
 
 ### Frontend
-- 🎨 Modern, responsive design with Tailwind CSS
+- 🎨 Styling with **CSS Modules**, global CSS, and **design tokens** (Style Dictionary → CSS variables)
 - 📱 Mobile-first approach
 - ⚡ Built with Next.js 16 App Router
 - 🖼️ Optimized images with Next.js Image component
@@ -434,10 +434,10 @@ npm run test:storybook
 #### Styling
 - **Design tokens (source of truth):** edit JSON under `tokens/` (e.g. `tokens/color.json`, `tokens/font.json`), then run **`npm run tokens:build`**. [Style Dictionary](https://amzn.github.io/style-dictionary/) generates **`src/styles/generated/tokens.css`** (`:root` CSS variables). Do not hand-edit the generated file.
 - **`npm run build`** and **`npm run build-storybook`** run token generation first (`prebuild` / `prebuild-storybook`) so CI and local builds stay in sync; still commit **`tokens.css`** after token changes so clones match without running the CLI.
-- **Wiring:** `src/app/globals.css` imports the generated CSS before Tailwind; `tailwind.config.js` maps extended colors and `font-work-sans` to those `var(--…)` values.
+- **Wiring:** `src/app/globals.css` imports the generated tokens first, then defines base typography, link colors, layout helpers (e.g. skip links, `.prose`), and small global utilities. Use **`var(--color-…)`** and other token variables in CSS modules or globals—there is no Tailwind layer.
+- **Shared page typography:** `src/lib/pageTypography.ts` re-exports classes from `src/styles/pageTypography.module.css` for CMS-driven pages (shell, banners, body copy, Strava/admin accents). Prefer these for consistency with tokens.
+- **Components:** colocate **`*.module.css`** with components or routes; import as `styles` and use `className={styles.foo}`. Storybook stories can use small `*.stories.module.css` files where layout helpers are needed.
 - **Docs:** Storybook → **Foundations → Design Tokens** reflects the same JSON (see `src/stories/designTokens.data.ts` + `src/lib/tokens/walkJsonTokens.ts`).
-- For one-off global CSS (not tokens), edit `src/app/globals.css` below the token import.
-- Component-level styling: Tailwind classes in components as usual.
 
 #### Content Schemas
 - Add new fields to existing schemas in `sanity/schemaTypes/`
@@ -471,5 +471,5 @@ For questions and support:
 
 - Built with [Next.js](https://nextjs.org/)
 - Content management by [Sanity](https://sanity.io/)
-- Styled with [Tailwind CSS](https://tailwindcss.com/)
+- UI styling: plain CSS, **CSS Modules**, and **Style Dictionary** tokens (no Tailwind)
 - Icons from [Heroicons](https://heroicons.com/)

@@ -41,8 +41,8 @@ export const cssCustomProperties = [
   },
 ] as const
 
-/** Tailwind extended palette (matches `tailwind.config.js` → CSS variables). */
-export const tailwindExtendedColors = [
+/** Custom + semantic colors from `tokens/color.json` (exposed as `--color-*` after build). */
+export const extendedPaletteColors = [
   {token: 'custom-50', hex: colorSource.color.custom['50'].$value},
   {token: 'custom-100', hex: colorSource.color.custom['100'].$value},
   {token: 'custom-200', hex: colorSource.color.custom['200'].$value},
@@ -78,17 +78,5 @@ export const documentedHexInGlobals = [
   {label: 'Selection text', hex: doc['selection-fg'].$value},
 ] as const
 
-/** Representative Tailwind spacing scale (default theme) */
+/** Representative spacing scale (1 unit = 0.25rem) */
 export const spacingSteps = [0, 1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24] as const
-
-/** Tailwind font-size utilities used across the site */
-export const typeScaleSteps = [
-  'text-xs',
-  'text-sm',
-  'text-base',
-  'text-lg',
-  'text-xl',
-  'text-2xl',
-  'text-3xl',
-  'text-4xl',
-] as const

@@ -1,0 +1,34 @@
+---
+description: Design tokens, CSS Modules, and global CSS — no Tailwind
+alwaysApply: true
+---
+
+# Styling and design tokens
+
+This project does **not** use Tailwind. Prefer **design tokens**, **CSS Modules**, and **`pageTypography`** helpers so UI stays consistent and CMS-driven pages match the rest of the site.
+
+## Tokens (source of truth)
+
+- Edit JSON under **`tokens/`** (e.g. `tokens/color.json`, `tokens/font.json`).
+- Run **`npm run tokens:build`** (also runs automatically before **`npm run build`** and **`npm run build-storybook`** via `prebuild` / `prebuild-storybook`).
+- [Style Dictionary](https://amzn.github.io/style-dictionary/) outputs **`src/styles/generated/tokens.css`** (`:root` CSS variables). **Do not hand-edit** the generated file; change JSON and rebuild.
+
+## Wiring
+
+- **`src/app/globals.css`** imports generated tokens first, then defines base typography, links, layout helpers (e.g. skip links, `.prose`, `.sr-only`), and small global utilities.
+- Use **`var(--color-…)`** and other token variables in CSS modules or globals.
+
+## Components and pages
+
+- Colocate **`ComponentName.module.css`** with the component or route; import as `styles` and use `className={styles.foo}`.
+- **`src/lib/pageTypography.ts`** re-exports classes from **`src/styles/pageTypography.module.css`** for shared shell/banner/body copy on CMS pages. Use these for tool/project pages and long-form layouts when appropriate.
+- Storybook stories may use small **`*.stories.module.css`** files for layout-only wrappers.
+
+## Reference
+
+- Storybook → **Foundations → Design Tokens** (`src/stories/DesignTokens.stories.tsx`, `src/stories/designTokens.data.ts`).
+- **`README.md`** → Customization → Styling for the same workflow in prose.
+
+## CMS-driven tool pages
+
+When adding routes like `/runs`, `/pileated-watch`, etc., follow **`.cursor/rules/cms-driven-tool-pages.mdc`** for copy and data, and apply **tokens + modules** here for layout and type—not utility-class frameworks.

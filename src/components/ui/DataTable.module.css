@@ -1,0 +1,116 @@
+.wrap {
+  overflow-x: auto;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.wrapOnWhite {
+  background: #fff;
+}
+
+.table {
+  min-width: 100%;
+  text-align: left;
+  font-size: 0.875rem;
+  border-collapse: collapse;
+}
+
+.thead {
+  background: #f3f4f6;
+  color: #1f2937;
+}
+
+.th {
+  padding: 0.75rem 1rem;
+  font-weight: 500;
+}
+
+.tbody {
+  background: #fff;
+}
+
+.tbody tr + tr {
+  border-top: 1px solid #e5e7eb;
+}
+
+.rowHover:hover {
+  background: #f9fafb;
+}
+
+.td {
+  padding: 0.75rem 1rem;
+}
+
+.tdMuted {
+  color: #1f2937;
+}
+
+.tdStrong {
+  color: #111827;
+}
+
+.tdCenter {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: #4b5563;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.maxW12 {
+  max-width: 12rem;
+}
+
+.maxW10 {
+  max-width: 10rem;
+}
+
+.maxW28 {
+  max-width: min(28rem, 50vw);
+}
+
+.maxW20 {
+  max-width: min(20rem, 40vw);
+}
+
+.linkEmerald {
+  color: #065f46;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.linkEmerald:hover {
+  color: #022c22;
+}
+
+.linkEmerald:focus-visible {
+  outline: 2px solid #059669;
+  outline-offset: 2px;
+  border-radius: 0.125rem;
+}
+
+.linkBlue {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.linkBlue:hover {
+  color: #1e40af;
+}

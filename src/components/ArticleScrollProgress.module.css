@@ -1,0 +1,16 @@
+.wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.svg {
+  flex-shrink: 0;
+}
+
+.track {
+  color: #e5e7eb;
+}
+
+.progress {
+  transition: stroke-dashoffset 150ms ease-out;
+}

@@ -63,18 +63,15 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className={workSans.variable}>
-      <body className={`${workSans.className} antialiased min-h-screen flex flex-col bg-[#e8e8e8]`}>
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-100 bg-gray-900 text-white px-4 py-2 rounded-md"
-        >
+      <body className={`${workSans.className} layout-body`}>
+        <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
         <Suspense fallback={null}>
           <GoogleAnalytics />
         </Suspense>
         <Navigation siteSettings={siteSettings || undefined} navigationPages={navigationPages} />
-        <main className="w-full shrink-0" id="main-content">
+        <main className="layout-main" id="main-content">
           {children}
         </main>
         <Footer siteSettings={siteSettings || undefined} />

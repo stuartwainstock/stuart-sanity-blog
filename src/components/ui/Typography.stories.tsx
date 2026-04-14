@@ -11,6 +11,7 @@ import {
   pageTitleH1,
   pageTitleH1DataPage,
 } from '@/lib/pageTypography'
+import s from './Typography.stories.module.css'
 
 const meta = {
   title: 'Atoms/Typography',
@@ -25,7 +26,7 @@ type Story = StoryObj<typeof meta>
 
 export const Scale: Story = {
   render: () => (
-    <div className="space-y-10">
+    <div className={s.stack}>
       <div>
         <div className={pageKicker}>Kicker</div>
         <div className={pageTitleH1}>H1 (pageTitleH1)</div>
@@ -49,7 +50,7 @@ export const Scale: Story = {
       <h2 className={pageSectionHeading}>Section heading (pageSectionHeading)</h2>
 
       <div className={pageBodyTypography}>
-        <p className="mb-6 text-inherit">
+        <p className={s.bodyLead}>
           Body typography wrapper (pageBodyTypography). This is the baseline type scale used across
           tool pages.
         </p>

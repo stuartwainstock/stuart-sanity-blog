@@ -5,6 +5,7 @@ import PortableText from '@/components/molecules/PortableText'
 import Button from '@/components/atoms/Button'
 import {portableTextBasic} from '@/stories/fixtures/portableText'
 import {pageBodyTypography, pageDataSourceLink, pageSectionHeading} from '@/lib/pageTypography'
+import storyStyles from './ToolPageExample.stories.module.css'
 
 const meta = {
   title: 'Organisms/Examples/ToolPage',
@@ -58,7 +59,7 @@ export const FlightsToolPage: Story = {
           </div>
         </section>
 
-        <section className="space-y-4">
+        <section className={storyStyles.section}>
           <h2 className={pageSectionHeading}>Body</h2>
           <div className={pageBodyTypography}>
             <PortableText value={portableTextBasic as never[]} pageBodyTypography />

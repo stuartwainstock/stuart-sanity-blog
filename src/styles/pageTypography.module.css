@@ -95,3 +95,107 @@
   margin-bottom: 1rem;
 }
 
+/* Vertical rhythm inside CMS body wrappers */
+.pageBodyGap {
+  margin-bottom: 1.5rem;
+}
+
+.pageBodyPlain {
+  margin-bottom: 0;
+  color: inherit;
+}
+
+.pageStackLoose {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Strava / admin accent links (orange) */
+.stravaAdminLink {
+  font-weight: 500;
+  color: #9a3412;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.stravaAdminLink:hover {
+  color: #7c2d12;
+}
+
+.stravaAdminLinkMuted {
+  font-weight: 500;
+  color: #c2410c;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.stravaAdminLinkMuted:hover {
+  color: #9a3412;
+}
+
+.calloutAmber {
+  margin-bottom: 2.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #fde68a;
+  background: #fffbeb;
+  color: #451a03;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.calloutError {
+  margin-bottom: 2.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #7f1d1d;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.calloutSuccess {
+  margin-bottom: 1.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #a7f3d0;
+  background: #ecfdf5;
+  color: #064e3b;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.calloutDanger {
+  margin-bottom: 2.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #7f1d1d;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.inlineCode {
+  font-size: 0.875rem;
+  background: #fee2e2;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.inlineCodeNeutral {
+  font-size: 0.75rem;
+  background: #fef3c7;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.strongDark {
+  font-weight: 600;
+  color: #111827;
+}
+

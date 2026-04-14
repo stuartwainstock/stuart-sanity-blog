@@ -8,7 +8,8 @@ import type {FeatureCollection} from 'geojson'
 import {maplibregl} from '@/lib/maplibreClient'
 import {SITE_MAP_STYLE} from '@/lib/maps/cartoStyle'
 import PortableText from '@/components/molecules/PortableText'
-import {pageBodyParagraph, pageBodyTypography} from '@/lib/pageTypography'
+import {pageBodyParagraph, pageBodyPlain, pageBodyTypography} from '@/lib/pageTypography'
+import mapStyles from './StravaRunsMap.module.css'
 import {
   RUNS_MAP_HOME_BOUNDS,
   RUNS_MAP_HOME_CENTER,
@@ -131,12 +132,12 @@ export default function StravaRunsMap({runs, mapIntroduction}: Props) {
   const hasCmsIntro = Array.isArray(mapIntroduction) && mapIntroduction.length > 0
 
   return (
-    <div className="space-y-6">
+    <div className={mapStyles.root}>
       <div id={descriptionId} className={hasCmsIntro ? pageBodyTypography : pageBodyParagraph}>
         {hasCmsIntro ? (
           <PortableText value={mapIntroduction as never[]} pageBodyTypography />
         ) : (
-          <p className="mb-0 text-inherit">{defaultMapIntroDescription()}</p>
+          <p className={pageBodyPlain}>{defaultMapIntroDescription()}</p>
         )}
       </div>
       {!hasRoutes ? (
@@ -147,7 +148,7 @@ export default function StravaRunsMap({runs, mapIntroduction}: Props) {
       ) : (
         <div
           id="runs-map"
-          className="relative w-full h-[min(70vh,520px)] rounded-lg overflow-hidden border border-gray-200 shadow-sm bg-gray-100"
+          className={mapStyles.mapShell}
           role="region"
           aria-label="Map of Strava run routes from the last year"
           aria-describedby={descriptionId}

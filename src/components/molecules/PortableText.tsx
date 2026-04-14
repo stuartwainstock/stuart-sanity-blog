@@ -14,8 +14,8 @@ interface PortableTextProps {
   value: TypedObject[]
   className?: string
   /**
-   * Omit Tailwind Typography `prose`; use `text-inherit` on blocks so a parent
-   * with `pageBodyTypography` classes (see `@/lib/pageTypography`) controls size/weight.
+   * When false, blocks avoid the global `.prose` wrapper; use inherited styles so a parent with
+   * `pageBodyTypography` (see `@/lib/pageTypography`) controls size/weight.
    */
   pageBodyTypography?: boolean
 }

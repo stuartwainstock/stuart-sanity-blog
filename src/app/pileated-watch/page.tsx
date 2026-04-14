@@ -9,6 +9,7 @@ import {resolveEbirdBirding} from '@/lib/ebird/resolveConfig'
 import PageHeroWithDataSource from '@/components/molecules/PageHeroWithDataSource'
 import {
   pageBanner,
+  pageBodyGap,
   pageBodyTypography,
   pageContent,
   pageInner,
@@ -16,7 +17,9 @@ import {
   pageSectionHeading,
   pageShellBg,
   pageTitleH1,
+  strongDark,
 } from '@/lib/pageTypography'
+import pwStyles from './page.module.css'
 
 export const revalidate = 300
 
@@ -75,26 +78,16 @@ export default async function PileatedWatchPage() {
               Pileated Watch
             </h1>
             <div className={pageBodyTypography}>
-              <p className="mb-6 text-inherit">
-                Open <strong className="font-semibold text-gray-900">Sanity Studio</strong> →{' '}
-                <strong className="font-semibold text-gray-900">
-                  Pileated Watch (eBird)
-                </strong>{' '}
-                and fill in <strong className="font-semibold text-gray-900">Page title</strong>,
-                your geographic area (hotspot L-codes or region code), and{' '}
-                <strong className="font-semibold text-gray-900">Publish</strong>. Draft content
-                does not appear on the live site.
+              <p className={pageBodyGap}>
+                Open <strong className={strongDark}>Sanity Studio</strong> →{' '}
+                <strong className={strongDark}>Pileated Watch (eBird)</strong> and fill in{' '}
+                <strong className={strongDark}>Page title</strong>, your geographic area (hotspot L-codes or
+                region code), and <strong className={strongDark}>Publish</strong>. Draft content does not
+                appear on the live site.
               </p>
-              <p className="mb-6 text-inherit">
-                The server needs{' '}
-                <code className="bg-gray-100 text-gray-900 px-2 py-1 rounded text-sm font-mono">
-                  EBIRD_API_KEY
-                </code>{' '}
-                in{' '}
-                <code className="bg-gray-100 text-gray-900 px-2 py-1 rounded text-sm font-mono">
-                  .env.local
-                </code>{' '}
-                and on your host (e.g. Vercel).
+              <p className={pageBodyGap}>
+                The server needs <code className={pwStyles.code}>EBIRD_API_KEY</code> in{' '}
+                <code className={pwStyles.code}>.env.local</code> and on your host (e.g. Vercel).
               </p>
             </div>
           </div>
@@ -115,10 +108,7 @@ export default async function PileatedWatchPage() {
 
   return (
     <div className={pageShellBg}>
-      <a
-        href="#pileated-watch-sightings"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 bg-gray-900 text-white px-4 py-2 rounded-md text-sm"
-      >
+      <a href="#pileated-watch-sightings" className="skip-link">
         Skip to sightings table
       </a>
 
@@ -149,12 +139,10 @@ export default async function PileatedWatchPage() {
 
       <div className={pageContent} aria-labelledby="pileated-title">
         {!obsResult.ok ? (
-          <p className="text-red-800 bg-red-50 border border-red-200 rounded-lg px-4 py-3 mb-10 text-base">
-            {obsResult.message}
-          </p>
+          <p className={pwStyles.error}>{obsResult.message}</p>
         ) : (
           <>
-            <section className="mb-14" aria-labelledby="map-section-title">
+            <section className={pwStyles.section} aria-labelledby="map-section-title">
               <h2 id="map-section-title" className={pageSectionHeading}>
                 {config.mapSectionTitle}
               </h2>

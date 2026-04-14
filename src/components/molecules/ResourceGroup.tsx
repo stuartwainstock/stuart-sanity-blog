@@ -1,6 +1,7 @@
 import ListGroupHeading from '@/components/atoms/ListGroupHeading'
 import ResourceListItem from '@/components/molecules/ResourceListItem'
 import type {Resource} from '@/lib/types'
+import styles from './ResourceGroup.module.css'
 
 export type ResourceGroupProps = {
   mediaType: string
@@ -12,10 +13,10 @@ export default function ResourceGroup({mediaType, groupLabel, resources}: Resour
   const headingId = `media-type-${mediaType}`
 
   return (
-    <div className="space-y-4">
+    <div className={styles.root}>
       <ListGroupHeading id={headingId}>{groupLabel}</ListGroupHeading>
       <div
-        className="space-y-4"
+        className={styles.list}
         aria-labelledby={headingId}
         aria-label={`Resources in ${groupLabel} group`}
       >

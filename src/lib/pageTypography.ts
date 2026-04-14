@@ -44,3 +44,27 @@ export const pageSectionHeading =
 
 /** Small line above the title (attribution, meta). */
 export const pageKicker = styles.pageKicker
+
+export const pageBodyGap = styles.pageBodyGap
+
+export const pageBodyPlain = styles.pageBodyPlain
+
+export const pageStackLoose = styles.pageStackLoose
+
+export const stravaAdminLink = styles.stravaAdminLink
+
+export const stravaAdminLinkMuted = styles.stravaAdminLinkMuted
+
+export const calloutAmber = styles.calloutAmber
+
+export const calloutError = styles.calloutError
+
+export const calloutSuccess = styles.calloutSuccess
+
+export const calloutDanger = styles.calloutDanger
+
+export const inlineCode = styles.inlineCode
+
+export const inlineCodeNeutral = styles.inlineCodeNeutral
+
+export const strongDark = styles.strongDark

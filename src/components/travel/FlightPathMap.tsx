@@ -10,6 +10,7 @@ import {readCssVarColor} from '@/lib/tokens/readCssVarColor'
 import {greatCircleSegmentsGeoJson, haversineKm} from '@/lib/travel/greatCircle'
 import type {AirportCoords, FlightLeg} from '@/lib/travel/types'
 import colorSource from '../../../tokens/color.json'
+import styles from './FlightPathMap.module.css'
 
 const FLIGHT_LINE_LAYER_ID = 'flight-paths-lines'
 
@@ -150,6 +151,8 @@ export default function FlightPathMap({
   }>(null)
 
   useLayoutEffect(() => {
+    // Read computed --color-link after mount; MapLibre line paint cannot use CSS var() directly.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sync token from DOM once for GeoJSON palette
     setLinkLineColor(readCssVarColor('--color-link', LINK_COLOR_FALLBACK))
   }, [])
 
@@ -208,22 +211,16 @@ export default function FlightPathMap({
     setCursor('')
   }, [setCursor])
 
-  const shellClass =
-    className ??
-    'w-full h-[min(70vh,560px)] rounded-lg border border-gray-200 overflow-hidden shadow-sm bg-gray-100'
+  const shellClass = className ?? styles.shellDefault
 
   return (
     <div className={shellClass}>
       {!hasRoutes ? (
-        <div className="flex h-full min-h-[320px] items-center justify-center px-4 text-center text-gray-600 text-sm">
+        <div className={styles.empty}>
           No flight legs to render. Add airport coordinates for each IATA code in your data source.
         </div>
       ) : (
-        <div
-          className="relative h-full w-full min-h-[320px]"
-          role="region"
-          aria-label="Map of great-circle flight paths"
-        >
+        <div className={styles.mapArea} role="region" aria-label="Map of great-circle flight paths">
           <Map
             ref={mapRef}
             mapLib={maplibregl}
@@ -258,14 +255,14 @@ export default function FlightPathMap({
           </Map>
           {hover ? (
             <div
-              className="pointer-events-none absolute z-10 max-w-xs rounded-md border border-gray-200 bg-white/95 px-3 py-2 text-sm text-gray-900 shadow-md"
+              className={styles.tooltip}
               style={{
                 left: hover.x,
                 top: hover.y,
                 transform: 'translate(-50%, calc(-100% - 10px))',
               }}
             >
-              <div className="font-semibold">{hover.dateLabel}</div>
+              <div className={styles.tooltipTitle}>{hover.dateLabel}</div>
               <div>{hover.route}</div>
               <div>{hover.distance}</div>
             </div>

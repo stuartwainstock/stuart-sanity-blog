@@ -7,6 +7,7 @@ import {maplibregl} from '@/lib/maplibreClient'
 import {SITE_MAP_STYLE} from '@/lib/maps/cartoStyle'
 import type {BirdObservation} from '@/lib/ebird/types'
 import {pageBodyParagraph} from '@/lib/pageTypography'
+import styles from './BackyardBirdMap.module.css'
 
 type Props = {
   observations: BirdObservation[]
@@ -56,14 +57,14 @@ export default function BackyardBirdMap({
   }
 
   return (
-    <div className="space-y-6">
+    <div className={styles.root}>
       <p id={descriptionId} className={pageBodyParagraph}>
         Pins show where {focusSpeciesLabel} was reported on eBird checklists in your
         configured area and time window. All observers’ sightings are included. The
         same rows appear in the table below for keyboard and screen-reader access.
       </p>
       <div
-        className="relative w-full h-[min(70vh,520px)] rounded-lg overflow-hidden border border-gray-200 shadow-sm bg-gray-100"
+        className={styles.mapShell}
         role="region"
         aria-label={`Map of recent ${focusSpeciesLabel} sightings from eBird`}
         aria-describedby={descriptionId}
@@ -90,7 +91,7 @@ export default function BackyardBirdMap({
                 href={o.checklistUri}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block w-3 h-3 rounded-full bg-emerald-700 border-2 border-white shadow-md hover:scale-125 focus:scale-125 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 transition-transform"
+                className={styles.marker}
                 title={`${o.speciesName} — open checklist on eBird`}
                 aria-label={`${o.speciesName}, eBird checklist, opens in new tab`}
               />

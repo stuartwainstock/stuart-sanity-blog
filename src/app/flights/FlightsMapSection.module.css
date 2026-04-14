@@ -1,0 +1,28 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.fallback {
+  width: 100%;
+  height: min(70vh, 560px);
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4b5563;
+  font-size: 0.875rem;
+}
+
+.empty {
+  width: 100%;
+  min-height: 320px;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 1.5rem;
+  color: #374151;
+}

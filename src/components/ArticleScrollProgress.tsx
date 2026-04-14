@@ -1,6 +1,7 @@
 'use client'
 
 import {useCallback, useEffect, useState} from 'react'
+import styles from './ArticleScrollProgress.module.css'
 
 type ArticleScrollProgressProps = {
   /** ID of the element whose height defines reading length (usually the wrapping `<article>`). */
@@ -49,7 +50,7 @@ export default function ArticleScrollProgress({articleId}: ArticleScrollProgress
 
   return (
     <div
-      className="flex justify-center"
+      className={styles.wrap}
       role="progressbar"
       aria-valuemin={0}
       aria-valuemax={100}
@@ -60,7 +61,7 @@ export default function ArticleScrollProgress({articleId}: ArticleScrollProgress
         width={SIZE}
         height={SIZE}
         viewBox={`0 0 ${SIZE} ${SIZE}`}
-        className="shrink-0"
+        className={styles.svg}
         aria-hidden="true"
       >
         <circle
@@ -70,7 +71,7 @@ export default function ArticleScrollProgress({articleId}: ArticleScrollProgress
           fill="none"
           stroke="currentColor"
           strokeWidth={STROKE}
-          className="text-gray-200"
+          className={styles.track}
         />
         <g transform={`rotate(-90 ${CX} ${CY})`}>
           <circle
@@ -83,7 +84,7 @@ export default function ArticleScrollProgress({articleId}: ArticleScrollProgress
             strokeLinecap="round"
             strokeDasharray={CIRC}
             strokeDashoffset={offset}
-            className="transition-[stroke-dashoffset] duration-150 ease-out"
+            className={styles.progress}
           />
         </g>
       </svg>

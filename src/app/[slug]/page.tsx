@@ -16,6 +16,7 @@ import {
 } from '@/lib/pageTypography'
 import SpeakingEngagements from '@/components/organisms/SpeakingEngagements'
 import ReadingList from '@/components/organisms/ReadingList'
+import styles from './page.module.css'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -101,7 +102,7 @@ export default async function PageComponent({ params }: PageProps) {
         aria-labelledby="page-title"
       >
         <div className={pageInner}>
-          <div className="text-left">
+          <div className={styles.bannerInner}>
             <h1 
               id="page-title"
               className={pageTitleH1}
@@ -119,28 +120,24 @@ export default async function PageComponent({ params }: PageProps) {
 
       {/* Featured Image */}
       {page.mainImage && page.mainImage.asset && (
-        <div className="relative h-96 md:h-[400px] bg-gray-100">
+        <div className={styles.featuredWrap}>
           <Image
             src={getImageUrl(page.mainImage, 1200, 600)}
             alt={page.mainImage.alt || page.title}
             fill
-            className="object-cover"
+            className={styles.featuredImage}
             priority
           />
           {page.mainImage.credit && (
-            <div className="absolute bottom-4 right-4 bg-black bg-opacity-50 text-white text-sm px-3 py-1 rounded">
-              Photo by {page.mainImage.credit}
-            </div>
+            <div className={styles.credit}>Photo by {page.mainImage.credit}</div>
           )}
         </div>
       )}
-      
+
       {/* Image Caption */}
       {page.mainImage && page.mainImage.asset && page.mainImage.caption && (
-        <div className={`${pageInner} px-8 py-4`}>
-          <p className="text-sm text-gray-600 text-center italic">
-            {page.mainImage.caption}
-          </p>
+        <div className={`${pageInner} ${styles.captionBlock}`}>
+          <p className={styles.caption}>{page.mainImage.caption}</p>
         </div>
       )}
 

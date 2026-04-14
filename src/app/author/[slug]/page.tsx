@@ -5,6 +5,7 @@ import PostCard from '@/components/molecules/PostCard'
 import Image from 'next/image'
 import { getImageUrl } from '@/lib/sanity'
 import Link from 'next/link'
+import styles from './page.module.css'
 
 interface AuthorPageProps {
   params: Promise<{
@@ -43,7 +44,7 @@ async function getAuthorData(slug: string) {
 export async function generateMetadata({ params }: AuthorPageProps) {
   const { slug } = await params
   const { author } = await getAuthorData(slug)
-  
+
   if (!author) {
     return {
       title: 'Author Not Found',
@@ -62,14 +63,11 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
 
   if (!author) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Author Not Found</h1>
-          <p className="text-gray-600 mb-8">The author you&apos;re looking for doesn&apos;t exist.</p>
-          <Link
-            href="/"
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-          >
+      <div className={styles.notFoundWrap}>
+        <div className={styles.notFoundInner}>
+          <h1 className={styles.notFoundTitle}>Author Not Found</h1>
+          <p className={styles.notFoundText}>The author you&apos;re looking for doesn&apos;t exist.</p>
+          <Link href="/" className={styles.btnPrimary}>
             Go Home
           </Link>
         </div>
@@ -78,35 +76,30 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
   }
 
   return (
-    <div className="min-h-screen">
-      {/* Author Header */}
-      <section className="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center gap-8">
+    <div className={styles.page}>
+      <section className={styles.hero}>
+        <div className={styles.heroInner}>
+          <div className={styles.heroRow}>
             {author.image && (
-              <div className="relative w-32 h-32 md:w-40 md:h-40">
+              <div className={styles.avatarWrap}>
                 <Image
                   src={getImageUrl(author.image, 160, 160)}
                   alt={author.image.alt || author.name}
                   fill
-                  className="rounded-full object-cover border-4 border-white shadow-lg"
+                  className={styles.avatar}
                 />
               </div>
             )}
-            <div className="text-center md:text-left">
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">{author.name}</h1>
+            <div className={styles.heroText}>
+              <h1 className={styles.heroTitle}>{author.name}</h1>
               {author.bio && (
-                <div className="text-xl text-blue-100 max-w-3xl">
-                  {/* You might want to render this as PortableText if it's rich text */}
+                <div className={styles.heroBio}>
                   <p>{firstPortableTextSpanText(author.bio) || 'Author bio'}</p>
                 </div>
               )}
-              <div className="flex flex-wrap gap-4 mt-6 justify-center md:justify-start">
+              <div className={styles.linkRow}>
                 {author.email && (
-                  <a
-                    href={`mailto:${author.email}`}
-                    className="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors"
-                  >
+                  <a href={`mailto:${author.email}`} className={styles.heroLink}>
                     Email
                   </a>
                 )}
@@ -115,7 +108,7 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
                     href={author.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                    className={styles.heroLink}
                     aria-label="Author website (opens in new tab)"
                   >
                     Website
@@ -126,7 +119,7 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
                     href={`https://twitter.com/${author.social.twitter}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                    className={styles.heroLink}
                     aria-label={`Twitter @${author.social.twitter} (opens in new tab)`}
                   >
                     Twitter
@@ -137,7 +130,7 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
                     href={`https://linkedin.com/in/${author.social.linkedin}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                    className={styles.heroLink}
                     aria-label={`LinkedIn ${author.social.linkedin} (opens in new tab)`}
                   >
                     LinkedIn
@@ -148,7 +141,7 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
                     href={`https://github.com/${author.social.github}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                    className={styles.heroLink}
                     aria-label={`GitHub ${author.social.github} (opens in new tab)`}
                   >
                     GitHub
@@ -160,19 +153,16 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
         </div>
       </section>
 
-      {/* Author Posts */}
       {posts.length > 0 && (
-        <section className="py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                Posts by {author.name}
-              </h2>
-              <p className="text-xl text-gray-600">
+        <section className={styles.postsSection}>
+          <div className={styles.sectionInner}>
+            <div className={styles.sectionHeader}>
+              <h2 className={styles.sectionTitle}>Posts by {author.name}</h2>
+              <p className={styles.sectionSubtitle}>
                 {posts.length} {posts.length === 1 ? 'post' : 'posts'} published
               </p>
             </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className={styles.grid}>
               {posts.map((post) => (
                 <PostCard key={post._id} post={post} />
               ))}
@@ -181,20 +171,12 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
         </section>
       )}
 
-      {/* No Posts Message */}
       {posts.length === 0 && (
-        <section className="py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              No Posts Yet
-            </h2>
-            <p className="text-xl text-gray-600 mb-8">
-              {author.name} hasn&apos;t published any posts yet.
-            </p>
-            <Link
-              href="/journal"
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-            >
+        <section className={styles.emptySection}>
+          <div className={styles.emptyInner}>
+            <h2 className={styles.sectionTitle}>No Posts Yet</h2>
+            <p className={styles.emptyLead}>{author.name} hasn&apos;t published any posts yet.</p>
+            <Link href="/journal" className={styles.btnPrimary}>
               Browse All Posts
             </Link>
           </div>

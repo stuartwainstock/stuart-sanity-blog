@@ -1,6 +1,7 @@
 import ResourceGroup from '@/components/molecules/ResourceGroup'
 import {getMediaTypeLabel} from '@/lib/resources/labels'
 import type {Resource} from '@/lib/types'
+import styles from './ReadingList.module.css'
 
 interface ReadingListProps {
   resources: Resource[]
@@ -26,8 +27,8 @@ export default function ReadingList({resources}: ReadingListProps) {
   const sortedMediaTypes = Object.keys(groupedResources).sort()
 
   return (
-    <section className="mt-16" aria-labelledby="reading-list-content">
-      <div id="reading-list-content" className="space-y-12">
+    <section className={styles.section} aria-labelledby="reading-list-content">
+      <div id="reading-list-content" className={styles.content}>
         {sortedMediaTypes.map((mediaType) => (
           <ResourceGroup
             key={mediaType}

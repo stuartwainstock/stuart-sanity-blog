@@ -3,6 +3,7 @@ import FlightPathMapDynamic from '@/components/travel/FlightPathMapDynamic'
 import PortableText from '@/components/molecules/PortableText'
 import {fetchTripItFlights} from '@/lib/tripit/flights'
 import {pageBodyTypography, pageSectionHeading} from '@/lib/pageTypography'
+import styles from './FlightsMapSection.module.css'
 
 type Props = {
   mapSectionTitle: string
@@ -11,7 +12,7 @@ type Props = {
 
 function FlightsMapSectionInner({mapSectionTitle, mapSectionIntroduction}: Props) {
   return (
-    <section className="space-y-6" aria-label="Flights map">
+    <section className={styles.section} aria-label="Flights map">
       <h2 className={pageSectionHeading}>{mapSectionTitle}</h2>
       {Array.isArray(mapSectionIntroduction) && mapSectionIntroduction.length > 0 ? (
         <div className={pageBodyTypography}>
@@ -20,9 +21,7 @@ function FlightsMapSectionInner({mapSectionTitle, mapSectionIntroduction}: Props
       ) : null}
       <Suspense
         fallback={
-          <div className="w-full h-[min(70vh,560px)] rounded-lg border border-gray-200 bg-gray-100 animate-pulse flex items-center justify-center text-gray-600 text-sm">
-            Loading flights…
-          </div>
+          <div className={`${styles.fallback} u-animate-pulse`}>Loading flights…</div>
         }
       >
         <FlightsMap />
@@ -35,7 +34,7 @@ async function FlightsMap() {
   const {legs, airports} = await fetchTripItFlights()
   if (legs.length === 0) {
     return (
-      <div className="w-full min-h-[320px] rounded-lg border border-gray-200 bg-white/80 p-6 text-gray-700">
+      <div className={styles.empty}>
         No flights returned from TripIt (or TripIt access isn’t configured for this deployment).
       </div>
     )
@@ -46,4 +45,3 @@ async function FlightsMap() {
 export default function FlightsMapSection(props: Props) {
   return <FlightsMapSectionInner {...props} />
 }
-

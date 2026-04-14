@@ -1,5 +1,6 @@
+/** PostCSS pipeline — no Tailwind; Next.js handles CSS modules and imports. */
 const config = {
-  plugins: { "@tailwindcss/postcss": {} },
-};
+  plugins: {},
+}
 
-export default config;
+export default config
