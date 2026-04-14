@@ -5,6 +5,12 @@ interface FooterProps {
   siteSettings?: SiteSettings
 }
 
+const footerLinkClass =
+  'text-[var(--color-link)] hover:text-[var(--color-link-hover)] focus:text-[var(--color-link-hover)] transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md px-1 py-0.5'
+
+const footerSocialLinkClass =
+  'text-[var(--color-link)] hover:text-[var(--color-link-hover)] focus:text-[var(--color-link-hover)] transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md p-1'
+
 export default function Footer({ siteSettings }: FooterProps) {
   const currentYear = new Date().getFullYear()
 
@@ -31,7 +37,7 @@ export default function Footer({ siteSettings }: FooterProps) {
                     href={`https://twitter.com/${siteSettings.social.twitter}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-600 hover:text-gray-900 focus:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md p-1"
+                    className={footerSocialLinkClass}
                     aria-label={`Follow us on Twitter: @${siteSettings.social.twitter} (opens in new tab)`}
                   >
                     <span className="sr-only">Twitter</span>
@@ -45,7 +51,7 @@ export default function Footer({ siteSettings }: FooterProps) {
                     href={`https://github.com/${siteSettings.social.github}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-600 hover:text-gray-900 focus:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md p-1"
+                    className={footerSocialLinkClass}
                     aria-label={`View our GitHub profile: ${siteSettings.social.github} (opens in new tab)`}
                   >
                     <span className="sr-only">GitHub</span>
@@ -59,7 +65,7 @@ export default function Footer({ siteSettings }: FooterProps) {
                     href={`https://linkedin.com/in/${siteSettings.social.linkedin}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-600 hover:text-gray-900 focus:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md p-1"
+                    className={footerSocialLinkClass}
                     aria-label={`Connect with us on LinkedIn: ${siteSettings.social.linkedin} (opens in new tab)`}
                   >
                     <span className="sr-only">LinkedIn</span>
@@ -87,7 +93,7 @@ export default function Footer({ siteSettings }: FooterProps) {
                           href={link.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-gray-600 hover:text-gray-900 focus:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md px-1 py-0.5"
+                          className={footerLinkClass}
                           aria-label={`${link.title} (opens in new tab)`}
                         >
                           {link.title}
@@ -95,7 +101,7 @@ export default function Footer({ siteSettings }: FooterProps) {
                       ) : (
                         <Link
                           href={link.url}
-                          className="text-gray-600 hover:text-gray-900 focus:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md px-1 py-0.5"
+                          className={footerLinkClass}
                         >
                           {link.title}
                         </Link>

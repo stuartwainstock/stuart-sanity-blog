@@ -12,11 +12,18 @@ interface NavigationProps {
   navigationPages?: Page[]
 }
 
+/** Tailwind text-* overrides base `a` link token — use tokens explicitly (see globals.css). */
 const navLinkClass =
-  'text-gray-600 hover:text-gray-900 focus:text-gray-900 px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md'
+  'text-[var(--color-link)] hover:text-[var(--color-link-hover)] focus:text-[var(--color-link-hover)] px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md'
 
 const navLinkClassMobile =
-  'block text-gray-600 hover:text-gray-900 focus:text-gray-900 px-3 py-2 text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md'
+  'block text-[var(--color-link)] hover:text-[var(--color-link-hover)] focus:text-[var(--color-link-hover)] px-3 py-2 text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-md'
+
+const navDropdownLinkClass =
+  'block px-4 py-2 text-sm text-[var(--color-link)] hover:bg-gray-50 hover:text-[var(--color-link-hover)] focus:bg-gray-50 focus:text-[var(--color-link-hover)] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-300'
+
+const navIconButtonClass =
+  'text-[var(--color-link)] hover:text-[var(--color-link-hover)] focus:text-[var(--color-link-hover)] focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 p-2 rounded-md'
 
 function useProjectsMenu(siteSettings?: SiteSettings) {
   const raw = siteSettings?.projectsMenu?.items ?? []
@@ -175,7 +182,7 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
                         <li key={item._key}>
                           <Link
                             href={item.href}
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 focus:bg-gray-50 focus:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-300"
+                            className={navDropdownLinkClass}
                             onClick={() => setProjectsOpen(false)}
                           >
                             {item.title}
@@ -209,7 +216,7 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
                   toggleMenu()
                 }
               }}
-              className="text-gray-600 hover:text-gray-900 focus:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 p-2 rounded-md"
+              className={navIconButtonClass}
               aria-expanded={isMenuOpen}
               aria-controls="mobile-menu"
               aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
