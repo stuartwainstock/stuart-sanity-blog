@@ -90,9 +90,18 @@ async function isAuthorized(request: NextRequest): Promise<boolean> {
   const expected = process.env.ANALYTICS_PROXY_SECRET?.trim()
   if (!expected) return false
 
+  const url = normalizeGaDashboardPluginUrl(request.url)
+  const secretFromUrl = (() => {
+    try {
+      return new URL(url).searchParams.get('secret')?.trim() ?? null
+    } catch {
+      return null
+    }
+  })()
+
   const provided =
     request.headers.get('x-analytics-proxy-secret')?.trim() ??
-    request.nextUrl.searchParams.get('secret')?.trim() ??
+    secretFromUrl ??
     request.headers.get('authorization')?.replace(/^Bearer\s+/i, '').trim()
 
   if (!provided) return false
@@ -101,9 +110,12 @@ async function isAuthorized(request: NextRequest): Promise<boolean> {
 
 export async function GET(request: NextRequest) {
   const normalizedUrl = normalizeGaDashboardPluginUrl(request.url)
-  const req = new NextRequest(normalizedUrl, {headers: request.headers})
+  const pluginRequest = new Request(normalizedUrl, {
+    method: 'GET',
+    headers: request.headers,
+  })
 
-  const ok = await isAuthorized(req)
+  const ok = await isAuthorized(request)
   if (!ok) {
     // If there is no shared secret configured, surface a clear misconfiguration instead of
     // implying the endpoint is meant to be public.
@@ -124,7 +136,7 @@ export async function GET(request: NextRequest) {
 
   normalizeGaEnvForVercel()
   normalizeGaPropertyId()
-  const res = await gaDashboardGET(req)
+  const res = await gaDashboardGET(pluginRequest)
   const headers = new Headers(res.headers)
   headers.set('Cache-Control', 'no-store')
   applyCors(request, headers)
