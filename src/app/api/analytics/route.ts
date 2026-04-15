@@ -83,6 +83,19 @@ function responseWithCors(
   return new Response(body, {status, headers})
 }
 
+/** JSON body so `sanity-plugin-ga-dashboard` can `res.json()` instead of failing on an empty 404. */
+function unauthorizedAnalyticsResponse(request: NextRequest): Response {
+  return responseWithCors(
+    request,
+    JSON.stringify({
+      error:
+        'Invalid or missing analytics proxy secret. Ensure SANITY_STUDIO_GA_API_URL includes the same value as Vercel ANALYTICS_PROXY_SECRET.',
+    }),
+    401,
+    {'Content-Type': 'application/json'},
+  )
+}
+
 async function isAuthorized(request: NextRequest): Promise<boolean> {
   // Prefer the signed admin session cookie when available (same-origin).
   if (await hasValidAdminSession()) return true
@@ -130,8 +143,7 @@ export async function GET(request: NextRequest) {
         {'Content-Type': 'application/json'},
       )
     }
-    // 404 without leaking details; CORS still applied so hosted Studio sees auth failure, not a CORS error.
-    return responseWithCors(request, null, 404)
+    return unauthorizedAnalyticsResponse(request)
   }
 
   normalizeGaEnvForVercel()
