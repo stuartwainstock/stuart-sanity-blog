@@ -27,6 +27,9 @@ const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
  * GA dashboard proxy for `sanity-plugin-ga-dashboard`.
  * Relative `/api/analytics` on hosted `*.sanity.studio` resolves against Sanity’s origin and redirects to
  * sanity.io — CORS fails. Use your live Next origin when building Studio via `sanity deploy` (no VERCEL).
+ *
+ * Note: `/api/analytics` is protected server-side. For hosted Studio builds, include the shared secret
+ * in `NEXT_PUBLIC_SANITY_GA_API_URL` as `?secret=...` (or send `x-analytics-proxy-secret`).
  */
 const PRODUCTION_SITE_ORIGIN = 'https://www.stuartwainstock.com'
 

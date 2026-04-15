@@ -7,9 +7,18 @@
  *
  * @see https://github.com/hardik-143/sanity-plugin-ga-dashboard#setup
  */
+import {timingSafeEqual} from 'crypto'
 import {normalizeGaEnvForVercel, normalizeGaPropertyId} from '@/lib/analytics/gaEnv'
+import {hasValidAdminSession, isStravaAdminAuthConfigured} from '@/lib/admin/session'
 import {GET as gaDashboardGET} from 'sanity-plugin-ga-dashboard/api'
 import type {NextRequest} from 'next/server'
+
+function safeCompareString(a: string, b: string): boolean {
+  const bufA = Buffer.from(a, 'utf8')
+  const bufB = Buffer.from(b, 'utf8')
+  if (bufA.length !== bufB.length) return false
+  return timingSafeEqual(bufA, bufB)
+}
 
 function allowedOrigins(): string[] {
   const raw = process.env.SANITY_ANALYTICS_CORS_ORIGINS?.trim()
@@ -24,15 +33,58 @@ function applyCors(request: NextRequest, headers: Headers) {
   if (!allowed.includes(origin)) return
   headers.set('Access-Control-Allow-Origin', origin)
   headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS')
-  headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+  headers.set(
+    'Access-Control-Allow-Headers',
+    'Content-Type, Authorization, x-analytics-proxy-secret',
+  )
   headers.append('Vary', 'Origin')
 }
 
+/**
+ * Server-side auth for analytics data.
+ *
+ * - Same-origin (embedded Studio): admin session cookie gate.
+ * - Hosted Studio: send `ANALYTICS_PROXY_SECRET` either as query param `?secret=...` or header
+ *   `x-analytics-proxy-secret: ...` (CORS is defense-in-depth, not access control).
+ */
+async function isAuthorized(request: NextRequest): Promise<boolean> {
+  // Prefer the signed admin session cookie when available (same-origin).
+  if (await hasValidAdminSession()) return true
+
+  const expected = process.env.ANALYTICS_PROXY_SECRET?.trim()
+  if (!expected) return false
+
+  const provided =
+    request.headers.get('x-analytics-proxy-secret')?.trim() ??
+    request.nextUrl.searchParams.get('secret')?.trim() ??
+    request.headers.get('authorization')?.replace(/^Bearer\s+/i, '').trim()
+
+  if (!provided) return false
+  return safeCompareString(provided, expected)
+}
+
 export async function GET(request: NextRequest) {
+  const ok = await isAuthorized(request)
+  if (!ok) {
+    // If there is no shared secret configured, surface a clear misconfiguration instead of
+    // implying the endpoint is meant to be public.
+    if (!process.env.ANALYTICS_PROXY_SECRET?.trim() && !isStravaAdminAuthConfigured()) {
+      return new Response(
+        JSON.stringify({
+          message:
+            'Analytics proxy is not configured. Set ANALYTICS_PROXY_SECRET or configure admin auth (ADMIN_PASSWORD).',
+        }),
+        {status: 503, headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store'}},
+      )
+    }
+    return new Response(null, {status: 404, headers: {'Cache-Control': 'no-store'}})
+  }
+
   normalizeGaEnvForVercel()
   normalizeGaPropertyId()
   const res = await gaDashboardGET(request)
   const headers = new Headers(res.headers)
+  headers.set('Cache-Control', 'no-store')
   applyCors(request, headers)
   return new Response(res.body, {status: res.status, headers})
 }
