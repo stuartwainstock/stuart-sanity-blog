@@ -18,10 +18,13 @@ import {
   toolProjectPage,
 } from './schemaTypes'
 
-// Studio runs as static assets in production, so env vars may not be present
-// at runtime. Keep env override support, but fall back to this project's values.
-const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'ojv692hs'
-const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
+// Studio runs as static assets in production, so env vars are baked at build time.
+// Prefer Sanity's `SANITY_STUDIO_` prefix (exposed to the Studio bundle), but keep
+// `NEXT_PUBLIC_` fallbacks for embedded / Next-hosted builds.
+const projectId =
+  process.env.SANITY_STUDIO_PROJECT_ID || process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'ojv692hs'
+const dataset =
+  process.env.SANITY_STUDIO_DATASET || process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
 
 /**
  * GA dashboard proxy for `sanity-plugin-ga-dashboard`.
@@ -34,7 +37,8 @@ const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
 const PRODUCTION_SITE_ORIGIN = 'https://www.stuartwainstock.com'
 
 const gaAnalyticsApiUrl = (() => {
-  const explicit = process.env.NEXT_PUBLIC_SANITY_GA_API_URL?.trim()
+  const explicit =
+    process.env.SANITY_STUDIO_GA_API_URL?.trim() ?? process.env.NEXT_PUBLIC_SANITY_GA_API_URL?.trim()
   if (explicit) return explicit
   if (process.env.VERCEL) return '/api/analytics'
   if (process.env.NODE_ENV !== 'production') return '/api/analytics'

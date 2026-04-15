@@ -26,6 +26,27 @@ function allowedOrigins(): string[] {
   return raw.split(',').map((s) => s.trim()).filter(Boolean)
 }
 
+/**
+ * `sanity-plugin-ga-dashboard` builds requests as `${apiUrl}?range=${n}`. If `apiUrl` already
+ * contains `?secret=...`, the result is `...?secret=TOKEN?range=30`, which corrupts `secret`.
+ * Fix by splitting the merged value and restoring `secret` + `range` query params.
+ */
+function normalizeGaDashboardPluginUrl(rawUrl: string): string {
+  try {
+    const u = new URL(rawUrl)
+    const secret = u.searchParams.get('secret')
+    if (secret && secret.includes('?range=')) {
+      const [s, tail] = secret.split('?range=')
+      u.searchParams.set('secret', s.trim())
+      const range = tail?.split('&')[0]?.trim()
+      if (range) u.searchParams.set('range', range)
+    }
+    return u.toString()
+  } catch {
+    return rawUrl
+  }
+}
+
 function applyCors(request: NextRequest, headers: Headers) {
   const origin = request.headers.get('origin')
   if (!origin) return
@@ -47,6 +68,21 @@ function applyCors(request: NextRequest, headers: Headers) {
  * - Hosted Studio: send `ANALYTICS_PROXY_SECRET` either as query param `?secret=...` or header
  *   `x-analytics-proxy-secret: ...` (CORS is defense-in-depth, not access control).
  */
+function responseWithCors(
+  request: NextRequest,
+  body: BodyInit | null,
+  status: number,
+  extraHeaders?: Record<string, string>,
+): Response {
+  const headers = new Headers()
+  if (extraHeaders) {
+    for (const [k, v] of Object.entries(extraHeaders)) headers.set(k, v)
+  }
+  if (!headers.has('Cache-Control')) headers.set('Cache-Control', 'no-store')
+  applyCors(request, headers)
+  return new Response(body, {status, headers})
+}
+
 async function isAuthorized(request: NextRequest): Promise<boolean> {
   // Prefer the signed admin session cookie when available (same-origin).
   if (await hasValidAdminSession()) return true
@@ -64,25 +100,31 @@ async function isAuthorized(request: NextRequest): Promise<boolean> {
 }
 
 export async function GET(request: NextRequest) {
-  const ok = await isAuthorized(request)
+  const normalizedUrl = normalizeGaDashboardPluginUrl(request.url)
+  const req = new NextRequest(normalizedUrl, {headers: request.headers})
+
+  const ok = await isAuthorized(req)
   if (!ok) {
     // If there is no shared secret configured, surface a clear misconfiguration instead of
     // implying the endpoint is meant to be public.
     if (!process.env.ANALYTICS_PROXY_SECRET?.trim() && !isStravaAdminAuthConfigured()) {
-      return new Response(
+      return responseWithCors(
+        request,
         JSON.stringify({
           message:
             'Analytics proxy is not configured. Set ANALYTICS_PROXY_SECRET or configure admin auth (ADMIN_PASSWORD).',
         }),
-        {status: 503, headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store'}},
+        503,
+        {'Content-Type': 'application/json'},
       )
     }
-    return new Response(null, {status: 404, headers: {'Cache-Control': 'no-store'}})
+    // 404 without leaking details; CORS still applied so hosted Studio sees auth failure, not a CORS error.
+    return responseWithCors(request, null, 404)
   }
 
   normalizeGaEnvForVercel()
   normalizeGaPropertyId()
-  const res = await gaDashboardGET(request)
+  const res = await gaDashboardGET(req)
   const headers = new Headers(res.headers)
   headers.set('Cache-Control', 'no-store')
   applyCors(request, headers)
