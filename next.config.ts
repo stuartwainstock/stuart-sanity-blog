@@ -81,7 +81,7 @@ const nextConfig: NextConfig = {
               "img-src 'self' data: blob: https://cdn.sanity.io https://www.google-analytics.com https://*.basemaps.cartocdn.com",
               "connect-src 'self' https://*.sanity.io https://*.sanity.run https://vercel.live https://www.google-analytics.com https://region1.google-analytics.com https://www.googletagmanager.com https://api.ebird.org https://*.basemaps.cartocdn.com",
               "worker-src 'self' blob:",
-              "frame-src 'self' https://*.sanity.io",
+              "frame-src 'self' https://*.sanity.io https://www.youtube-nocookie.com https://www.youtube.com",
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",

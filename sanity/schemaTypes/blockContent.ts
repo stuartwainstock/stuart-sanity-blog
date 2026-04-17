@@ -1,4 +1,5 @@
-import {defineType, defineArrayMember} from 'sanity'
+import {defineType, defineArrayMember, defineField} from 'sanity'
+import {parseYouTubeVideoId} from '../../src/lib/youtube'
 
 export const blockContent = defineType({
   title: 'Block Content',
@@ -106,6 +107,50 @@ export const blockContent = defineType({
           return {
             title: `Code Block (${language || 'Plain text'})`,
             subtitle: code ? code.substring(0, 50) + '...' : 'No code',
+          }
+        },
+      },
+    }),
+    defineArrayMember({
+      name: 'youtube',
+      title: 'YouTube video',
+      type: 'object',
+      fields: [
+        defineField({
+          name: 'url',
+          title: 'YouTube URL',
+          type: 'url',
+          description: 'Paste a watch, Shorts, or youtu.be link.',
+          validation: (Rule) =>
+            Rule.required().uri({allowRelative: false, scheme: ['http', 'https']}).custom((url) => {
+              if (!url || typeof url !== 'string') return 'URL is required'
+              return parseYouTubeVideoId(url) ? true : 'Use a valid YouTube or youtu.be URL'
+            }),
+        }),
+        defineField({
+          name: 'title',
+          title: 'Video title (accessibility)',
+          type: 'string',
+          description:
+            'Short label for screen readers (iframe title). If empty, a generic label is used.',
+        }),
+        defineField({
+          name: 'caption',
+          title: 'Caption',
+          type: 'string',
+          description: 'Optional caption below the video.',
+        }),
+      ],
+      preview: {
+        select: {
+          url: 'url',
+          caption: 'caption',
+        },
+        prepare({url, caption}: {url?: string; caption?: string}) {
+          const id = url ? parseYouTubeVideoId(url) : null
+          return {
+            title: 'YouTube video',
+            subtitle: caption || (id ? `Video ID: ${id}` : url) || '',
           }
         },
       },

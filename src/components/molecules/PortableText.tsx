@@ -4,11 +4,13 @@ import type {TypedObject} from '@portabletext/types'
 import Image from 'next/image'
 import { getImageUrl } from '@/lib/sanity'
 import type {SanityImage} from '@/lib/types'
+import {parseYouTubeVideoId, youtubeNocookieEmbedSrc} from '@/lib/youtube'
 import styles from './PortableText.module.css'
 
 type PortableTextMarkLink = {href?: string}
 type PortableTextImageValue = SanityImage
 type PortableTextCodeValue = {language?: string; code?: string}
+type PortableTextYoutubeValue = {url?: string; title?: string; caption?: string}
 
 interface PortableTextProps {
   value: TypedObject[]
@@ -63,6 +65,50 @@ function buildComponents(pageBody: boolean): PortableTextComponents {
         </pre>
       </div>
     ),
+    youtube: ({value}: {value: PortableTextYoutubeValue}) => {
+      const id = value.url ? parseYouTubeVideoId(value.url) : null
+      if (!id) {
+        return (
+          <p className={styles.youtubeFallback}>
+            {value.url ? (
+              <>
+                Could not embed this video.{' '}
+                <a
+                  href={value.url}
+                  className={styles.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Open on YouTube
+                </a>
+                <span className="sr-only"> (opens in new tab)</span>
+              </>
+            ) : (
+              'Missing YouTube URL.'
+            )}
+          </p>
+        )
+      }
+      const title = value.title?.trim() || 'YouTube video'
+      return (
+        <figure className={styles.youtubeBlock}>
+          <div className={styles.youtubeAspect}>
+            <iframe
+              className={styles.youtubeIframe}
+              src={youtubeNocookieEmbedSrc(id)}
+              title={title}
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            />
+          </div>
+          {value.caption ? (
+            <figcaption className={styles.youtubeCaption}>{value.caption}</figcaption>
+          ) : null}
+        </figure>
+      )
+    },
   },
   block: {
     h1: ({children}: {children?: ReactNode}) => (
