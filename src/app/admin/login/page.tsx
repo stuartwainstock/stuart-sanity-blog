@@ -39,8 +39,8 @@ export default async function AdminLoginPage({
       <div className={pageContent}>
         <h1 className={`${styles.title} ${styles.titleTight}`}>Site admin sign-in</h1>
         <p className={styles.leadNarrow}>
-          Enter the password configured as <code className={styles.code}>ADMIN_PASSWORD</code>{' '}
-          in your deployment. This is required before connecting Strava or completing the OAuth callback.
+          Enter the password configured in your deployment. This is required before connecting
+          Strava or completing the OAuth callback.
         </p>
         <form
           action="/api/admin/session"
