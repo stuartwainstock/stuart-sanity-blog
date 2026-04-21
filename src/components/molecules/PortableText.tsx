@@ -37,6 +37,7 @@ function buildComponents(pageBody: boolean): PortableTextComponents {
           alt={value.alt || 'Blog image'}
           width={800}
           height={600}
+          sizes="(min-width: 960px) 800px, 100vw"
           className={styles.image}
         />
         {value.caption && (

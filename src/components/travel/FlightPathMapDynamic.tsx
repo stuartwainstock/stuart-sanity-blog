@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic'
 import type {AirportCoords, FlightLeg} from '@/lib/travel/types'
 import {MapLoadingShell} from '@/components/maps/MapLoadingShell'
+import LazyMount from '@/components/utils/LazyMount'
 
 const Map = dynamic(() => import('@/components/travel/FlightPathMap'), {
   ssr: false,
@@ -21,5 +22,9 @@ type Props = {
 
 /** MapLibre loads client-only in Next.js App Router. */
 export default function FlightPathMapDynamic(props: Props) {
-  return <Map {...props} />
+  return (
+    <LazyMount fallback={<MapLoadingShell centered height="tall" label="Loading map…" />}>
+      <Map {...props} />
+    </LazyMount>
+  )
 }

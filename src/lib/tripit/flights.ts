@@ -57,7 +57,8 @@ async function legsToFlightMap(legs: FlightLeg[]): Promise<{
 
 async function loadTripItJsonFromPath(relativeOrAbsolute: string): Promise<TripItListAirResponse> {
   const p = String(relativeOrAbsolute).trim()
-  const resolved = path.isAbsolute(p) ? p : path.join(process.cwd(), p)
+  // Avoid tracing the whole repo in Turbopack builds when callers provide relative paths.
+  const resolved = path.isAbsolute(p) ? p : path.join(/*turbopackIgnore: true*/ process.cwd(), p)
   const raw = await readFile(resolved, 'utf8')
   return JSON.parse(raw) as TripItListAirResponse
 }
@@ -79,9 +80,19 @@ export const fetchTripItFlights = cache(async (): Promise<{
   airports: AirportCoords
 }> => {
   const envPath = process.env.TRIPIT_FLIGHTS_JSON?.trim()
-  const defaultAbs = path.join(process.cwd(), DEFAULT_TRIPIT_FLIGHTS_JSON)
   const filePath =
-    envPath || (existsSync(defaultAbs) ? DEFAULT_TRIPIT_FLIGHTS_JSON : '')
+    envPath ||
+    (existsSync(
+      path.join(
+        /*turbopackIgnore: true*/ process.cwd(),
+        'src',
+        'data',
+        'tripit',
+        'list-air-historical.json',
+      ),
+    )
+      ? DEFAULT_TRIPIT_FLIGHTS_JSON
+      : '')
 
   if (filePath) {
     const data = await loadTripItJsonFromPath(filePath)

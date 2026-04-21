@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic'
 import type {StravaRunMapInput} from '@/lib/strava/types'
 import StravaRunsMapLoading from '@/components/strava/StravaRunsMapLoading'
+import LazyMount from '@/components/utils/LazyMount'
 
 const Map = dynamic(() => import('@/components/strava/StravaRunsMap'), {
   ssr: false,
@@ -15,5 +16,9 @@ type Props = {
 }
 
 export default function StravaRunsMapDynamic(props: Props) {
-  return <Map {...props} />
+  return (
+    <LazyMount fallback={<StravaRunsMapLoading />}>
+      <Map {...props} />
+    </LazyMount>
+  )
 }

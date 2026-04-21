@@ -30,8 +30,17 @@ async function getLayoutData() {
 
 export async function generateMetadata(): Promise<Metadata> {
   const { siteSettings } = await getLayoutData();
+  const metadataBase = (() => {
+    const raw = siteSettings?.url || 'https://www.stuartwainstock.com'
+    try {
+      return new URL(raw)
+    } catch {
+      return new URL('https://www.stuartwainstock.com')
+    }
+  })()
   
   return {
+    metadataBase,
     title: {
       default: siteSettings?.title || "Blog",
       template: `%s | ${siteSettings?.title || "Blog"}`,
