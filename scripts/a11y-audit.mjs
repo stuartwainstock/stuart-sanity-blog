@@ -3,13 +3,13 @@
  * Runs axe-core (via Puppeteer) + Lighthouse (accessibility only) against production Next.
  *
  * Prerequisites: `npm run build` (this script runs `next start` for you).
- * Uses Puppeteer’s bundled Chromium (set CHROME_PATH to override).
+ * Uses `puppeteer-core` (set CHROME_PATH to a Chrome/Chromium binary).
  *
  * Env:
  *   AUDIT_PORT=3010           — port for Next (default 3010)
  *   AUDIT_PATHS=/,/journal    — comma-separated paths
  *   BASE_URL=http://...       — do not start Next; audit this origin
- *   CHROME_PATH=...           — Chromium/Chrome binary (Puppeteer default if unset)
+ *   CHROME_PATH=...           — Chromium/Chrome binary (required)
  *   SKIP_LIGHTHOUSE=1         — axe only
  *   AUDIT_STRICT=0            — do not exit 1 when axe finds violations
  */
@@ -143,9 +143,15 @@ async function main() {
     process.exit(1)
   }
 
-  const puppeteer = await import('puppeteer')
-  const executablePath =
-    process.env.CHROME_PATH || puppeteer.default.executablePath()
+  const puppeteer = await import('puppeteer-core')
+  const executablePath = process.env.CHROME_PATH
+  if (!executablePath) {
+    console.error('Missing CHROME_PATH. Point this to a local Chrome/Chromium binary.')
+    console.error(
+      'Tip: on macOS, try: CHROME_PATH=\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\"',
+    )
+    process.exit(1)
+  }
 
   let server
   const useExternalBase = Boolean(process.env.BASE_URL)
@@ -177,7 +183,7 @@ async function main() {
 
     browser = await puppeteer.default.launch({
       headless: true,
-      executablePath: process.env.CHROME_PATH || undefined,
+      executablePath,
       args: ['--no-sandbox', '--disable-dev-shm-usage'],
     })
 

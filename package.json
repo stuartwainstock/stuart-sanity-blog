@@ -35,7 +35,6 @@
     "@sanity/ui": "^3.1.8",
     "@sanity/vision": "5.21.0",
     "@supabase/supabase-js": "2.104.0",
-    "@vitest/browser": "4.1.5",
     "jose": "^6.1.0",
     "maplibre-gl": "5.23.0",
     "next": "16.2.4",
@@ -63,8 +62,9 @@
     "@types/node": "^20",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19",
-    "@vitest/browser-playwright": "4.1.5",
-    "@vitest/coverage-v8": "4.1.5",
+    "@vitest/browser": "4.1.4",
+    "@vitest/browser-playwright": "4.1.4",
+    "@vitest/coverage-v8": "4.1.4",
     "axe-core": "4.11.3",
     "chromatic": "16.3.0",
     "dotenv": "17.4.2",
@@ -73,12 +73,12 @@
     "eslint-plugin-storybook": "^10.3.5",
     "lighthouse": "^13.1.0",
     "playwright": "^1.59.1",
-    "puppeteer": "24.42.0",
+    "puppeteer-core": "24.42.0",
     "storybook": "^10.3.5",
     "style-dictionary": "^4.3.3",
     "typescript": "^5",
     "vite": "8.0.9",
-    "vitest": "4.1.5"
+    "vitest": "4.1.4"
   },
   "browserslist": {
     "production": [
