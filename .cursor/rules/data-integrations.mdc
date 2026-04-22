@@ -1,0 +1,149 @@
+---
+description: Strava, eBird, and TripIt integration patterns — keep custom, do not replace with community MCPs
+alwaysApply: true
+---
+
+# Data integrations
+
+This project has three custom data integrations. Each has a deliberate architecture that must not be replaced with generic community MCP servers. This rule documents the patterns, the rationale, and the correct entry points for each.
+
+---
+
+## Strava — custom OAuth + Supabase sync
+
+**Do NOT replace with a community Strava MCP** (r-huijts/strava-mcp, MariyaFilippova/mcp-strava, etc.). No official Strava MCP exists. Community servers do not handle token refresh or Supabase persistence.
+
+### Architecture
+
+```
+Strava API
+  └─ OAuth connect  → /api/strava/connect
+  └─ OAuth callback → /api/strava/callback  (exchanges code, persists tokens)
+  └─ Sync           → /api/strava/sync      (full backfill → incremental)
+  └─ Read           → src/lib/strava/runsQuery.ts → Supabase
+                      (never hits Strava API on page render)
+```
+
+### Token management
+
+- Tokens are stored in Supabase `strava_oauth` as a singleton row (`id = 'singleton'`).
+- `getValidStravaAccessToken()` in `src/lib/strava/tokens.ts` auto-refreshes tokens with a **5-minute expiry skew buffer** before returning an access token.
+- Do not call Strava API routes directly — always go through `getValidStravaAccessToken()`.
+
+### Sync strategy
+
+- `syncStravaRuns()` in `src/lib/strava/sync.ts` checks `strava_sync_state` to decide between **full backfill** (first run) and **incremental** (subsequent runs with a 7-day overlap buffer).
+- Activities are upserted into `strava_activities` on conflict by `id`.
+- Only `sport_type === 'Run'` activities are stored.
+
+### Automated daily sync (Vercel Cron)
+
+The sync runs automatically at **06:00 UTC daily** via `vercel.json`:
+
+```json
+{ "crons": [{ "path": "/api/strava/sync", "schedule": "0 6 * * *" }] }
+```
+
+- Vercel hits `GET /api/strava/sync` and injects `Authorization: Bearer <CRON_SECRET>`.
+- Set `CRON_SECRET` in Vercel project environment variables (Dashboard → Settings → Environment Variables).
+- The manual admin button at `/admin/strava` still works via `POST /api/strava/sync` (guarded by `STRAVA_SYNC_SECRET`).
+- Both handlers call the same `syncStravaRuns()` — full backfill on first run, incremental thereafter.
+
+### Key files
+
+```
+src/lib/strava/
+  oauth.ts          ← token exchange and refresh (Strava API calls only here)
+  tokens.ts         ← getValidStravaAccessToken(), persistTokens()
+  activities.ts     ← listActivityPage() (paginated Strava API)
+  sync.ts           ← syncStravaRuns() (full + incremental)
+  runsQuery.ts      ← read from Supabase for rendering
+  types.ts          ← StravaActivitySummary, StravaTokenResponse, etc.
+src/app/api/strava/
+  connect/route.ts
+  callback/route.ts
+  sync/route.ts     ← GET (Vercel Cron, CRON_SECRET) + POST (manual, STRAVA_SYNC_SECRET)
+vercel.json         ← cron schedule
+```
+
+Do not modify `src/lib/strava/` without also updating the Supabase schema.
+
+---
+
+## eBird — Sanity-config-driven fetch client
+
+**Do NOT replace with a community eBird MCP** (moonbirdai/ebird-mcp-server, siansiansu/ebird-mcp-server). No official eBird MCP from Cornell Lab exists. Community MCPs have no awareness of the Sanity-driven config that controls which hotspots, species, and observation window are active.
+
+### Architecture
+
+```
+Sanity ebirdBirding document
+  └─ mapDataSource  (hotspots | region)
+  └─ hotspotCodes   (space/comma-separated L-codes)
+  └─ regionCode     (e.g. US-NY-109)
+  └─ focusSpeciesCode
+  └─ recentDaysBack
+  └─ maxObservationsToFetch
+
+resolved at runtime by src/lib/ebird/resolveConfig.ts
+  └─ passed to src/lib/ebird/client.ts → fetchMapObservations()
+  └─ rendered by src/components/backyard/
+```
+
+### Rules
+
+- **Always go through `fetchMapObservations(config)`** — never call the eBird API directly from components.
+- Config values come from Sanity. Use the Sanity MCP to update `ebirdBirding` fields (hotspots, species, observation window) rather than editing code.
+- The `EBIRD_API_KEY` must be set in `.env.local`.
+- eBird observation window is capped at 30 days by the API; `recentDaysBack` must be between 1–30.
+
+### Key files
+
+```
+src/lib/ebird/
+  client.ts         ← fetchMapObservations() — the only production eBird fetch entry point
+  resolveConfig.ts  ← maps Sanity ebirdBirding doc → ResolvedEbirdBirding
+  types.ts          ← BirdObservation, EbirdObservationsResult
+src/components/backyard/
+  BackyardBirdMap.tsx / BackyardBirdMapDynamic.tsx / BackyardBirdMapLoading.tsx
+  BackyardObservationsTable.tsx
+```
+
+---
+
+## TripIt — local JSON preferred, live OAuth as fallback
+
+TripIt data is served from a **committed JSON export** at `src/data/tripit/list-air-historical.json`. The live OAuth client is a fallback for development only.
+
+### Architecture
+
+```
+src/data/tripit/list-air-historical.json  ← committed export (preferred)
+  └─ fetchTripItFlights() in src/lib/tripit/flights.ts checks for this file first
+  └─ if absent, falls back to live TripIt OAuth API
+
+TRIPIT_FLIGHTS_JSON env var overrides the file path
+```
+
+### Rules
+
+- **Never add live TripIt API calls to the render path.** The committed JSON is the production data source.
+- To update flight data: run `npm run tripit:transform` on a new TripIt export, review the output, then commit the updated `list-air-historical.json`.
+- `fetchTripItFlights()` is wrapped in React `cache()` — do not call it more than once per request tree.
+- Airport coordinates are resolved via `src/lib/travel/airportCoordsNode.ts` from the `ourairports-data-js` package — no external geocoding API needed.
+
+### Key files
+
+```
+src/data/tripit/
+  list-air-historical.json          ← committed flight export
+  list-air-historical.example.json  ← shape reference
+src/lib/tripit/
+  flights.ts    ← fetchTripItFlights(), tripItListAirResponseToFlightMap()
+  client.ts     ← live OAuth client (fallback / dev only)
+  types.ts      ← TripItListAirResponse, TripItAirObject, etc.
+src/components/travel/
+  FlightPathMap.tsx / FlightPathMapDynamic.tsx
+scripts/
+  tripit-export-to-list-air.mjs    ← transform raw TripIt export → list-air shape
+```

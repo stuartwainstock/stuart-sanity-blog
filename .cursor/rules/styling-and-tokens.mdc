@@ -1,22 +1,57 @@
 ---
-description: Design tokens, CSS Modules, and global CSS — no Tailwind
+description: Design tokens, CSS Modules, global CSS, and map component patterns — no Tailwind
 alwaysApply: true
 ---
 
-# Styling and design tokens
+# Styling, design tokens, and map components
 
-This project does **not** use Tailwind. Prefer **design tokens**, **CSS Modules**, and **`pageTypography`** helpers so UI stays consistent and CMS-driven pages match the rest of the site.
+This project does **not** use Tailwind. Use **design tokens**, **CSS Modules**, and **`pageTypography`** helpers so UI stays consistent and CMS-driven pages match the rest of the site.
 
 ## Tokens (source of truth)
 
-- Edit JSON under **`tokens/`** (e.g. `tokens/color.json`, `tokens/font.json`).
-- Run **`npm run tokens:build`** (also runs automatically before **`npm run build`** and **`npm run build-storybook`** via `prebuild` / `prebuild-storybook`).
-- [Style Dictionary](https://amzn.github.io/style-dictionary/) outputs **`src/styles/generated/tokens.css`** (`:root` CSS variables). **Do not hand-edit** the generated file; change JSON and rebuild.
+- Edit JSON under **`tokens/`** (`tokens/color.json`, `tokens/font.json`).
+- Run **`npm run tokens:build`** to regenerate (also runs automatically before `npm run build` and `npm run build-storybook`).
+- [Style Dictionary](https://amzn.github.io/style-dictionary/) outputs **`src/styles/generated/tokens.css`** as `:root` CSS variables. **Do not hand-edit** the generated file — change the JSON and rebuild.
+- **Never hardcode hex values or font strings.** Always use the corresponding CSS custom property.
+
+### Available tokens
+
+```css
+/* Semantic surfaces */
+--color-page-bg: #e8e8e8       /* body / page background */
+--color-section-bg: #f5f5f5    /* section / panel backgrounds */
+--color-card-bg: #ffffff       /* card / surface backgrounds */
+
+/* Typography */
+--color-heading: #4f4f4f       /* h1–h6 */
+--color-documented-body: #000000
+--color-documented-prose-body: #374151
+--color-documented-prose-heading: #111827
+
+/* Interactive */
+--color-link: #0000ff
+--color-link-hover: #0000cc
+
+/* Gray scale */
+--color-custom-50: #f9f9f9
+--color-custom-100: #f0f0f0
+--color-custom-200: #e8e8e8
+--color-custom-300: #d1d1d1
+--color-custom-400: #b8b8b8
+--color-custom-500: #9f9f9f
+--color-custom-600: #868686
+--color-custom-700: #6d6d6d
+--color-custom-800: #545454
+--color-custom-900: #3b3b3b
+
+/* Typography */
+--font-work-sans: 'Work Sans', sans-serif
+```
 
 ## Wiring
 
-- **`src/app/globals.css`** imports generated tokens first, then defines base typography, links, layout helpers (e.g. skip links, `.prose`, `.sr-only`), and small global utilities.
-- Use **`var(--color-…)`** and other token variables in CSS modules or globals.
+- **`src/app/globals.css`** imports generated tokens first, then defines base typography, links, layout helpers (skip links, `.prose`, `.sr-only`), and small global utilities.
+- Use **`var(--color-…)`** and other token variables in CSS Modules or globals — never raw values.
 
 ## Components and pages
 
@@ -24,11 +59,50 @@ This project does **not** use Tailwind. Prefer **design tokens**, **CSS Modules*
 - **`src/lib/pageTypography.ts`** re-exports classes from **`src/styles/pageTypography.module.css`** for shared shell/banner/body copy on CMS pages. Use these for tool/project pages and long-form layouts when appropriate.
 - Storybook stories may use small **`*.stories.module.css`** files for layout-only wrappers.
 
+## Map components (Dynamic/Static split)
+
+MapLibre-backed components **must** use a three-file split to avoid SSR errors:
+
+```
+FooMap.tsx          ← actual MapLibre component (client-only, 'use client')
+FooMapDynamic.tsx   ← next/dynamic wrapper with ssr: false
+FooMapLoading.tsx   ← server-rendered loading skeleton (no MapLibre imports)
+```
+
+**Always import `FooMapDynamic` in page components**, never `FooMap` directly. The loading skeleton renders on the server and is replaced client-side once MapLibre initialises.
+
+Example pattern:
+```tsx
+// FooMapDynamic.tsx
+import dynamic from 'next/dynamic'
+import { FooMapLoading } from './FooMapLoading'
+
+export const FooMapDynamic = dynamic(() => import('./FooMap'), {
+  ssr: false,
+  loading: () => <FooMapLoading />,
+})
+```
+
+Shared map chrome (spinner, aspect-ratio shell) lives in `src/components/maps/MapLoadingShell`.
+
+## Atomic design structure
+
+```
+src/components/
+  atoms/       # Button, Chip, ListGroupHeading
+  molecules/   # PortableText, PostCard, ResourceGroup, ResourceListItem,
+               # ResourceMetaChips, PageHeroWithDataSource
+  organisms/   # Footer, ReadingList, SpeakingEngagements
+  strava/      # StravaRunsMap, StravaRunsTable, RunsMapTableSkeleton
+  backyard/    # BackyardBirdMap, BackyardObservationsTable
+  travel/      # FlightPathMap
+  maps/        # MapLoadingShell (shared map chrome)
+  ui/          # Headless/utility (DataTable, Typography stories)
+  utils/       # LazyMount
+```
+
 ## Reference
 
-- Storybook → **Foundations → Design Tokens** (`src/stories/DesignTokens.stories.tsx`, `src/stories/designTokens.data.ts`).
+- Storybook → **Foundations → Design Tokens** (`src/stories/DesignTokens.stories.tsx`).
 - **`README.md`** → Customization → Styling for the same workflow in prose.
-
-## CMS-driven tool pages
-
-When adding routes like `/runs`, `/pileated-watch`, etc., follow **`.cursor/rules/cms-driven-tool-pages.mdc`** for copy and data, and apply **tokens + modules** here for layout and type—not utility-class frameworks.
+- CMS-driven page patterns → `.cursor/rules/cms-driven-tool-pages.mdc`.
