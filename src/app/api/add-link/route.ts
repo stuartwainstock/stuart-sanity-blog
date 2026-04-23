@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@sanity/client'
 import ogs from 'open-graph-scraper'
+import { promises as dns } from 'node:dns'
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET
@@ -25,6 +26,49 @@ function isValidUrl(value: string): boolean {
   } catch {
     return false
   }
+}
+
+/**
+ * SSRF guard — resolves the hostname and rejects any URL that points to
+ * loopback, private, link-local, or cloud-metadata IP ranges.
+ * Called immediately before open-graph-scraper makes an outbound fetch.
+ */
+const PRIVATE_IP_PATTERNS = [
+  /^127\./,                       // loopback IPv4
+  /^10\./,                        // RFC 1918
+  /^172\.(1[6-9]|2\d|3[01])\./,  // RFC 1918
+  /^192\.168\./,                  // RFC 1918
+  /^169\.254\./,                  // link-local + AWS/GCP metadata endpoint
+  /^0\./,                         // "this" network
+  /^::1$/,                        // IPv6 loopback
+  /^fc/i,                         // IPv6 ULA
+  /^fe80/i,                       // IPv6 link-local
+  /^fd/i,                         // IPv6 ULA
+]
+
+async function isSafeExternalUrl(value: string): Promise<boolean> {
+  let hostname: string
+  try {
+    hostname = new URL(value).hostname
+  } catch {
+    return false
+  }
+
+  // Reject raw IP hostnames that match private ranges directly
+  if (PRIVATE_IP_PATTERNS.some((r) => r.test(hostname))) return false
+
+  // Resolve hostname and verify all returned addresses are public
+  try {
+    const v4 = await dns.lookup(hostname, { family: 4 }).catch(() => null)
+    const v6 = await dns.lookup(hostname, { family: 6 }).catch(() => null)
+    for (const addr of [v4?.address, v6?.address].filter(Boolean) as string[]) {
+      if (PRIVATE_IP_PATTERNS.some((r) => r.test(addr))) return false
+    }
+  } catch {
+    return false // Cannot resolve → do not fetch
+  }
+
+  return true
 }
 
 function normalizeUrl(value: string): string {
@@ -151,9 +195,15 @@ async function createResourceFromUrl(url: string) {
     let image = ''
     let metadataWarning: string | undefined
 
+    // SSRF guard: block requests to private/link-local/metadata IP ranges.
+    const safe = await isSafeExternalUrl(normalizedUrl)
+    if (!safe) {
+      return { status: 400, body: { error: 'URL resolves to a disallowed network range.' } }
+    }
+
     // ogs can throw, or return { error: true, result: { error: "...", ... } } — never block create.
     try {
-      const ogsResponse = await ogs({ url, timeout: 10000 })
+      const ogsResponse = await ogs({ url: normalizedUrl, timeout: 10000 })
       const { result, error } = ogsResponse as {
         result?: {
           success?: boolean
