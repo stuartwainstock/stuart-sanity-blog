@@ -1,0 +1,219 @@
+/* BirdCard.module.css
+ * All color values must reference CSS custom properties from
+ * src/styles/generated/tokens.css — no hardcoded hex values.
+ * High-contrast mode is activated via data-high-contrast="true"
+ * on the .card element, overriding token values locally.
+ */
+
+/* ── Card shell ────────────────────────────────────────────────────────────── */
+
+.card {
+  --card-bg: var(--color-card-bg);
+  --card-heading: var(--color-heading);
+  --card-body: var(--color-documented-prose-body);
+  --card-border: var(--color-custom-300);
+  --card-meta: var(--color-custom-600);
+  --card-swatch-outline: transparent;
+  --card-audio-bg: var(--color-custom-100);
+  --card-audio-color: var(--color-heading);
+  --card-audio-border: var(--color-custom-300);
+  --card-link-color: var(--color-link);
+
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  font-family: var(--font-work-sans);
+  /* Smooth token transitions when toggling high-contrast */
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+/* ── High-contrast override ────────────────────────────────────────────────── */
+/* Uses local custom properties so all child selectors below automatically
+   inherit the correct values — no selector duplication needed. */
+
+.card[data-high-contrast='true'] {
+  --card-bg: #000000;
+  --card-heading: #ffff00;
+  --card-body: #ffffff;
+  --card-border: #ffffff;
+  --card-meta: #cccccc;
+  --card-swatch-outline: #ffffff;
+  --card-audio-bg: #1a1a1a;
+  --card-audio-color: #ffff00;
+  --card-audio-border: #ffffff;
+  --card-link-color: #66b3ff;
+}
+
+/* ── Header ────────────────────────────────────────────────────────────────── */
+
+.cardHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.speciesName {
+  font-family: var(--font-work-sans);
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--card-heading);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.meta {
+  font-size: 0.8125rem;
+  color: var(--card-meta);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Alt text ──────────────────────────────────────────────────────────────── */
+
+.altText {
+  font-size: 0.9375rem;
+  color: var(--card-body);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ── Plumage swatches ──────────────────────────────────────────────────────── */
+
+.swatchSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.swatchLabel {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--card-meta);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.swatch {
+  display: inline-block;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 0.25rem;
+  /* Outline uses local var — becomes white in high-contrast mode */
+  outline: 2px solid var(--card-swatch-outline);
+  outline-offset: 1px;
+  flex-shrink: 0;
+}
+
+/* ── Footer ────────────────────────────────────────────────────────────────── */
+
+.cardFooter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--card-border);
+}
+
+/* ── Audio button ──────────────────────────────────────────────────────────── */
+/* Minimum 48×48px tap target per WCAG 2.5.5 (AAA) / 2.5.8 (AA in WCAG 2.2) */
+
+.audioRow {
+  display: flex;
+  align-items: center;
+}
+
+.audioButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+
+  /* Minimum tap target */
+  min-width: 48px;
+  min-height: 48px;
+  padding: 0 0.875rem;
+
+  background: var(--card-audio-bg);
+  color: var(--card-audio-color);
+  border: 1px solid var(--card-audio-border);
+  border-radius: 0.375rem;
+  font-family: var(--font-work-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+
+  /* Prevent 300ms delay on iOS */
+  touch-action: manipulation;
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.audioButton:hover {
+  background: var(--color-custom-200);
+}
+
+.audioButton:focus-visible {
+  outline: 2px solid var(--card-audio-color);
+  outline-offset: 2px;
+}
+
+.audioButton[aria-pressed='true'] {
+  background: var(--color-custom-300);
+}
+
+.audioIcon {
+  width: 1rem;
+  height: 1rem;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+.audioLabel {
+  /* Visible label alongside the icon — not sr-only, supports low-vision */
+  font-size: 0.875rem;
+  line-height: 1;
+}
+
+.audioError {
+  font-size: 0.8125rem;
+  color: var(--card-meta);
+  margin: 0;
+}
+
+/* ── Checklist link ────────────────────────────────────────────────────────── */
+
+.checklistLink {
+  font-size: 0.875rem;
+  color: var(--card-link-color);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  line-height: 48px; /* Vertically align with audio button */
+}
+
+.checklistLink:hover {
+  color: var(--color-link-hover);
+}
+
+.checklistLink:focus-visible {
+  outline: 2px solid var(--card-link-color);
+  outline-offset: 2px;
+  border-radius: 2px;
+}

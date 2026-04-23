@@ -484,6 +484,27 @@ export const EBIRD_BIRDING_QUERY = groq`
   }
 `
 
+// ── Birding Dashboard ─────────────────────────────────────────────────────────
+
+/** All bird sightings for the /birding-dashboard page, newest first. */
+export const BIRD_SIGHTINGS_QUERY = groq`
+  *[
+    _type == "birdSighting"
+  ] | order(observedOn desc) {
+    _id,
+    speciesName,
+    speciesCode,
+    observedOn,
+    locationLabel,
+    altText,
+    plumageColors,
+    callAudioUrl,
+    ebirdChecklistUri,
+    latitude,
+    longitude
+  }
+`
+
 export const PUBLISHED_RESOURCES_QUERY = groq`
   *[
     _type == "resource" &&

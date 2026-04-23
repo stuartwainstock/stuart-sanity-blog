@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { StringInputProps, set } from 'sanity'
 
 interface OpenLibraryBook {
@@ -26,15 +26,6 @@ export default function BookSearchInput(props: StringInputProps) {
   const [selectedBook, setSelectedBook] = useState<OpenLibraryBook | null>(null)
   const [showResults, setShowResults] = useState(false)
 
-  useEffect(() => {
-    if (searchQuery.length > 2) {
-      searchBooks(searchQuery)
-    } else {
-      setSearchResults([])
-      setShowResults(false)
-    }
-  }, [searchQuery])
-
   const searchBooks = async (query: string) => {
     setIsSearching(true)
     try {
@@ -51,6 +42,8 @@ export default function BookSearchInput(props: StringInputProps) {
       setIsSearching(false)
     }
   }
+
+  // Trigger searches directly from input events to avoid setState-in-effect lint issues.
 
   const selectBook = (book: OpenLibraryBook) => {
     setSelectedBook(book)
@@ -85,7 +78,16 @@ export default function BookSearchInput(props: StringInputProps) {
         <input
           type="text"
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e) => {
+            const next = e.target.value
+            setSearchQuery(next)
+            if (next.length > 2) {
+              searchBooks(next)
+            } else {
+              setSearchResults([])
+              setShowResults(false)
+            }
+          }}
           placeholder="Search for books on Open Library..."
           style={{
             width: '100%',

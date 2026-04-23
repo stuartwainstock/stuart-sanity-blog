@@ -1,4 +1,5 @@
 export { author } from './author'
+export { birdSighting } from './birdSighting'
 export { blockContent } from './blockContent'
 export { category } from './category'
 export { homepage } from './homepage'

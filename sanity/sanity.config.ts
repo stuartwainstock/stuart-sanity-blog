@@ -5,6 +5,7 @@ import {unsplashImageAsset} from 'sanity-plugin-asset-source-unsplash'
 import {googleAnalyticsPlugin} from 'sanity-plugin-ga-dashboard'
 import {
   author,
+  birdSighting,
   blockContent,
   category,
   homepage,
@@ -162,6 +163,14 @@ export default defineConfig({
                       ),
                   ])
               ),
+            S.listItem()
+              .title('Bird Sightings (Birding Dashboard)')
+              .schemaType('birdSighting')
+              .child(
+                S.documentTypeList('birdSighting')
+                  .title('Bird Sightings')
+                  .defaultOrdering([{field: 'observedOn', direction: 'desc'}])
+              ),
             S.divider(),
             S.listItem()
               .title('Authors')
@@ -183,6 +192,7 @@ export default defineConfig({
   schema: {
     types: [
       author,
+      birdSighting,
       blockContent,
       category,
       homepage,
