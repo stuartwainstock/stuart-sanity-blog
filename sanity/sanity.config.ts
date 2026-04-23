@@ -83,6 +83,14 @@ export default defineConfig({
                   .documentId('ebirdBirding')
               ),
             S.listItem()
+              .title('Birding Dashboard — /birding-dashboard')
+              .id('toolProjectPage-birding-dashboard')
+              .child(
+                S.document()
+                  .schemaType('toolProjectPage')
+                  .documentId('toolProjectPage-birding-dashboard')
+              ),
+            S.listItem()
               .title('Runs (Strava · sync: Site operations tab)')
               .id('toolProjectPage-runs')
               .child(

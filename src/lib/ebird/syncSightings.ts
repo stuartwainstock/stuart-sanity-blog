@@ -2,7 +2,7 @@
 
 import {createClient} from '@sanity/client'
 import {resolveEbirdBirding} from '@/lib/ebird/resolveConfig'
-import {fetchMapObservations} from '@/lib/ebird/client'
+import {fetchAllSpeciesObservations} from '@/lib/ebird/client'
 import {sanityClient} from '@/lib/sanity'
 import {EBIRD_BIRDING_QUERY} from '@/lib/queries'
 import type {EbirdBirding} from '@/lib/types'
@@ -75,8 +75,9 @@ export async function syncSightingsAction(): Promise<SyncSightingsResult> {
       return {ok: false, created: 0, skipped: 0, message: 'eBird config could not be resolved.'}
     }
 
-    // 3. Fetch observations from eBird API
-    const result = await fetchMapObservations(config)
+    // 3. Fetch all-species observations from eBird API
+    // (Dashboard covers the full region, not just the focus species on Pileated Watch)
+    const result = await fetchAllSpeciesObservations(config)
 
     if (!result.ok) {
       return {ok: false, created: 0, skipped: 0, message: result.message}

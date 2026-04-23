@@ -77,6 +77,10 @@ function recentObsPath(loc: string, speciesCode: string): string {
   return `/data/obs/${encodeURIComponent(loc)}/recent/${encodeURIComponent(speciesCode)}`
 }
 
+function recentAllSpeciesPath(loc: string): string {
+  return `/data/obs/${encodeURIComponent(loc)}/recent`
+}
+
 function normalizeRecentObs(
   rows: Record<string, unknown>[]
 ): BirdObservation[] {
@@ -219,6 +223,110 @@ export async function fetchMapObservations(
       const json = (await res.json()) as Record<string, unknown>[]
       const rows = Array.isArray(json) ? json : []
       collected.push(...normalizeRecentObs(rows).slice(0, fetchBudget))
+    }
+
+    const observations = collected.sort(sortObsDesc).slice(0, max)
+    return {ok: true, observations}
+  } catch (e) {
+    const message = e instanceof Error ? e.message : 'Unknown error'
+    return {ok: false, message}
+  }
+}
+
+/**
+ * Fetches ALL species observations from the configured geographic area — no
+ * species filter applied. Used by the Birding Dashboard sync to pull a broad
+ * regional picture rather than a single target species.
+ *
+ * Uses the same geographic config (hotspots / region, daysBack, maxObs) as
+ * fetchMapObservations but calls /data/obs/{loc}/recent without a species code.
+ */
+export async function fetchAllSpeciesObservations(
+  config: ResolvedEbirdBirding,
+  revalidateSeconds = 300
+): Promise<EbirdObservationsResult> {
+  const key = getApiKey()
+  if (!key) {
+    return {
+      ok: false,
+      message:
+        'Missing EBIRD_API_KEY. Add it to your environment (see .env.local.example).',
+    }
+  }
+
+  const max = Math.min(Math.max(1, config.maxObservationsToFetch), 10000)
+  const back = Math.min(Math.max(1, config.recentDaysBack), 30)
+  const collected: BirdObservation[] = []
+  const seen = new Set<string>()
+
+  try {
+    if (config.mapDataSource === 'hotspots') {
+      const codes = parseHotspotCodes(config.hotspotCodes)
+      if (codes.length === 0) {
+        return {
+          ok: false,
+          message:
+            'No hotspot codes configured. Add L-codes under Hotspot codes in Studio, or switch geographic area to Region.',
+        }
+      }
+
+      const perHotspot = Math.max(1, Math.ceil(max / codes.length))
+
+      for (const hotspotCode of codes) {
+        if (collected.length >= max) break
+        const params = new URLSearchParams()
+        params.set('fmt', 'json')
+        params.set('detail', 'full')
+        params.set('back', String(back))
+        params.set(
+          'maxResults',
+          String(Math.min(perHotspot, max - collected.length))
+        )
+
+        const path = recentAllSpeciesPath(hotspotCode)
+        const res = await ebirdFetch(path, params, revalidateSeconds)
+        if (!res.ok) {
+          return {
+            ok: false,
+            message: `eBird returned ${res.status} for hotspot ${hotspotCode}. Check the hotspot code and API key.`,
+          }
+        }
+        const json = (await res.json()) as Record<string, unknown>[]
+        const rows = Array.isArray(json) ? json : []
+        for (const obs of normalizeRecentObs(rows)) {
+          if (seen.has(obs.id)) continue
+          seen.add(obs.id)
+          collected.push(obs)
+          if (collected.length >= max) break
+        }
+      }
+    } else {
+      const region = config.regionCode?.trim()
+      if (!region) {
+        return {
+          ok: false,
+          message:
+            'Region code is required when geographic area is Region (e.g. US-NY-109).',
+        }
+      }
+
+      const params = new URLSearchParams()
+      params.set('fmt', 'json')
+      params.set('detail', 'full')
+      params.set('back', String(back))
+      params.set('maxResults', String(max))
+
+      const path = recentAllSpeciesPath(region)
+      const res = await ebirdFetch(path, params, revalidateSeconds)
+      if (!res.ok) {
+        return {
+          ok: false,
+          message: `eBird returned ${res.status} for region ${region}. Check the region code and API key.`,
+        }
+      }
+      const json = (await res.json()) as Record<string, unknown>[]
+      const rows = Array.isArray(json) ? json : []
+      collected.push(...normalizeRecentObs(rows).slice(0, max))
     }
 
     const observations = collected.sort(sortObsDesc).slice(0, max)

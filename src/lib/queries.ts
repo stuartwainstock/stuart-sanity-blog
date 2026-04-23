@@ -449,6 +449,32 @@ export const TOOL_PROJECT_PAGE_RUNS_QUERY = groq`
   }
 `
 
+/** Birding Dashboard — /birding-dashboard (document ID fixed in Studio structure). */
+export const TOOL_PROJECT_PAGE_BIRDING_QUERY = groq`
+  *[_type == "toolProjectPage" && _id == "toolProjectPage-birding-dashboard"][0]{
+    _id,
+    projectKey,
+    pageTitle,
+    heroIntroduction,
+    birdingSightingsTitle,
+    birdingSightingsIntroduction,
+    seo {
+      metaTitle,
+      metaDescription,
+      openGraphImage {
+        asset->{
+          _id,
+          url
+        },
+        alt,
+        credit
+      },
+      keywords,
+      noIndex
+    },
+  }
+`
+
 export const EBIRD_BIRDING_QUERY = groq`
   *[_type == "ebirdBirding" && _id == "ebirdBirding"][0]{
     _id,

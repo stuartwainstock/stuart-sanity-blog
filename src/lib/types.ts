@@ -180,12 +180,16 @@ export interface EbirdBirding {
 /** Singletons `toolProjectPage-runs`, `toolProjectPage-flights`, etc. */
 export interface ToolProjectPage {
   _id: string
-  projectKey?: 'runs' | 'flights'
+  projectKey?: 'runs' | 'flights' | 'birding-dashboard'
   pageTitle?: string
   heroIntroduction?: TypedObject[]
   mapSectionTitle?: string
   mapSectionIntroduction?: TypedObject[]
   tableSectionTitle?: string
   tableSectionIntroduction?: TypedObject[]
+  /** Birding Dashboard — heading above the card grid */
+  birdingSightingsTitle?: string
+  /** Birding Dashboard — optional copy above the card grid */
+  birdingSightingsIntroduction?: TypedObject[]
   seo?: SEO
 }

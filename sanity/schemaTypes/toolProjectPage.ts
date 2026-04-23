@@ -23,7 +23,7 @@ export const toolProjectPage = defineType({
         list: [
           {title: 'Runs (Strava) — /runs', value: 'runs'},
           {title: 'Flights (TripIt) — /flights', value: 'flights'},
-          // Add entries when you add new tool routes + singleton documents.
+          {title: 'Birding Dashboard — /birding-dashboard', value: 'birding-dashboard'},
         ],
         layout: 'radio',
       },
@@ -57,6 +57,15 @@ export const toolProjectPage = defineType({
         'Open this in your browser to connect Strava and sync runs into the database (sign in at /admin/login on that site if required). Format: https://your-domain.com/admin/strava — local dev: http://localhost:3000/admin/strava',
     }),
     defineField({
+      name: 'birdingDashboardUrl',
+      title: 'Birding Dashboard — page URL',
+      type: 'url',
+      group: 'operations',
+      hidden: ({document}) => document?.projectKey !== 'birding-dashboard',
+      description:
+        'Open this URL to trigger an eBird sync from the dashboard. Uses the geographic area and days-back window from Studio → Pileated Watch (eBird). Format: https://your-domain.com/birding-dashboard — local dev: http://localhost:3000/birding-dashboard',
+    }),
+    defineField({
       name: 'mapSectionTitle',
       title: 'Map section title',
       type: 'string',
@@ -85,6 +94,24 @@ export const toolProjectPage = defineType({
       type: 'blockContent',
       group: 'content',
       description: 'Paragraph(s) above the table.',
+    }),
+    defineField({
+      name: 'birdingSightingsTitle',
+      title: 'Sightings section title',
+      type: 'string',
+      group: 'content',
+      initialValue: 'Recent sightings',
+      hidden: ({document}) => document?.projectKey !== 'birding-dashboard',
+      description: 'Heading (H2) above the bird card grid on the Birding Dashboard.',
+    }),
+    defineField({
+      name: 'birdingSightingsIntroduction',
+      title: 'Sightings section introduction',
+      type: 'blockContent',
+      group: 'content',
+      hidden: ({document}) => document?.projectKey !== 'birding-dashboard',
+      description:
+        'Optional copy above the card grid — context about accessibility enrichment, photo credit workflow, etc.',
     }),
     defineField({
       name: 'seo',

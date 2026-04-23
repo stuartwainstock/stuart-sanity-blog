@@ -21,9 +21,10 @@ export type ToolProjectPage = {
   _createdAt: string
   _updatedAt: string
   _rev: string
-  projectKey?: 'runs'
+  projectKey?: 'runs' | 'flights'
   pageTitle?: string
   heroIntroduction?: BlockContent
+  runsStravaAdminDashboardUrl?: string
   mapSectionTitle?: string
   mapSectionIntroduction?: BlockContent
   tableSectionTitle?: string
@@ -89,6 +90,13 @@ export type BlockContent = Array<
       language?: 'javascript' | 'typescript' | 'html' | 'css' | 'python' | 'json' | 'bash'
       code?: string
       _type: 'codeBlock'
+      _key: string
+    }
+  | {
+      url?: string
+      title?: string
+      caption?: string
+      _type: 'youtube'
       _key: string
     }
 >
@@ -306,6 +314,9 @@ export type EbirdBirding = {
   _rev: string
   mapPageTitle?: string
   mapPageIntroduction?: BlockContent
+  mapSectionTitle?: string
+  sightingsSectionTitle?: string
+  sightingsIntroduction?: BlockContent
   mapDataSource?: 'hotspots' | 'region'
   hotspotCodes?: string
   regionCode?: string
@@ -351,6 +362,24 @@ export type Category = {
   slug?: Slug
   description?: string
   color?: 'blue' | 'green' | 'red' | 'yellow' | 'purple' | 'pink' | 'gray'
+}
+
+export type BirdSighting = {
+  _id: string
+  _type: 'birdSighting'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  speciesName?: string
+  speciesCode?: string
+  observedOn?: string
+  locationLabel?: string
+  altText?: string
+  plumageColors?: Array<string>
+  callAudioUrl?: string
+  latitude?: number
+  longitude?: number
+  ebirdChecklistUri?: string
 }
 
 export type Author = {
@@ -512,6 +541,7 @@ export type AllSanitySchemaTypes =
   | EbirdBirding
   | Homepage
   | Category
+  | BirdSighting
   | Author
   | SanityImagePaletteSwatch
   | SanityImagePalette
