@@ -1,9 +1,14 @@
+ 'use client'
+
+import {useMemo, useState} from 'react'
 import type {ReactNode} from 'react'
 import Link from 'next/link'
+import Button from '@/components/atoms/Button'
 import {pageBodyGap, pageBodyParagraph, pageSectionHeading} from '@/lib/pageTypography'
 import type {StravaRunTableRow} from '@/lib/strava/types'
 import {RUNS_MAP_WINDOW_DAYS} from '@/lib/strava/constants'
 import dt from '@/components/ui/DataTable.module.css'
+import styles from './StravaRunsTable.module.css'
 
 type Props = {
   runs: StravaRunTableRow[]
@@ -29,7 +34,7 @@ function formatEffort(n: number | null): string {
 function defaultTableIntro(limit: number) {
   return (
     <p className={`${pageBodyParagraph} ${pageBodyGap}`}>
-      Most recent {RUNS_MAP_WINDOW_DAYS}-day window (up to {limit} rows). Location, shoe, and relative effort
+      Most recent {RUNS_MAP_WINDOW_DAYS}-day window ({limit} rows per page). Location, shoe, and relative effort
       come from Strava when available. When Strava only has GPS start points, place names are resolved from
       coordinates (city-level, via OpenStreetMap). Open Strava for full activity details.
     </p>
@@ -42,7 +47,27 @@ export default function StravaRunsTable({
   sectionTitle = 'Recent runs',
   intro,
 }: Props) {
-  const rows = runs.slice(0, limit)
+  const pageSize = Math.max(1, limit)
+  const totalRows = runs.length
+  const totalPages = Math.max(1, Math.ceil(totalRows / pageSize))
+  const [page, setPage] = useState(0)
+
+  const safePage = Math.min(Math.max(0, page), totalPages - 1)
+
+  const rows = useMemo(() => {
+    const start = safePage * pageSize
+    return runs.slice(start, start + pageSize)
+  }, [pageSize, runs, safePage])
+
+  const range = useMemo(() => {
+    if (totalRows === 0) return {from: 0, to: 0}
+    const from = safePage * pageSize + 1
+    const to = Math.min(totalRows, (safePage + 1) * pageSize)
+    return {from, to}
+  }, [pageSize, safePage, totalRows])
+
+  const canPrev = safePage > 0
+  const canNext = safePage < totalPages - 1
 
   return (
     <section className="u-mb-14 scroll-mt-24" aria-labelledby="runs-table-title" id="runs-recent">
@@ -50,6 +75,36 @@ export default function StravaRunsTable({
         {sectionTitle}
       </h2>
       {intro !== undefined ? intro : defaultTableIntro(limit)}
+      {totalRows > 0 && totalPages > 1 ? (
+        <div className={styles.controls} aria-label="Runs table pagination controls">
+          <div className={styles.controlsLeft}>
+            <Button
+              variant="secondary"
+              size="sm"
+              disabled={!canPrev}
+              onClick={() => setPage((p) => Math.max(0, p - 1))}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              disabled={!canNext}
+              onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+            >
+              Next
+            </Button>
+          </div>
+          <div className={styles.controlsRight}>
+            <span className={styles.pageMeta}>
+              Showing {range.from}–{range.to} of {totalRows}
+            </span>
+            <span className={styles.pageMeta}>
+              Page {safePage + 1} of {totalPages}
+            </span>
+          </div>
+        </div>
+      ) : null}
       <div className={`${dt.wrap} ${dt.wrapOnWhite}`}>
         <table className={dt.table}>
           <caption className="sr-only">
@@ -127,6 +182,26 @@ export default function StravaRunsTable({
           </tbody>
         </table>
       </div>
+      {totalRows > 0 && totalPages > 1 ? (
+        <div className={styles.controlsBottom}>
+          <Button
+            variant="secondary"
+            size="sm"
+            disabled={!canPrev}
+            onClick={() => setPage((p) => Math.max(0, p - 1))}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            disabled={!canNext}
+            onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+          >
+            Next
+          </Button>
+        </div>
+      ) : null}
     </section>
   )
 }
