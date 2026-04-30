@@ -539,7 +539,22 @@ export const BIRD_SIGHTINGS_QUERY = groq`
     callAudioUrl,
     ebirdChecklistUri,
     latitude,
-    longitude
+    longitude,
+    cardImage {
+      asset->{
+        _id,
+        url
+      },
+      alt
+    },
+    cardImageAlt,
+    imageSuggestionStatus,
+    suggestedCoverProvider,
+    suggestedCoverImageUrl,
+    suggestedCoverImagePageUrl,
+    suggestedCoverPhotographerName,
+    suggestedCoverPhotographerPageUrl,
+    suggestedCoverAltDraft
   }
 `
 

@@ -63,7 +63,7 @@ export const toolProjectPage = defineType({
       group: 'operations',
       hidden: ({document}) => document?.projectKey !== 'birding-dashboard',
       description:
-        'Open this URL to trigger an eBird sync from the dashboard. Uses the geographic area and days-back window from Studio → Pileated Watch (eBird). Format: https://your-domain.com/birding-dashboard — local dev: http://localhost:3000/birding-dashboard',
+        'Open this URL to trigger an eBird sync from the dashboard. Uses the geographic area and days-back window from Studio → Birding Dashboard sync scope (eBird). Format: https://your-domain.com/birding-dashboard — local dev: http://localhost:3000/birding-dashboard',
     }),
     defineField({
       name: 'mapSectionTitle',

@@ -48,9 +48,9 @@ export interface SyncSightingsResult {
  * on the /birding-dashboard page.
  *
  * Flow:
- *  1. Fetch the ebirdBirding config singleton from Sanity.
- *  2. Resolve it into a typed config (hotspots / region, species code, etc.).
- *  3. Call fetchMapObservations() — the production eBird fetch entry point.
+ *  1. Fetch the `ebirdDashboard` sync-scope singleton from Sanity.
+ *  2. Resolve it into a typed config (hotspots / region, days back, max rows).
+ *  3. Call `fetchAllSpeciesObservations()` (all-species recent endpoint).
  *  4. Upsert each observation as a birdSighting document.
  *     - _id is deterministic so re-running is idempotent.
  *     - Accessibility fields (altText, plumageColors, callAudioUrl) are NOT
@@ -143,6 +143,8 @@ export async function syncSightingsAction(): Promise<SyncSightingsResult> {
           altText: '',
           plumageColors: [],
           callAudioUrl: null,
+          imageSuggestionStatus: 'none',
+          suggestedCoverProvider: 'none',
         })
         created++
       }

@@ -21,14 +21,17 @@ export type ToolProjectPage = {
   _createdAt: string
   _updatedAt: string
   _rev: string
-  projectKey?: 'runs' | 'flights'
+  projectKey?: 'runs' | 'flights' | 'birding-dashboard'
   pageTitle?: string
   heroIntroduction?: BlockContent
   runsStravaAdminDashboardUrl?: string
+  birdingDashboardUrl?: string
   mapSectionTitle?: string
   mapSectionIntroduction?: BlockContent
   tableSectionTitle?: string
   tableSectionIntroduction?: BlockContent
+  birdingSightingsTitle?: string
+  birdingSightingsIntroduction?: BlockContent
   seo?: Seo
 }
 
@@ -306,6 +309,19 @@ export type Link = {
   addedDate?: string
 }
 
+export type EbirdDashboard = {
+  _id: string
+  _type: 'ebirdDashboard'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  mapDataSource?: 'hotspots' | 'region'
+  hotspotCodes?: string
+  regionCode?: string
+  recentDaysBack?: number
+  maxObservationsToFetch?: number
+}
+
 export type EbirdBirding = {
   _id: string
   _type: 'ebirdBirding'
@@ -374,6 +390,21 @@ export type BirdSighting = {
   speciesCode?: string
   observedOn?: string
   locationLabel?: string
+  cardImage?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+  }
+  cardImageAlt?: string
+  imageSuggestionStatus?: 'none' | 'pending_review' | 'dismissed'
+  suggestedCoverProvider?: 'none' | 'unsplash'
+  suggestedCoverImageUrl?: string
+  suggestedCoverImagePageUrl?: string
+  suggestedCoverPhotographerName?: string
+  suggestedCoverPhotographerPageUrl?: string
+  suggestedCoverAltDraft?: string
   altText?: string
   plumageColors?: Array<string>
   callAudioUrl?: string
@@ -538,6 +569,7 @@ export type AllSanitySchemaTypes =
   | Slug
   | Page
   | Link
+  | EbirdDashboard
   | EbirdBirding
   | Homepage
   | Category

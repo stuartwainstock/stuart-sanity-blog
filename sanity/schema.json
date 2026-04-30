@@ -46,6 +46,10 @@
             {
               "type": "string",
               "value": "flights"
+            },
+            {
+              "type": "string",
+              "value": "birding-dashboard"
             }
           ]
         },
@@ -67,6 +71,13 @@
         "optional": true
       },
       "runsStravaAdminDashboardUrl": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "birdingDashboardUrl": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
@@ -96,6 +107,21 @@
         "optional": true
       },
       "tableSectionIntroduction": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "inline",
+          "name": "blockContent"
+        },
+        "optional": true
+      },
+      "birdingSightingsTitle": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "birdingSightingsIntroduction": {
         "type": "objectAttribute",
         "value": {
           "type": "inline",
@@ -1877,6 +1903,88 @@
     }
   },
   {
+    "name": "ebirdDashboard",
+    "type": "document",
+    "attributes": {
+      "_id": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        }
+      },
+      "_type": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+          "value": "ebirdDashboard"
+        }
+      },
+      "_createdAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        }
+      },
+      "_updatedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        }
+      },
+      "_rev": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        }
+      },
+      "mapDataSource": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "hotspots"
+            },
+            {
+              "type": "string",
+              "value": "region"
+            }
+          ]
+        },
+        "optional": true
+      },
+      "hotspotCodes": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "regionCode": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "recentDaysBack": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "number"
+        },
+        "optional": true
+      },
+      "maxObservationsToFetch": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "number"
+        },
+        "optional": true
+      }
+    }
+  },
+  {
     "name": "ebirdBirding",
     "type": "document",
     "attributes": {
@@ -2312,6 +2420,133 @@
         "optional": true
       },
       "locationLabel": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "cardImage": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "object",
+          "attributes": {
+            "asset": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "inline",
+                "name": "sanity.imageAsset.reference"
+              },
+              "optional": true
+            },
+            "media": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "unknown"
+              },
+              "optional": true
+            },
+            "hotspot": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "inline",
+                "name": "sanity.imageHotspot"
+              },
+              "optional": true
+            },
+            "crop": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "inline",
+                "name": "sanity.imageCrop"
+              },
+              "optional": true
+            },
+            "_type": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "string",
+                "value": "image"
+              }
+            }
+          }
+        },
+        "optional": true
+      },
+      "cardImageAlt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "imageSuggestionStatus": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "none"
+            },
+            {
+              "type": "string",
+              "value": "pending_review"
+            },
+            {
+              "type": "string",
+              "value": "dismissed"
+            }
+          ]
+        },
+        "optional": true
+      },
+      "suggestedCoverProvider": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "none"
+            },
+            {
+              "type": "string",
+              "value": "unsplash"
+            }
+          ]
+        },
+        "optional": true
+      },
+      "suggestedCoverImageUrl": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "suggestedCoverImagePageUrl": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "suggestedCoverPhotographerName": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "suggestedCoverPhotographerPageUrl": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "suggestedCoverAltDraft": {
         "type": "objectAttribute",
         "value": {
           "type": "string"

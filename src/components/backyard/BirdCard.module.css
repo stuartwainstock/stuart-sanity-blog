@@ -51,6 +51,22 @@
   --card-link-color: #66b3ff;
 }
 
+/* ── Card image (Sanity-hosted) ───────────────────────────────────────────── */
+
+.cardFigure {
+  margin: 0;
+  border-radius: 0.375rem;
+  overflow: hidden;
+  border: 1px solid var(--card-border);
+}
+
+.cardImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
 /* ── Header ────────────────────────────────────────────────────────────────── */
 
 .cardHeader {

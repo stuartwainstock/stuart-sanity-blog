@@ -5,6 +5,7 @@ import {sanityClient, fetchToolProjectPageBirding, getImageUrl} from '@/lib/sani
 import {BIRD_SIGHTINGS_QUERY} from '@/lib/queries'
 import {syncSightingsAction} from '@/lib/ebird/syncSightings'
 import type {BirdSighting} from '@/components/backyard/BirdCard'
+import type {SanityImage} from '@/lib/types'
 import PortableText from '@/components/molecules/PortableText'
 import PageHeroWithDataSource from '@/components/molecules/PageHeroWithDataSource'
 import {
@@ -77,16 +78,37 @@ interface BirdingDashboardPageProps {
   }>
 }
 
+type BirdSightingSanityRow = BirdSighting & {
+  cardImage?: SanityImage | null
+  cardImageAlt?: string | null
+}
+
 export default async function BirdingDashboardPage({searchParams}: BirdingDashboardPageProps) {
-  const [params, pageCopy, sightings] = await Promise.all([
+  const [params, pageCopy, rawSightings] = await Promise.all([
     searchParams,
     fetchToolProjectPageBirding(),
-    sanityClient.fetch<BirdSighting[]>(
+    sanityClient.fetch<BirdSightingSanityRow[]>(
       BIRD_SIGHTINGS_QUERY,
       {},
       {useCdn: false, next: {revalidate}},
     ),
   ])
+
+  const sightings: BirdSighting[] = rawSightings.map((s) => ({
+    _id: s._id,
+    speciesName: s.speciesName,
+    speciesCode: s.speciesCode,
+    observedOn: s.observedOn,
+    locationLabel: s.locationLabel,
+    altText: s.altText,
+    plumageColors: s.plumageColors,
+    callAudioUrl: s.callAudioUrl,
+    ebirdChecklistUri: s.ebirdChecklistUri,
+    latitude: s.latitude,
+    longitude: s.longitude,
+    cardImageUrl: s.cardImage?.asset ? getImageUrl(s.cardImage, 720, 480) : null,
+    cardImageAlt: s.cardImageAlt?.trim() || null,
+  }))
 
   const pageTitle = pageCopy?.pageTitle?.trim() || 'Birding Dashboard'
   const sightingsSectionTitle = pageCopy?.birdingSightingsTitle?.trim() || 'Recent sightings'
@@ -138,7 +160,7 @@ export default async function BirdingDashboardPage({searchParams}: BirdingDashbo
             >
               eBird
             </a>
-            . Accessibility metadata (alt text, plumage colors, call audio) enriched
+            .             Accessibility metadata (alt text, optional card images, plumage colors, call audio) enriched
             in{' '}
             <Link href="/studio" className={pageDataSourceLink}>
               Sanity Studio

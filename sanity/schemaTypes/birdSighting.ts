@@ -1,5 +1,5 @@
 import {defineField, defineType} from 'sanity'
-import {EyeOpenIcon, AccessDeniedIcon, EarthGlobeIcon} from '@sanity/icons'
+import {EyeOpenIcon, AccessDeniedIcon, EarthGlobeIcon, ImageIcon} from '@sanity/icons'
 
 export const birdSighting = defineType({
   name: 'birdSighting',
@@ -8,6 +8,7 @@ export const birdSighting = defineType({
   icon: EyeOpenIcon,
   groups: [
     {name: 'identity', title: 'Identity', icon: EyeOpenIcon, default: true},
+    {name: 'visual', title: 'Card image', icon: ImageIcon},
     {name: 'accessibility', title: 'Accessibility', icon: AccessDeniedIcon},
     {name: 'location', title: 'Location & Source', icon: EarthGlobeIcon},
   ],
@@ -49,6 +50,102 @@ export const birdSighting = defineType({
       type: 'string',
       group: 'identity',
       description: 'Human-readable location name from eBird (e.g. "Bald Eagle SNA--Pool 4").',
+    }),
+
+    // ── Card image (approved) + Unsplash suggestion (review) ─────────────────
+    defineField({
+      name: 'cardImage',
+      title: 'Card image',
+      type: 'image',
+      group: 'visual',
+      options: {hotspot: true},
+      description:
+        'Optional hero image on the Birding Dashboard card. Pick from Unsplash (asset source) or upload. Leave empty until you approve a suggestion or choose your own.',
+    }),
+    defineField({
+      name: 'cardImageAlt',
+      title: 'Card image alt text',
+      type: 'string',
+      group: 'visual',
+      description:
+        'Short description of the photograph for screen readers (what is shown in the image). When empty, the card falls back to Alt Text below if present.',
+      validation: (Rule) => [
+        Rule.max(200).warning('Keep image alt text concise (under ~200 characters).'),
+      ],
+    }),
+    defineField({
+      name: 'imageSuggestionStatus',
+      title: 'Image suggestion status',
+      type: 'string',
+      group: 'visual',
+      initialValue: 'none',
+      options: {
+        list: [
+          {title: 'No active suggestion', value: 'none'},
+          {title: 'Pending review (script suggested an image — verify, then add Card image)', value: 'pending_review'},
+          {title: 'Dismissed (do not auto-suggest again for this sighting)', value: 'dismissed'},
+        ],
+        layout: 'radio',
+      },
+      description:
+        'Run `npm run birding:suggest-unsplash` locally to populate a suggested Unsplash preview. When satisfied, add Card image from Studio (Unsplash asset source), set Card image alt text, then set status to No active suggestion.',
+    }),
+    defineField({
+      name: 'suggestedCoverProvider',
+      title: 'Suggested cover source',
+      type: 'string',
+      group: 'visual',
+      initialValue: 'none',
+      options: {
+        list: [
+          {title: 'None', value: 'none'},
+          {title: 'Unsplash (search API — editor must still approve)', value: 'unsplash'},
+        ],
+        layout: 'radio',
+      },
+      readOnly: true,
+      description: 'Filled automatically by the suggestion script for traceability.',
+    }),
+    defineField({
+      name: 'suggestedCoverImageUrl',
+      title: 'Suggested image (preview URL)',
+      type: 'url',
+      group: 'visual',
+      readOnly: true,
+      description: 'Temporary Unsplash CDN URL for review only. Do not rely on this for the live site.',
+    }),
+    defineField({
+      name: 'suggestedCoverImagePageUrl',
+      title: 'Suggested image on Unsplash',
+      type: 'url',
+      group: 'visual',
+      readOnly: true,
+      description: 'Open this link in Studio to verify licensing context before adding Card image.',
+    }),
+    defineField({
+      name: 'suggestedCoverPhotographerName',
+      title: 'Suggested photographer name',
+      type: 'string',
+      group: 'visual',
+      readOnly: true,
+    }),
+    defineField({
+      name: 'suggestedCoverPhotographerPageUrl',
+      title: 'Suggested photographer on Unsplash',
+      type: 'url',
+      group: 'visual',
+      readOnly: true,
+    }),
+    defineField({
+      name: 'suggestedCoverAltDraft',
+      title: 'Suggested alt text (draft)',
+      type: 'text',
+      rows: 2,
+      group: 'visual',
+      readOnly: true,
+      description:
+        'Draft alt text for the suggested photo. Copy into Card image alt text after you verify the image matches the species.',
+      validation: (Rule) => [Rule.max(400).warning('Keep draft alt text under ~400 characters.')],
     }),
 
     // ── Accessibility ─────────────────────────────────────────────────────────

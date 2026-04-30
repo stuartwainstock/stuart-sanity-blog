@@ -24,7 +24,8 @@
     "build-storybook": "storybook build",
     "test:storybook": "vitest run --project storybook",
     "chromatic": "node ./scripts/chromatic.mjs",
-    "tripit:transform": "node scripts/tripit-export-to-list-air.mjs"
+    "tripit:transform": "node scripts/tripit-export-to-list-air.mjs",
+    "birding:suggest-unsplash": "node scripts/birding-suggest-unsplash.mjs"
   },
   "dependencies": {
     "@babel/runtime": "^7.29.2",

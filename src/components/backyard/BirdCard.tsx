@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import {useRef, useState} from 'react'
 import styles from './BirdCard.module.css'
 
@@ -17,6 +18,10 @@ export interface BirdSighting {
   ebirdChecklistUri: string | null
   latitude: number | null
   longitude: number | null
+  /** Resolved Sanity CDN URL (server maps `cardImage` → URL for next/image). */
+  cardImageUrl?: string | null
+  /** Alt text for the card photo; falls back to `altText` when empty. */
+  cardImageAlt?: string | null
 }
 
 interface BirdCardProps {
@@ -118,6 +123,8 @@ export function BirdCard({sighting, highContrast = false}: BirdCardProps) {
     plumageColors,
     callAudioUrl,
     ebirdChecklistUri,
+    cardImageUrl,
+    cardImageAlt,
   } = sighting
 
   const formattedDate = observedOn
@@ -129,12 +136,30 @@ export function BirdCard({sighting, highContrast = false}: BirdCardProps) {
       })
     : null
 
+  const imageAlt =
+    (cardImageAlt && cardImageAlt.trim()) ||
+    (altText && altText.trim()) ||
+    `${speciesName} — sighting card`
+
   return (
     <article
       className={styles.card}
       data-high-contrast={highContrast || undefined}
       aria-label={altText || speciesName}
     >
+      {cardImageUrl ? (
+        <figure className={styles.cardFigure}>
+          <Image
+            src={cardImageUrl}
+            alt={imageAlt}
+            width={720}
+            height={480}
+            className={styles.cardImage}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
+        </figure>
+      ) : null}
+
       <header className={styles.cardHeader}>
         <h3 className={styles.speciesName}>{speciesName}</h3>
 
