@@ -1,11 +1,11 @@
 'use server'
 
 import {createClient} from '@sanity/client'
-import {resolveEbirdBirding} from '@/lib/ebird/resolveConfig'
+import {resolveEbirdDashboard} from '@/lib/ebird/resolveConfig'
 import {fetchAllSpeciesObservations} from '@/lib/ebird/client'
 import {sanityClient} from '@/lib/sanity'
-import {EBIRD_BIRDING_QUERY} from '@/lib/queries'
-import type {EbirdBirding} from '@/lib/types'
+import {EBIRD_DASHBOARD_QUERY} from '@/lib/queries'
+import type {EbirdDashboard} from '@/lib/types'
 
 // ── Sanity write client ───────────────────────────────────────────────────────
 // Uses SANITY_API_WRITE_TOKEN (Editor permission) — server-only, never exposed
@@ -58,19 +58,25 @@ export interface SyncSightingsResult {
  */
 export async function syncSightingsAction(): Promise<SyncSightingsResult> {
   try {
-    // 1. Load eBird config from Sanity
-    const rawConfig = await sanityClient.fetch<EbirdBirding | null>(
-      EBIRD_BIRDING_QUERY,
+    // 1. Load dashboard sync scope config from Sanity
+    const rawConfig = await sanityClient.fetch<EbirdDashboard | null>(
+      EBIRD_DASHBOARD_QUERY,
       {},
       {useCdn: false},
     )
 
     if (!rawConfig) {
-      return {ok: false, created: 0, skipped: 0, message: 'No eBird config found in Sanity. Configure it in Studio → Pileated Watch (eBird).'}
+      return {
+        ok: false,
+        created: 0,
+        skipped: 0,
+        message:
+          'No Birding Dashboard eBird config found in Sanity. Configure it in Studio → Birding Dashboard sync scope (eBird).',
+      }
     }
 
     // 2. Resolve config
-    const config = resolveEbirdBirding(rawConfig)
+    const config = resolveEbirdDashboard(rawConfig)
     if (!config) {
       return {ok: false, created: 0, skipped: 0, message: 'eBird config could not be resolved.'}
     }

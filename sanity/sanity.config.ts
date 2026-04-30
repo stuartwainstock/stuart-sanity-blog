@@ -10,6 +10,7 @@ import {
   category,
   homepage,
   ebirdBirding,
+  ebirdDashboard,
   link,
   page,
   post,
@@ -81,6 +82,14 @@ export default defineConfig({
                 S.document()
                   .schemaType('ebirdBirding')
                   .documentId('ebirdBirding')
+              ),
+            S.listItem()
+              .title('Birding Dashboard sync scope (eBird)')
+              .id('ebirdDashboard')
+              .child(
+                S.document()
+                  .schemaType('ebirdDashboard')
+                  .documentId('ebirdDashboard')
               ),
             S.listItem()
               .title('Birding Dashboard — /birding-dashboard')
@@ -205,6 +214,7 @@ export default defineConfig({
       category,
       homepage,
       ebirdBirding,
+      ebirdDashboard,
       link,
       page,
       post,

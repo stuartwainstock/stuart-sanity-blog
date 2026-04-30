@@ -9,6 +9,14 @@ const MAP_FALLBACK = {
 const DEFAULT_SPECIES_CODE = 'pilwoo'
 const DEFAULT_SPECIES_LABEL = 'Pileated Woodpecker'
 
+export type EbirdAreaConfig = {
+  mapDataSource: 'hotspots' | 'region'
+  hotspotCodes?: string
+  regionCode?: string
+  recentDaysBack: number
+  maxObservationsToFetch: number
+}
+
 export type ResolvedEbirdBirding = EbirdBirding & {
   recentDaysBack: number
   maxObservationsToFetch: number
@@ -21,6 +29,23 @@ export type ResolvedEbirdBirding = EbirdBirding & {
   sightingsSectionTitle: string
 }
 
+export type ResolvedEbirdDashboard = EbirdAreaConfig & {
+  recentDaysBack: number
+  maxObservationsToFetch: number
+}
+
+function resolveAreaConfig(
+  raw: Pick<EbirdAreaConfig, 'mapDataSource' | 'hotspotCodes' | 'regionCode' | 'recentDaysBack' | 'maxObservationsToFetch'>
+): EbirdAreaConfig {
+  return {
+    mapDataSource: raw.mapDataSource || 'hotspots',
+    hotspotCodes: raw.hotspotCodes,
+    regionCode: raw.regionCode,
+    recentDaysBack: raw.recentDaysBack ?? 30,
+    maxObservationsToFetch: raw.maxObservationsToFetch ?? 500,
+  }
+}
+
 export function resolveEbirdBirding(
   raw: EbirdBirding | null
 ): ResolvedEbirdBirding | null {
@@ -28,9 +53,7 @@ export function resolveEbirdBirding(
   const code = raw.focusSpeciesCode?.trim() || DEFAULT_SPECIES_CODE
   return {
     ...raw,
-    mapDataSource: raw.mapDataSource || 'hotspots',
-    recentDaysBack: raw.recentDaysBack ?? 30,
-    maxObservationsToFetch: raw.maxObservationsToFetch ?? 500,
+    ...resolveAreaConfig(raw),
     defaultMapLatitude: raw.defaultMapLatitude ?? MAP_FALLBACK.latitude,
     defaultMapLongitude: raw.defaultMapLongitude ?? MAP_FALLBACK.longitude,
     defaultMapZoom: raw.defaultMapZoom ?? MAP_FALLBACK.zoom,
@@ -40,4 +63,9 @@ export function resolveEbirdBirding(
     mapSectionTitle: raw.mapSectionTitle?.trim() || 'Map',
     sightingsSectionTitle: raw.sightingsSectionTitle?.trim() || 'Sightings',
   }
+}
+
+export function resolveEbirdDashboard(raw: EbirdAreaConfig | null): ResolvedEbirdDashboard | null {
+  if (!raw) return null
+  return resolveAreaConfig(raw)
 }

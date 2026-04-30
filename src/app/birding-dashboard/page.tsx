@@ -109,7 +109,7 @@ export default async function BirdingDashboardPage({searchParams}: BirdingDashbo
         Manage and preview bird sighting cards across all species in the region. Sync
         pulls recent observations from the eBird geographic area configured in{' '}
         <Link href="/studio" className={pageDataSourceLink}>
-          Studio → Pileated Watch
+          Studio → Birding Dashboard sync scope
         </Link>
         . Existing accessibility fields (alt text, plumage, audio) are never
         overwritten on re-sync.

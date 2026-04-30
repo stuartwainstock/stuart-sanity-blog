@@ -177,6 +177,15 @@ export interface EbirdBirding {
   seoMap?: SEO
 }
 
+export interface EbirdDashboard {
+  _id: string
+  mapDataSource: 'hotspots' | 'region'
+  hotspotCodes?: string
+  regionCode?: string
+  recentDaysBack: number
+  maxObservationsToFetch: number
+}
+
 /** Singletons `toolProjectPage-runs`, `toolProjectPage-flights`, etc. */
 export interface ToolProjectPage {
   _id: string

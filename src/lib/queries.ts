@@ -510,6 +510,18 @@ export const EBIRD_BIRDING_QUERY = groq`
   }
 `
 
+/** Birding Dashboard sync scope singleton — controls /birding-dashboard sync. */
+export const EBIRD_DASHBOARD_QUERY = groq`
+  *[_type == "ebirdDashboard" && _id == "ebirdDashboard"][0]{
+    _id,
+    mapDataSource,
+    hotspotCodes,
+    regionCode,
+    recentDaysBack,
+    maxObservationsToFetch,
+  }
+`
+
 // ── Birding Dashboard ─────────────────────────────────────────────────────────
 
 /** All bird sightings for the /birding-dashboard page, newest first. */

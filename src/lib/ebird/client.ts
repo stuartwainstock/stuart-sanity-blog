@@ -1,4 +1,4 @@
-import type {ResolvedEbirdBirding} from '@/lib/ebird/resolveConfig'
+import type {EbirdAreaConfig, ResolvedEbirdBirding} from '@/lib/ebird/resolveConfig'
 import type {
   BirdObservation,
   EbirdObservationsResult,
@@ -242,7 +242,7 @@ export async function fetchMapObservations(
  * fetchMapObservations but calls /data/obs/{loc}/recent without a species code.
  */
 export async function fetchAllSpeciesObservations(
-  config: ResolvedEbirdBirding,
+  config: EbirdAreaConfig,
   revalidateSeconds = 300
 ): Promise<EbirdObservationsResult> {
   const key = getApiKey()
