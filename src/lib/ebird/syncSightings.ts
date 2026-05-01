@@ -2,7 +2,10 @@
 
 import {createClient} from '@sanity/client'
 import {resolveEbirdDashboard} from '@/lib/ebird/resolveConfig'
-import {fetchAllSpeciesObservations} from '@/lib/ebird/client'
+import {
+  fetchAllSpeciesObservations,
+  observedOnToSanityDate,
+} from '@/lib/ebird/client'
 import {sanityClient} from '@/lib/sanity'
 import {EBIRD_DASHBOARD_QUERY} from '@/lib/queries'
 import type {EbirdDashboard} from '@/lib/types'
@@ -112,13 +115,18 @@ export async function syncSightingsAction(): Promise<SyncSightingsResult> {
 
     for (const obs of observations) {
       const docId = toSanityId(obs.id)
+      const observedOnSanity =
+        observedOnToSanityDate(obs.observedOn) ??
+        observedOnToSanityDate(
+          obs.id.includes(':') ? obs.id.split(':').pop() ?? null : null,
+        )
 
       if (existingIdSet.has(docId)) {
         // Document exists — only update non-accessibility fields to preserve
         // any alt text, plumage colors, or audio URLs the editor has added.
         transaction.patch(docId, {
           set: {
-            observedOn: obs.observedOn ?? null,
+            observedOn: observedOnSanity,
             locationLabel: obs.locationLabel ?? null,
             latitude: obs.latitude,
             longitude: obs.longitude,
@@ -134,7 +142,7 @@ export async function syncSightingsAction(): Promise<SyncSightingsResult> {
           _type: 'birdSighting',
           speciesName: obs.speciesName,
           speciesCode: obs.speciesCode,
-          observedOn: obs.observedOn ?? null,
+          observedOn: observedOnSanity,
           locationLabel: obs.locationLabel ?? null,
           latitude: obs.latitude,
           longitude: obs.longitude,

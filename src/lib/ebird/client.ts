@@ -92,6 +92,8 @@ export function observedOnToSanityDate(value: string | null): string | null {
   if (/^\d{4}-\d{2}-\d{2}[ T]/.test(v)) return v.slice(0, 10)
   const t = Date.parse(v)
   if (!Number.isNaN(t)) return new Date(t).toISOString().slice(0, 10)
+  // Odd separators (e.g. narrow no-break space): still often start with YYYY-MM-DD
+  if (v.length >= 10 && /^\d{4}-\d{2}-\d{2}/.test(v)) return v.slice(0, 10)
   return null
 }
 

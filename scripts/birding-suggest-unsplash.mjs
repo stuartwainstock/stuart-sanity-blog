@@ -14,8 +14,10 @@
  *   DRY_RUN=1 node --env-file=.env.local scripts/birding-suggest-unsplash.mjs
  *   MAX=25 node --env-file=.env.local scripts/birding-suggest-unsplash.mjs
  *
- * Regenerate (next Unsplash search page) for docs already in `pending_review`:
+ * Regenerate (next Unsplash search page) for docs already in `pending_review` with a preview URL:
  *   REGENERATE=1 node --env-file=.env.local scripts/birding-suggest-unsplash.mjs
+ *
+ * Docs in `pending_review` but missing suggestedCoverImageUrl are picked up by the default run (same as new suggestions).
  *
  * Optional per-doc override in Studio: `suggestedCoverSearchQueryManual` — exact Unsplash query string.
  *
@@ -65,11 +67,16 @@ const client = createClient({
   useCdn: false,
 })
 
+// Include pending_review only when preview URL is missing (broken/stale state);
+// otherwise pending_review is handled by REGENERATE=1 to bump search page.
 const eligibleNewQuery = `*[
   _type == "birdSighting"
   && !defined(cardImage)
-  && imageSuggestionStatus != "pending_review"
   && imageSuggestionStatus != "dismissed"
+  && (
+    imageSuggestionStatus != "pending_review"
+    || !defined(suggestedCoverImageUrl)
+  )
 ] | order(observedOn desc) [0...$max]{
   _id,
   speciesName,
