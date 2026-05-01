@@ -141,7 +141,7 @@ function buildAltDraft(speciesName: string, locationLabel: string | null, altDes
 
 async function searchUnsplash(query: string, page: number) {
   const unsplashKey = process.env.UNSPLASH_ACCESS_KEY?.trim()
-  if (!unsplashKey) return null
+  if (!unsplashKey) return {ok: false as const, reason: 'missing_key' as const}
 
   const apiPage = Math.max(1, Math.min(10, page))
   const u = new URL('https://api.unsplash.com/search/photos')
@@ -156,11 +156,11 @@ async function searchUnsplash(query: string, page: number) {
       'Accept-Version': 'v1',
     },
   })
-  if (!res.ok) return null
+  if (!res.ok) return {ok: false as const, reason: 'http_error' as const}
 
   const json = (await res.json().catch(() => null)) as any
   const hit = Array.isArray(json?.results) ? json.results[0] : null
-  if (!hit) return null
+  if (!hit) return {ok: false as const, reason: 'no_results' as const}
 
   const urls = hit.urls || {}
   const user = hit.user || {}
@@ -172,15 +172,57 @@ async function searchUnsplash(query: string, page: number) {
     null
 
   const imageUrl = urls.regular || urls.small || null
-  if (!imageUrl) return null
+  if (!imageUrl) return {ok: false as const, reason: 'no_results' as const}
 
   return {
+    ok: true as const,
     imageUrl,
     photoPageUrl: links.html || null,
     photographerName: typeof user.name === 'string' ? user.name : null,
     photographerPageUrl: userLinks.html || null,
     altDescription,
   }
+}
+
+function buildFallbackQueries(args: {
+  manual: string | null
+  speciesName: string
+  speciesCode: string
+  locationLabel: string | null
+}): string[] {
+  const manual = args.manual?.trim() || ''
+  if (manual) return [manual]
+
+  const name = args.speciesName.trim() || 'bird'
+  const code = args.speciesCode.trim()
+  const loc = (args.locationLabel || '').trim()
+
+  // Start specific → get progressively more forgiving.
+  const candidates = [
+    // Original
+    buildSearchQuery(name, code, args.locationLabel),
+    // Drop location
+    [name, code, 'wild bird North America'].filter(Boolean).join(' ').trim(),
+    // Drop species code (often too niche)
+    [name, 'wild bird North America'].filter(Boolean).join(' ').trim(),
+    // Drop region bias (fallback)
+    [name, 'wild bird'].filter(Boolean).join(' ').trim(),
+    // If name contains owl/woodpecker etc, keep name only.
+    name,
+  ]
+
+  const out: string[] = []
+  for (const q of candidates) {
+    const t = q.replace(/\s+/g, ' ').trim()
+    if (!t) continue
+    if (!out.includes(t)) out.push(t)
+  }
+  // If we had a location, try it paired with name as a last resort.
+  if (loc) {
+    const q = `${name} ${loc}`.replace(/\s+/g, ' ').trim()
+    if (!out.includes(q)) out.push(q)
+  }
+  return out
 }
 
 export async function POST(request: NextRequest) {
@@ -266,8 +308,13 @@ export async function POST(request: NextRequest) {
 
     const speciesName = doc.speciesName?.trim() || 'Bird'
     const speciesCode = doc.speciesCode?.trim() || ''
-    const manual = doc.suggestedCoverSearchQueryManual?.trim()
-    const query = manual || buildSearchQuery(speciesName, speciesCode, doc.locationLabel ?? null)
+    const manual = doc.suggestedCoverSearchQueryManual?.trim() ?? null
+    const queries = buildFallbackQueries({
+      manual,
+      speciesName,
+      speciesCode,
+      locationLabel: doc.locationLabel ?? null,
+    })
 
     if (mode === 'dismiss') {
       const patch = {
@@ -291,16 +338,35 @@ export async function POST(request: NextRequest) {
     const currentPage = Number(doc.suggestedCoverSearchPage) || 1
     const nextPage = mode === 'regenerate' ? Math.min(10, currentPage + 1) : 1
 
-    const hit = await searchUnsplash(query, nextPage)
-    if (!hit?.imageUrl) {
+    let picked: {query: string; hit: any} | null = null
+    let lastReason: string | null = null
+    for (const q of queries) {
+      const res = await searchUnsplash(q, nextPage)
+      if (res.ok) {
+        picked = {query: q, hit: res}
+        break
+      }
+      lastReason = res.reason
+      if (res.reason === 'missing_key') break
+    }
+
+    if (!picked) {
       return responseWithCors(
         request,
-        JSON.stringify({message: 'No Unsplash results.'}),
-        404,
+        JSON.stringify({
+          message:
+            lastReason === 'missing_key'
+              ? 'Missing UNSPLASH_ACCESS_KEY on the site environment.'
+              : 'No Unsplash results.',
+          triedQueries: queries.slice(0, 5),
+          page: nextPage,
+        }),
+        lastReason === 'missing_key' ? 500 : 404,
         {'Content-Type': 'application/json'},
       )
     }
 
+    const {query, hit} = picked
     const patch: UnsplashSuggestionPatch = {
       suggestedCoverProvider: 'unsplash',
       suggestedCoverImageUrl: hit.imageUrl,
