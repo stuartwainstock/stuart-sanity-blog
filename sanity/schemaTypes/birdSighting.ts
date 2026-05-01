@@ -1,5 +1,6 @@
 import {defineField, defineType} from 'sanity'
 import {EyeOpenIcon, AccessDeniedIcon, EarthGlobeIcon, ImageIcon} from '@sanity/icons'
+import {SuggestedCoverImageUrlInput} from '../components/SuggestedCoverImageUrlInput'
 
 export const birdSighting = defineType({
   name: 'birdSighting',
@@ -113,6 +114,9 @@ export const birdSighting = defineType({
       group: 'visual',
       readOnly: true,
       description: 'Temporary Unsplash CDN URL for review only. Do not rely on this for the live site.',
+      components: {
+        input: SuggestedCoverImageUrlInput,
+      },
     }),
     defineField({
       name: 'suggestedCoverImagePageUrl',
@@ -144,7 +148,7 @@ export const birdSighting = defineType({
       group: 'visual',
       readOnly: true,
       description:
-        'Draft alt text for the suggested photo. Copy into Card image alt text after you verify the image matches the species.',
+        'Draft alt text for the suggested photo (from Unsplash metadata when available, plus species / location). Copy into Card image alt text after you verify the image matches the species.',
       validation: (Rule) => [Rule.max(400).warning('Keep draft alt text under ~400 characters.')],
     }),
 

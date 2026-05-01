@@ -65,7 +65,8 @@ const eligibleQuery = `*[
   && imageSuggestionStatus != "dismissed"
 ] | order(observedOn desc) [0...$max]{
   _id,
-  speciesName
+  speciesName,
+  locationLabel
 }`
 
 async function searchUnsplashFirst(query) {
@@ -95,12 +96,32 @@ async function searchUnsplashFirst(query) {
   const links = hit.links || {}
   const userLinks = user.links || {}
 
+  const altDescription =
+    (typeof hit.alt_description === 'string' && hit.alt_description.trim()) ||
+    (typeof hit.description === 'string' && hit.description.trim()) ||
+    null
+
   return {
     imageUrl: urls.regular || urls.small || null,
     photoPageUrl: links.html || null,
     photographerName: typeof user.name === 'string' ? user.name : null,
     photographerPageUrl: userLinks.html || null,
+    altDescription,
   }
+}
+
+function buildAltDraft(speciesName, locationLabel, altDescription) {
+  const name = speciesName?.trim() || 'Bird'
+  const loc = locationLabel?.trim()
+  const locPhrase = loc ? ` Location: ${loc}.` : ''
+  if (altDescription) {
+    const base = `${name}: ${altDescription}.${locPhrase} Verify this photo matches the species before publishing.`
+    return base.replace(/\s+/g, ' ').trim().slice(0, 400)
+  }
+  return `Photograph of a ${name}.${locPhrase} Verify the image matches this eBird species before publishing.`
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 400)
 }
 
 async function main() {
@@ -131,7 +152,11 @@ async function main() {
       continue
     }
 
-    const suggestedCoverAltDraft = `Photograph of a ${name} (verify species match before publishing).`
+    const suggestedCoverAltDraft = buildAltDraft(
+      name,
+      doc.locationLabel,
+      suggestion.altDescription
+    )
 
     const patch = {
       suggestedCoverProvider: 'unsplash',
