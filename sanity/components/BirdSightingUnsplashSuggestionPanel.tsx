@@ -41,6 +41,14 @@ function getBirdingSuggestApiUrl(): string {
     ''
   const v = typeof explicit === 'string' ? explicit.trim() : ''
   if (v) return v
+  // Hosted Studio (`*.sanity.studio`) cannot call same-origin `/api/*`.
+  // Fall back to the canonical site origin (same pattern as GA proxy config).
+  if (typeof window !== 'undefined') {
+    const host = window.location?.hostname || ''
+    if (host.endsWith('.sanity.studio')) {
+      return 'https://www.stuartwainstock.com/api/birding/suggest-unsplash'
+    }
+  }
   // Embedded Studio (same-origin) or local dev.
   return '/api/birding/suggest-unsplash'
 }

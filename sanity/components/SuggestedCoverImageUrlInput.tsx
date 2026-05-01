@@ -21,12 +21,22 @@ export function SuggestedCoverImageUrlInput(props: UrlInputProps) {
   const url = typeof value === 'string' && value.trim().length > 0 ? value.trim() : ''
   const canCallApi = Boolean(docId && !String(docId).startsWith('drafts.'))
 
+  function apiUrl(): string {
+    if (typeof window !== 'undefined') {
+      const host = window.location?.hostname || ''
+      if (host.endsWith('.sanity.studio')) {
+        return 'https://www.stuartwainstock.com/api/birding/suggest-unsplash'
+      }
+    }
+    return '/api/birding/suggest-unsplash'
+  }
+
   async function run(mode: 'suggest' | 'regenerate') {
     if (!canCallApi) return
     const label = mode === 'regenerate' ? 'Next suggestion' : 'Suggest image'
     toast.push({status: 'info', title: `${label}…`})
     try {
-      const res = await fetch('/api/birding/suggest-unsplash', {
+      const res = await fetch(apiUrl(), {
         method: 'POST',
         headers: {'content-type': 'application/json'},
         body: JSON.stringify({id: docId, mode}),
