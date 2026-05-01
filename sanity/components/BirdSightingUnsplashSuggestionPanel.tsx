@@ -14,7 +14,7 @@ import {
 import type {StringInputProps} from 'sanity'
 import {PatchEvent, set, useFormValue} from 'sanity'
 
-type ApiMode = 'suggest' | 'regenerate' | 'dismiss'
+type ApiMode = 'suggest' | 'regenerate' | 'dismiss' | 'confirm'
 
 type SuggestionPatch = Partial<{
   suggestedCoverProvider: 'none' | 'unsplash'
@@ -86,6 +86,7 @@ export function BirdSightingUnsplashSuggestionPanel(props: StringInputProps) {
   const searchPage = Number(useFormValue(['suggestedCoverSearchPage']) ?? 1) || 1
 
   const urlFromDoc = truthyString(useFormValue(['suggestedCoverImageUrl']))
+  const hasCardImage = Boolean(useFormValue(['cardImage', 'asset', '_ref']))
   const photoPageFromDoc = truthyString(useFormValue(['suggestedCoverImagePageUrl']))
   const photographerNameFromDoc = truthyString(useFormValue(['suggestedCoverPhotographerName']))
   const photographerPageFromDoc = truthyString(useFormValue(['suggestedCoverPhotographerPageUrl']))
@@ -228,6 +229,14 @@ export function BirdSightingUnsplashSuggestionPanel(props: StringInputProps) {
               onClick={() => run('suggest')}
               disabled={!docId || busyMode != null}
               loading={busyMode === 'suggest'}
+            />
+            <Button
+              tone="positive"
+              mode="default"
+              text={hasCardImage ? 'Card image set' : 'Confirm → set Card image'}
+              onClick={() => run('confirm')}
+              disabled={!docId || !hasSuggestion || hasCardImage || busyMode != null}
+              loading={busyMode === 'confirm'}
             />
             <Button
               tone="default"

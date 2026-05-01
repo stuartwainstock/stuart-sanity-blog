@@ -75,7 +75,7 @@ async function isAuthorized(request: NextRequest): Promise<boolean> {
 
 type RequestBody = {
   id: string
-  mode: 'suggest' | 'regenerate' | 'dismiss'
+  mode: 'suggest' | 'regenerate' | 'dismiss' | 'confirm'
 }
 
 type BirdSightingForSuggest = {
@@ -253,7 +253,13 @@ export async function POST(request: NextRequest) {
 
   const id = String(body.id ?? '').trim()
   const mode = body.mode
-  if (!id || (mode !== 'suggest' && mode !== 'regenerate' && mode !== 'dismiss')) {
+  if (
+    !id ||
+    (mode !== 'suggest' &&
+      mode !== 'regenerate' &&
+      mode !== 'dismiss' &&
+      mode !== 'confirm')
+  ) {
     return responseWithCors(
       request,
       JSON.stringify({message: 'Missing id or invalid mode.'}),
@@ -272,7 +278,13 @@ export async function POST(request: NextRequest) {
       return id.startsWith('drafts.') ? [id, base] : [id, draft]
     })()
 
-    const doc = await client.fetch<BirdSightingForSuggest | null>(
+    const doc = await client.fetch<
+      (BirdSightingForSuggest & {
+        suggestedCoverImageUrl?: string | null
+        suggestedCoverAltDraft?: string | null
+        cardImageAlt?: string | null
+      }) | null
+    >(
       `*[
         _type == "birdSighting"
         && _id in $ids
@@ -283,6 +295,9 @@ export async function POST(request: NextRequest) {
         speciesCode,
         locationLabel,
         cardImage,
+        cardImageAlt,
+        suggestedCoverImageUrl,
+        suggestedCoverAltDraft,
         suggestedCoverSearchQueryManual,
         suggestedCoverSearchPage
       }`,
@@ -326,6 +341,69 @@ export async function POST(request: NextRequest) {
         suggestedCoverPhotographerPageUrl: null,
         suggestedCoverAltDraft: null,
       }
+      await client.patch(doc._id).set(patch).commit()
+      return responseWithCors(
+        request,
+        JSON.stringify({ok: true, patch}),
+        200,
+        {'Content-Type': 'application/json'},
+      )
+    }
+
+    if (mode === 'confirm') {
+      const url = (doc.suggestedCoverImageUrl || '').trim()
+      if (!url) {
+        return responseWithCors(
+          request,
+          JSON.stringify({message: 'No suggested image URL to confirm.'}),
+          400,
+          {'Content-Type': 'application/json'},
+        )
+      }
+
+      // Download the suggested image and upload to Sanity as a real image asset.
+      const res = await fetch(url)
+      if (!res.ok) {
+        return responseWithCors(
+          request,
+          JSON.stringify({message: `Failed to download suggested image (HTTP ${res.status}).`}),
+          502,
+          {'Content-Type': 'application/json'},
+        )
+      }
+      const arrayBuffer = await res.arrayBuffer()
+      const buffer = Buffer.from(arrayBuffer)
+      const safeName = speciesName
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '')
+        .slice(0, 60)
+      const filename = `${safeName || 'bird'}-${doc._id.slice(-12)}.jpg`
+
+      const asset = await client.assets.upload('image', buffer, {
+        filename,
+        contentType: res.headers.get('content-type') || 'image/jpeg',
+        source: {
+          id: doc._id,
+          name: 'unsplash',
+          url: doc.suggestedCoverImageUrl || undefined,
+        },
+      })
+
+      const patch: Record<string, unknown> = {
+        cardImage: {
+          _type: 'image',
+          asset: {_type: 'reference', _ref: asset._id},
+        },
+      }
+
+      const altDraft = (doc.suggestedCoverAltDraft || '').trim()
+      const existingAlt = (doc.cardImageAlt || '').trim()
+      if (!existingAlt && altDraft) patch.cardImageAlt = altDraft
+
+      // If we successfully set the card image, mark the workflow done.
+      patch.imageSuggestionStatus = 'none'
+
       await client.patch(doc._id).set(patch).commit()
       return responseWithCors(
         request,
