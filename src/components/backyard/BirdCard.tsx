@@ -22,6 +22,9 @@ export interface BirdSighting {
   cardImageUrl?: string | null
   /** Alt text for the card photo; falls back to `altText` when empty. */
   cardImageAlt?: string | null
+  /** Unsplash suggestion URL (dashboard only: shown while pending review and no `cardImage`). */
+  suggestedCoverImageUrl?: string | null
+  imageSuggestionStatus?: string | null
 }
 
 interface BirdCardProps {
@@ -125,6 +128,8 @@ export function BirdCard({sighting, highContrast = false}: BirdCardProps) {
     ebirdChecklistUri,
     cardImageUrl,
     cardImageAlt,
+    suggestedCoverImageUrl,
+    imageSuggestionStatus,
   } = sighting
 
   const formattedDate = observedOn
@@ -141,22 +146,39 @@ export function BirdCard({sighting, highContrast = false}: BirdCardProps) {
     (altText && altText.trim()) ||
     `${speciesName} — sighting card`
 
+  const suggestedPreviewUrl =
+    !cardImageUrl &&
+    imageSuggestionStatus === 'pending_review' &&
+    suggestedCoverImageUrl?.trim()
+      ? suggestedCoverImageUrl.trim()
+      : null
+  const heroImageUrl = cardImageUrl || suggestedPreviewUrl
+  const isSuggestedPreview = Boolean(suggestedPreviewUrl)
+
   return (
     <article
       className={styles.card}
       data-high-contrast={highContrast || undefined}
       aria-label={altText || speciesName}
     >
-      {cardImageUrl ? (
-        <figure className={styles.cardFigure}>
+      {heroImageUrl ? (
+        <figure
+          className={styles.cardFigure}
+          data-preview={isSuggestedPreview || undefined}
+        >
           <Image
-            src={cardImageUrl}
+            src={heroImageUrl}
             alt={imageAlt}
             width={720}
             height={480}
             className={styles.cardImage}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
+          {isSuggestedPreview ? (
+            <figcaption className={styles.previewCaption}>
+              Suggested preview — add Card image in Studio to finalize
+            </figcaption>
+          ) : null}
         </figure>
       ) : null}
 

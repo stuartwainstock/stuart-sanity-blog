@@ -108,6 +108,8 @@ export default async function BirdingDashboardPage({searchParams}: BirdingDashbo
     longitude: s.longitude,
     cardImageUrl: s.cardImage?.asset ? getImageUrl(s.cardImage, 720, 480) : null,
     cardImageAlt: s.cardImageAlt?.trim() || null,
+    suggestedCoverImageUrl: s.suggestedCoverImageUrl?.trim() || null,
+    imageSuggestionStatus: s.imageSuggestionStatus ?? null,
   }))
 
   const pageTitle = pageCopy?.pageTitle?.trim() || 'Birding Dashboard'
