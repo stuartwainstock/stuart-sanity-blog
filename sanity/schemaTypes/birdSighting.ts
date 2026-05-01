@@ -9,13 +9,7 @@ export const birdSighting = defineType({
   icon: EyeOpenIcon,
   groups: [
     {name: 'identity', title: 'Identity', icon: EyeOpenIcon, default: true},
-    {
-      name: 'visual',
-      title: 'Card image',
-      icon: ImageIcon,
-      subtitle:
-        'No separate “Approve” button: accepting a suggestion means adding the photo under Card image (Unsplash asset source or upload), then marking the workflow complete below.',
-    },
+    {name: 'visual', title: 'Card image', icon: ImageIcon},
     {name: 'accessibility', title: 'Accessibility', icon: AccessDeniedIcon},
     {name: 'location', title: 'Location & Source', icon: EarthGlobeIcon},
   ],
@@ -66,7 +60,8 @@ export const birdSighting = defineType({
       type: 'url',
       group: 'visual',
       readOnly: true,
-      description: 'Temporary Unsplash CDN URL for review only. Do not rely on this for the live site.',
+      description:
+        'There is no separate Approve control: add the chosen photo under Card image (Unsplash asset source or upload), then mark the workflow complete below. This URL is a temporary Unsplash CDN preview for review only — do not rely on it for the live site.',
       components: {
         input: SuggestedCoverImageUrlInput,
       },
