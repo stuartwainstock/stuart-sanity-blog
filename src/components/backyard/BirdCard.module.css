@@ -18,6 +18,9 @@
   --card-audio-color: var(--color-heading);
   --card-audio-border: var(--color-custom-300);
   --card-link-color: var(--color-link);
+  --card-caption-bg: var(--color-custom-100);
+  --card-caption-text: var(--card-meta);
+  --card-caption-link: var(--card-link-color);
 
   background: var(--card-bg);
   border: 1px solid var(--card-border);
@@ -49,6 +52,9 @@
   --card-audio-color: #ffff00;
   --card-audio-border: #ffffff;
   --card-link-color: #66b3ff;
+  --card-caption-bg: #000000;
+  --card-caption-text: #ffffff;
+  --card-caption-link: #66b3ff;
 }
 
 /* ── Card image (Sanity-hosted) ───────────────────────────────────────────── */
@@ -70,8 +76,8 @@
   padding: 0.375rem 0.5rem;
   font-size: 0.75rem;
   line-height: 1.35;
-  color: var(--card-meta);
-  background: var(--color-custom-100);
+  color: var(--card-caption-text);
+  background: var(--card-caption-bg);
   border-top: 1px solid var(--card-border);
 }
 
@@ -80,8 +86,8 @@
   padding: 0.375rem 0.5rem;
   font-size: 0.75rem;
   line-height: 1.35;
-  color: var(--card-meta);
-  background: var(--color-custom-100);
+  color: var(--card-caption-text);
+  background: var(--card-caption-bg);
   border-top: 1px solid var(--card-border);
   display: flex;
   flex-wrap: wrap;
@@ -89,7 +95,7 @@
 }
 
 .attributionCaption a {
-  color: var(--card-link-color);
+  color: var(--card-caption-link);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
