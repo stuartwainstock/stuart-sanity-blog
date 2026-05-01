@@ -81,6 +81,20 @@ function recentAllSpeciesPath(loc: string): string {
   return `/data/obs/${encodeURIComponent(loc)}/recent`
 }
 
+/**
+ * eBird `obsDt` often includes time (e.g. "2026-04-30 10:45"). Sanity `date`
+ * fields require YYYY-MM-DD only.
+ */
+export function observedOnToSanityDate(value: string | null): string | null {
+  if (!value?.trim()) return null
+  const v = value.trim()
+  if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v
+  if (/^\d{4}-\d{2}-\d{2}[ T]/.test(v)) return v.slice(0, 10)
+  const t = Date.parse(v)
+  if (!Number.isNaN(t)) return new Date(t).toISOString().slice(0, 10)
+  return null
+}
+
 function normalizeRecentObs(
   rows: Record<string, unknown>[]
 ): BirdObservation[] {
@@ -108,7 +122,7 @@ function normalizeRecentObs(
     const id = `${subId}:${speciesCode}:${obsDt || ''}`
     out.push({
       id,
-      observedOn: obsDt,
+      observedOn: observedOnToSanityDate(obsDt),
       latitude: lat,
       longitude: lng,
       speciesName: comName,
