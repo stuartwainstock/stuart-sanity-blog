@@ -30,6 +30,7 @@ function applyCors(request: NextRequest, headers: Headers) {
     }
     headers.set('Access-Control-Allow-Origin', origin)
   }
+  headers.set('Access-Control-Allow-Credentials', 'true')
   headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS')
   headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-birding-suggest-secret')
   headers.append('Vary', 'Origin')

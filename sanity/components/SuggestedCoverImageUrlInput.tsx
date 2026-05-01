@@ -41,7 +41,7 @@ export function SuggestedCoverImageUrlInput(props: UrlInputProps) {
         method: 'POST',
         headers: {'content-type': 'application/json'},
         body: JSON.stringify({id: docId, mode}),
-        credentials: 'include',
+        credentials: 'omit',
       })
       const json = await res.json().catch(() => ({}))
       if (!res.ok) {

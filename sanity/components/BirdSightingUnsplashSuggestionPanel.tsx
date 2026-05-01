@@ -151,7 +151,8 @@ export function BirdSightingUnsplashSuggestionPanel(props: StringInputProps) {
         method: 'POST',
         headers,
         body: JSON.stringify({id: docId, mode}),
-        credentials: 'include',
+        // Hosted Studio uses shared-secret auth; avoid cookies to keep CORS simple.
+        credentials: 'omit',
       })
       const json = await res.json().catch(() => ({}))
       if (!res.ok) {
