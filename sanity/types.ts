@@ -405,6 +405,9 @@ export type BirdSighting = {
   suggestedCoverPhotographerName?: string
   suggestedCoverPhotographerPageUrl?: string
   suggestedCoverAltDraft?: string
+  suggestedCoverSearchQueryManual?: string
+  suggestedCoverSearchQueryLast?: string
+  suggestedCoverSearchPage?: number
   altText?: string
   plumageColors?: Array<string>
   callAudioUrl?: string

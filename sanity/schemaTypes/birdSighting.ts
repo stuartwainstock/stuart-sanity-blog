@@ -89,7 +89,7 @@ export const birdSighting = defineType({
         layout: 'radio',
       },
       description:
-        'Run `npm run birding:suggest-unsplash` locally to populate a suggested Unsplash preview. When satisfied, add Card image from Studio (Unsplash asset source), set Card image alt text, then set status to No active suggestion.',
+        'Run `npm run birding:suggest-unsplash` locally to populate a suggested Unsplash preview. Wrong image? Run `npm run birding:regenerate-unsplash` (or `REGENERATE=1`) to fetch the next Unsplash result while status is Pending review. When satisfied, add Card image from Studio (Unsplash asset source), set Card image alt text, then set status to No active suggestion.',
     }),
     defineField({
       name: 'suggestedCoverProvider',
@@ -150,6 +150,36 @@ export const birdSighting = defineType({
       description:
         'Draft alt text for the suggested photo (from Unsplash metadata when available, plus species / location). Copy into Card image alt text after you verify the image matches the species.',
       validation: (Rule) => [Rule.max(400).warning('Keep draft alt text under ~400 characters.')],
+    }),
+    defineField({
+      name: 'suggestedCoverSearchQueryManual',
+      title: 'Unsplash search query (manual override)',
+      type: 'string',
+      group: 'visual',
+      description:
+        'Optional. When set, suggestion scripts use this exact Unsplash search string instead of the auto-built query (helpful when the species name is ambiguous or non-local). Clear when you want auto queries again.',
+      validation: (Rule) => [Rule.max(200).warning('Keep queries concise for better matches.')],
+    }),
+    defineField({
+      name: 'suggestedCoverSearchQueryLast',
+      title: 'Last Unsplash search query (auto)',
+      type: 'string',
+      group: 'visual',
+      readOnly: true,
+      description: 'Filled by the suggestion script so editors can see what was searched.',
+    }),
+    defineField({
+      name: 'suggestedCoverSearchPage',
+      title: 'Unsplash search results page',
+      type: 'number',
+      group: 'visual',
+      readOnly: true,
+      initialValue: 1,
+      validation: (Rule) => [
+        Rule.min(1).max(10).error('Unsplash pagination is capped between 1 and 10.'),
+      ],
+      description:
+        'Which Unsplash search results page the last suggestion used. Regenerate bumps this to fetch the next image.',
     }),
 
     // ── Accessibility ─────────────────────────────────────────────────────────

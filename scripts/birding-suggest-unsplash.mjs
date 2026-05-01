@@ -14,6 +14,11 @@
  *   DRY_RUN=1 node --env-file=.env.local scripts/birding-suggest-unsplash.mjs
  *   MAX=25 node --env-file=.env.local scripts/birding-suggest-unsplash.mjs
  *
+ * Regenerate (next Unsplash search page) for docs already in `pending_review`:
+ *   REGENERATE=1 node --env-file=.env.local scripts/birding-suggest-unsplash.mjs
+ *
+ * Optional per-doc override in Studio: `suggestedCoverSearchQueryManual` — exact Unsplash query string.
+ *
  * Unsplash API guidelines: https://unsplash.com/documentation — respect rate limits (demo tier is limited).
  */
 
@@ -26,6 +31,8 @@ const token =
 const unsplashKey = process.env.UNSPLASH_ACCESS_KEY?.trim()
 const dryRun =
   process.env.DRY_RUN === '1' || process.env.DRY_RUN === 'true'
+const regenerate =
+  process.env.REGENERATE === '1' || process.env.REGENERATE === 'true'
 const max = Math.min(
   500,
   Math.max(1, Number.parseInt(process.env.MAX ?? '20', 10) || 20)
@@ -58,7 +65,7 @@ const client = createClient({
   useCdn: false,
 })
 
-const eligibleQuery = `*[
+const eligibleNewQuery = `*[
   _type == "birdSighting"
   && !defined(cardImage)
   && imageSuggestionStatus != "pending_review"
@@ -66,14 +73,46 @@ const eligibleQuery = `*[
 ] | order(observedOn desc) [0...$max]{
   _id,
   speciesName,
-  locationLabel
+  speciesCode,
+  locationLabel,
+  suggestedCoverSearchQueryManual
 }`
 
-async function searchUnsplashFirst(query) {
+const eligibleRegenerateQuery = `*[
+  _type == "birdSighting"
+  && !defined(cardImage)
+  && imageSuggestionStatus == "pending_review"
+] | order(observedOn desc) [0...$max]{
+  _id,
+  speciesName,
+  speciesCode,
+  locationLabel,
+  suggestedCoverSearchQueryManual,
+  suggestedCoverSearchPage
+}`
+
+function buildSearchQuery(speciesName, speciesCode, locationLabel) {
+  const name = (speciesName || '').trim() || 'bird'
+  const code = (speciesCode || '').trim()
+  const loc = (locationLabel || '').trim()
+  // Bias toward Nearctic species to reduce wrong-region wildlife hits (e.g. finches abroad).
+  const parts = [name, code, 'wild bird North America']
+  if (loc) parts.push(loc)
+  return parts.filter(Boolean).join(' ').replace(/\s+/g, ' ').trim()
+}
+
+function resolveQuery(doc) {
+  const manual = doc.suggestedCoverSearchQueryManual?.trim()
+  if (manual) return manual
+  return buildSearchQuery(doc.speciesName, doc.speciesCode, doc.locationLabel)
+}
+
+async function searchUnsplash(query, page) {
   const u = new URL('https://api.unsplash.com/search/photos')
   u.searchParams.set('query', query)
   u.searchParams.set('per_page', '1')
   u.searchParams.set('orientation', 'landscape')
+  u.searchParams.set('page', String(Math.max(1, Math.min(10, page))))
 
   const res = await fetch(u.toString(), {
     headers: {
@@ -125,30 +164,56 @@ function buildAltDraft(speciesName, locationLabel, altDescription) {
 }
 
 async function main() {
-  const docs = await client.fetch(eligibleQuery, {max})
+  const queryGroq = regenerate ? eligibleRegenerateQuery : eligibleNewQuery
+  const docs = await client.fetch(queryGroq, {max})
+
   if (docs.length === 0) {
-    console.log('No eligible birdSighting documents (need no cardImage, status not pending/dismissed).')
+    if (regenerate) {
+      console.log(
+        'No birdSighting documents in pending_review without Card image — nothing to regenerate.'
+      )
+    } else {
+      console.log(
+        'No eligible birdSighting documents (need no cardImage, status not pending/dismissed).'
+      )
+    }
     return
   }
 
+  const modeLabel = regenerate ? 'regenerate' : 'suggest'
   console.log(
-    `${dryRun ? '[DRY_RUN] ' : ''}Suggesting Unsplash previews for ${docs.length} sighting(s)…`
+    `${dryRun ? '[DRY_RUN] ' : ''}Unsplash ${modeLabel}: processing ${docs.length} sighting(s)…`
   )
 
   for (const doc of docs) {
     const _id = doc._id
     const name = doc.speciesName || 'bird'
-    const query = `${name} bird`
+    const query = resolveQuery(doc)
+
+    let apiPage
+    if (regenerate) {
+      const stored = Number(doc.suggestedCoverSearchPage) || 1
+      if (stored >= 10) {
+        console.log(
+          `  ${_id}: suggestedCoverSearchPage is already ${stored} (max 10). Bump not possible — set a manual Unsplash query or dismiss and re-run a fresh suggestion.`
+        )
+        continue
+      }
+      apiPage = Math.min(10, stored + 1)
+    } else {
+      apiPage = 1
+    }
+
     let suggestion
     try {
-      suggestion = await searchUnsplashFirst(query)
+      suggestion = await searchUnsplash(query, apiPage)
     } catch (e) {
       console.error(`  ${_id}: Unsplash search failed`, e)
       continue
     }
 
     if (!suggestion?.imageUrl) {
-      console.log(`  ${_id}: no Unsplash results for "${query}"`)
+      console.log(`  ${_id}: no Unsplash results for query="${query}" page=${apiPage}`)
       continue
     }
 
@@ -165,16 +230,20 @@ async function main() {
       suggestedCoverPhotographerName: suggestion.photographerName,
       suggestedCoverPhotographerPageUrl: suggestion.photographerPageUrl,
       suggestedCoverAltDraft,
+      suggestedCoverSearchQueryLast: query,
+      suggestedCoverSearchPage: apiPage,
       imageSuggestionStatus: 'pending_review',
     }
 
     if (dryRun) {
-      console.log(`  ${_id}: would set pending_review — ${suggestion.imageUrl}`)
+      console.log(
+        `  ${_id}: would set pending_review — page=${apiPage} query="${query}" — ${suggestion.imageUrl}`
+      )
       continue
     }
 
     await client.patch(_id).set(patch).commit()
-    console.log(`  ${_id}: pending_review — ${suggestion.imageUrl}`)
+    console.log(`  ${_id}: pending_review — page=${apiPage} query="${query}" — ${suggestion.imageUrl}`)
   }
 }
 

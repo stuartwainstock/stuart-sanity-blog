@@ -2553,6 +2553,27 @@
         },
         "optional": true
       },
+      "suggestedCoverSearchQueryManual": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "suggestedCoverSearchQueryLast": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "suggestedCoverSearchPage": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "number"
+        },
+        "optional": true
+      },
       "altText": {
         "type": "objectAttribute",
         "value": {
