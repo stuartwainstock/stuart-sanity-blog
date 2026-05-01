@@ -246,10 +246,6 @@ export function BirdCard({sighting, highContrast = false}: BirdCardProps) {
         )}
       </header>
 
-      {altText && (
-        <p className={styles.altText}>{altText}</p>
-      )}
-
       {plumageColors && plumageColors.length > 0 && (
         <div className={styles.swatchSection}>
           <p className={styles.swatchLabel}>Plumage</p>
