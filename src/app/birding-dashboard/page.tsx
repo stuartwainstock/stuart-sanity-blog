@@ -109,6 +109,10 @@ export default async function BirdingDashboardPage({searchParams}: BirdingDashbo
     cardImageUrl: s.cardImage?.asset ? getImageUrl(s.cardImage, 720, 480) : null,
     cardImageAlt: s.cardImageAlt?.trim() || null,
     suggestedCoverImageUrl: s.suggestedCoverImageUrl?.trim() || null,
+    suggestedCoverImagePageUrl: s.suggestedCoverImagePageUrl?.trim() || null,
+    suggestedCoverPhotographerName: s.suggestedCoverPhotographerName?.trim() || null,
+    suggestedCoverPhotographerPageUrl: s.suggestedCoverPhotographerPageUrl?.trim() || null,
+    suggestedCoverProvider: s.suggestedCoverProvider ?? null,
     imageSuggestionStatus: s.imageSuggestionStatus ?? null,
   }))
 

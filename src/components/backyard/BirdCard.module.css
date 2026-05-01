@@ -74,6 +74,29 @@
   border-top: 1px solid var(--card-border);
 }
 
+.attributionCaption {
+  margin: 0;
+  padding: 0.375rem 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: var(--card-meta);
+  background: var(--color-custom-100);
+  border-top: 1px solid var(--card-border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.attributionCaption a {
+  color: var(--card-link-color);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.attributionCaption a:hover {
+  color: var(--color-link-hover);
+}
+
 .cardImage {
   display: block;
   width: 100%;

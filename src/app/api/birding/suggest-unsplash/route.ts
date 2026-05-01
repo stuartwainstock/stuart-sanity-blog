@@ -76,6 +76,8 @@ async function isAuthorized(request: NextRequest): Promise<boolean> {
 type RequestBody = {
   id: string
   mode: 'suggest' | 'regenerate' | 'dismiss' | 'confirm'
+  suggestedUrl?: string | null
+  suggestedAltDraft?: string | null
 }
 
 type BirdSightingForSuggest = {
@@ -225,6 +227,21 @@ function buildFallbackQueries(args: {
   return out
 }
 
+function isAllowedUnsplashUrl(url: string): boolean {
+  try {
+    const u = new URL(url)
+    const h = u.hostname.toLowerCase()
+    return (
+      h === 'images.unsplash.com' ||
+      h.endsWith('.images.unsplash.com') ||
+      h === 'unsplash.com' ||
+      h.endsWith('.unsplash.com')
+    )
+  } catch {
+    return false
+  }
+}
+
 export async function POST(request: NextRequest) {
   const ok = await isAuthorized(request)
   if (!ok) {
@@ -351,11 +368,21 @@ export async function POST(request: NextRequest) {
     }
 
     if (mode === 'confirm') {
-      const url = (doc.suggestedCoverImageUrl || '').trim()
+      const requestedUrl = typeof body.suggestedUrl === 'string' ? body.suggestedUrl.trim() : ''
+      const fallbackUrl = (doc.suggestedCoverImageUrl || '').trim()
+      const url = requestedUrl || fallbackUrl
       if (!url) {
         return responseWithCors(
           request,
           JSON.stringify({message: 'No suggested image URL to confirm.'}),
+          400,
+          {'Content-Type': 'application/json'},
+        )
+      }
+      if (!isAllowedUnsplashUrl(url)) {
+        return responseWithCors(
+          request,
+          JSON.stringify({message: 'Suggested URL is not an allowed Unsplash host.'}),
           400,
           {'Content-Type': 'application/json'},
         )
@@ -386,7 +413,7 @@ export async function POST(request: NextRequest) {
         source: {
           id: doc._id,
           name: 'unsplash',
-          url: doc.suggestedCoverImageUrl || undefined,
+          url,
         },
       })
 
@@ -397,7 +424,9 @@ export async function POST(request: NextRequest) {
         },
       }
 
-      const altDraft = (doc.suggestedCoverAltDraft || '').trim()
+      const requestedAlt =
+        typeof body.suggestedAltDraft === 'string' ? body.suggestedAltDraft.trim() : ''
+      const altDraft = (requestedAlt || doc.suggestedCoverAltDraft || '').trim()
       const existingAlt = (doc.cardImageAlt || '').trim()
       if (!existingAlt && altDraft) patch.cardImageAlt = altDraft
 

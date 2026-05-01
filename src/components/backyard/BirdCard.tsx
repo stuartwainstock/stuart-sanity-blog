@@ -24,6 +24,10 @@ export interface BirdSighting {
   cardImageAlt?: string | null
   /** Unsplash suggestion URL (dashboard only: shown while pending review and no `cardImage`). */
   suggestedCoverImageUrl?: string | null
+  suggestedCoverImagePageUrl?: string | null
+  suggestedCoverPhotographerName?: string | null
+  suggestedCoverPhotographerPageUrl?: string | null
+  suggestedCoverProvider?: string | null
   imageSuggestionStatus?: string | null
 }
 
@@ -129,6 +133,10 @@ export function BirdCard({sighting, highContrast = false}: BirdCardProps) {
     cardImageUrl,
     cardImageAlt,
     suggestedCoverImageUrl,
+    suggestedCoverImagePageUrl,
+    suggestedCoverPhotographerName,
+    suggestedCoverPhotographerPageUrl,
+    suggestedCoverProvider,
     imageSuggestionStatus,
   } = sighting
 
@@ -154,6 +162,11 @@ export function BirdCard({sighting, highContrast = false}: BirdCardProps) {
       : null
   const heroImageUrl = cardImageUrl || suggestedPreviewUrl
   const isSuggestedPreview = Boolean(suggestedPreviewUrl)
+  const showUnsplashAttribution =
+    (suggestedCoverProvider === 'unsplash' || isSuggestedPreview) &&
+    Boolean(suggestedCoverImagePageUrl?.trim()) &&
+    Boolean(suggestedCoverPhotographerName?.trim()) &&
+    Boolean(suggestedCoverPhotographerPageUrl?.trim())
 
   return (
     <article
@@ -177,6 +190,25 @@ export function BirdCard({sighting, highContrast = false}: BirdCardProps) {
           {isSuggestedPreview ? (
             <figcaption className={styles.previewCaption}>
               Suggested preview — add Card image in Studio to finalize
+            </figcaption>
+          ) : null}
+          {showUnsplashAttribution ? (
+            <figcaption className={styles.attributionCaption}>
+              <a
+                href={suggestedCoverImagePageUrl!.trim()}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Unsplash photo
+              </a>{' '}
+              by{' '}
+              <a
+                href={suggestedCoverPhotographerPageUrl!.trim()}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {suggestedCoverPhotographerName!.trim()}
+              </a>
             </figcaption>
           ) : null}
         </figure>

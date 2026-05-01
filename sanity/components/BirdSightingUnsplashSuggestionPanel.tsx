@@ -149,7 +149,13 @@ export function BirdSightingUnsplashSuggestionPanel(props: StringInputProps) {
     if (!docId) return
     setBusyMode(mode)
     const label =
-      mode === 'suggest' ? 'Suggest image' : mode === 'regenerate' ? 'Next suggestion' : 'Dismiss suggestion'
+      mode === 'suggest'
+        ? 'Suggest image'
+        : mode === 'regenerate'
+          ? 'Next suggestion'
+          : mode === 'confirm'
+            ? 'Confirm image'
+            : 'Dismiss suggestion'
     toast.push({status: 'info', title: `${label}…`})
 
     try {
@@ -160,7 +166,13 @@ export function BirdSightingUnsplashSuggestionPanel(props: StringInputProps) {
       const res = await fetch(getBirdingSuggestApiUrl(), {
         method: 'POST',
         headers,
-        body: JSON.stringify({id: docId, mode}),
+        body: JSON.stringify({
+          id: docId,
+          mode,
+          // For confirm: avoid races where the server still sees an older suggestion.
+          suggestedUrl: effective.url || null,
+          suggestedAltDraft: effective.altDraft || null,
+        }),
         // Hosted Studio uses shared-secret auth; avoid cookies to keep CORS simple.
         credentials: 'omit',
       })
@@ -173,9 +185,18 @@ export function BirdSightingUnsplashSuggestionPanel(props: StringInputProps) {
       const patch = (json?.patch ?? null) as SuggestionPatch | null
       if (patch) setOptimistic(patch)
 
-      // Keep the radio value aligned with the server-side patch.
+      // Keep the radio value aligned with the server-side patch and apply card image immediately on confirm.
       if (mode === 'dismiss') {
         onChange(PatchEvent.from(set('dismissed')))
+      } else if (mode === 'confirm') {
+        const nextPatches = [set('none')]
+        if (patch && (patch as any).cardImage) {
+          nextPatches.push(set((patch as any).cardImage, ['cardImage']))
+        }
+        if (patch && typeof (patch as any).cardImageAlt === 'string') {
+          nextPatches.push(set((patch as any).cardImageAlt, ['cardImageAlt']))
+        }
+        onChange(PatchEvent.from(nextPatches))
       } else {
         onChange(PatchEvent.from(set('pending_review')))
       }
