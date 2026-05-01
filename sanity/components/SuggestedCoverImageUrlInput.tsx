@@ -22,6 +22,23 @@ export function SuggestedCoverImageUrlInput(props: UrlInputProps) {
   const url = typeof value === 'string' && value.trim().length > 0 ? value.trim() : ''
   const canCallApi = Boolean(docId && !String(docId).startsWith('drafts.'))
 
+  function suggestSecret(): string {
+    const fromProcess =
+      (typeof process !== 'undefined' &&
+        process.env &&
+        (process.env.SANITY_STUDIO_BIRDING_SUGGEST_SECRET ||
+          process.env.NEXT_PUBLIC_BIRDING_SUGGEST_SECRET)) ||
+      ''
+    const p = typeof fromProcess === 'string' ? fromProcess.trim() : ''
+    if (p) return p
+    const metaEnv = (import.meta as any)?.env
+    const fromMeta =
+      (metaEnv?.SANITY_STUDIO_BIRDING_SUGGEST_SECRET ||
+        metaEnv?.NEXT_PUBLIC_BIRDING_SUGGEST_SECRET ||
+        '') as string
+    return typeof fromMeta === 'string' ? fromMeta.trim() : ''
+  }
+
   function apiUrl(): string {
     if (typeof window !== 'undefined') {
       const host = window.location?.hostname || ''
@@ -37,9 +54,13 @@ export function SuggestedCoverImageUrlInput(props: UrlInputProps) {
     const label = mode === 'regenerate' ? 'Next suggestion' : 'Suggest image'
     toast.push({status: 'info', title: `${label}…`})
     try {
+      const headers: Record<string, string> = {'content-type': 'application/json'}
+      const secret = suggestSecret()
+      if (secret) headers['x-birding-suggest-secret'] = secret
+
       const res = await fetch(apiUrl(), {
         method: 'POST',
-        headers: {'content-type': 'application/json'},
+        headers,
         body: JSON.stringify({id: docId, mode}),
         credentials: 'omit',
       })

@@ -54,13 +54,22 @@ function getBirdingSuggestApiUrl(): string {
 }
 
 function getBirdingSuggestSecret(): string {
-  const explicit =
+  const fromProcess =
     (typeof process !== 'undefined' &&
       process.env &&
       (process.env.SANITY_STUDIO_BIRDING_SUGGEST_SECRET ||
         process.env.NEXT_PUBLIC_BIRDING_SUGGEST_SECRET)) ||
     ''
-  return typeof explicit === 'string' ? explicit.trim() : ''
+  const p = typeof fromProcess === 'string' ? fromProcess.trim() : ''
+  if (p) return p
+
+  // Hosted Studio (Vite) exposes env on import.meta.env at build time.
+  const metaEnv = (import.meta as any)?.env
+  const fromMeta =
+    (metaEnv?.SANITY_STUDIO_BIRDING_SUGGEST_SECRET ||
+      metaEnv?.NEXT_PUBLIC_BIRDING_SUGGEST_SECRET ||
+      '') as string
+  return typeof fromMeta === 'string' ? fromMeta.trim() : ''
 }
 
 export function BirdSightingUnsplashSuggestionPanel(props: StringInputProps) {
