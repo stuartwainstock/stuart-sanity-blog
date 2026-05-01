@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic'
 
 type RequestBody = {
   id: string
-  mode: 'suggest' | 'regenerate'
+  mode: 'suggest' | 'regenerate' | 'dismiss'
 }
 
 type BirdSightingForSuggest = {
@@ -132,7 +132,7 @@ export async function POST(request: NextRequest) {
 
   const id = String(body.id ?? '').trim()
   const mode = body.mode
-  if (!id || (mode !== 'suggest' && mode !== 'regenerate')) {
+  if (!id || (mode !== 'suggest' && mode !== 'regenerate' && mode !== 'dismiss')) {
     return NextResponse.json({message: 'Missing id or invalid mode.'}, {status: 400})
   }
 
@@ -162,6 +162,20 @@ export async function POST(request: NextRequest) {
     const speciesCode = doc.speciesCode?.trim() || ''
     const manual = doc.suggestedCoverSearchQueryManual?.trim()
     const query = manual || buildSearchQuery(speciesName, speciesCode, doc.locationLabel ?? null)
+
+    if (mode === 'dismiss') {
+      const patch = {
+        imageSuggestionStatus: 'dismissed' as const,
+        suggestedCoverProvider: 'none' as const,
+        suggestedCoverImageUrl: null,
+        suggestedCoverImagePageUrl: null,
+        suggestedCoverPhotographerName: null,
+        suggestedCoverPhotographerPageUrl: null,
+        suggestedCoverAltDraft: null,
+      }
+      await client.patch(doc._id).set(patch).commit()
+      return NextResponse.json({ok: true, patch})
+    }
 
     const currentPage = Number(doc.suggestedCoverSearchPage) || 1
     const nextPage = mode === 'regenerate' ? Math.min(10, currentPage + 1) : 1

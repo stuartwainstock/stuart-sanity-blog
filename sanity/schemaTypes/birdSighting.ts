@@ -1,6 +1,7 @@
 import {defineField, defineType} from 'sanity'
 import {EyeOpenIcon, AccessDeniedIcon, EarthGlobeIcon, ImageIcon} from '@sanity/icons'
 import {SuggestedCoverImageUrlInput} from '../components/SuggestedCoverImageUrlInput'
+import {BirdSightingUnsplashSuggestionPanel} from '../components/BirdSightingUnsplashSuggestionPanel'
 
 export const birdSighting = defineType({
   name: 'birdSighting',
@@ -53,7 +54,37 @@ export const birdSighting = defineType({
       description: 'Human-readable location name from eBird (e.g. "Bald Eagle SNA--Pool 4").',
     }),
 
-    // ── Card image: script suggestion first, then publish via Card image + workflow ─
+    // ── Card image: editor-driven suggestion + publish via Card image + workflow ─
+    defineField({
+      name: 'imageSuggestionStatus',
+      title: 'Suggestion workflow',
+      type: 'string',
+      group: 'visual',
+      initialValue: 'none',
+      options: {
+        list: [
+          {
+            title: 'Done — no open suggestion (use after Card image is set)',
+            value: 'none',
+          },
+          {
+            title: 'Review pending — suggestion exists; add Card image + alt to publish',
+            value: 'pending_review',
+          },
+          {
+            title: 'Dismissed — reject suggestion; do not auto-suggest again for this sighting',
+            value: 'dismissed',
+          },
+        ],
+        layout: 'radio',
+      },
+      description:
+        'Use the panel above to fetch suggestions from Unsplash. There is no separate approve toggle: publishing means setting Card image + Card image alt.',
+      components: {
+        input: BirdSightingUnsplashSuggestionPanel,
+      },
+    }),
+
     defineField({
       name: 'suggestedCoverImageUrl',
       title: 'Suggested image (preview URL)',
@@ -164,32 +195,6 @@ export const birdSighting = defineType({
       validation: (Rule) => [
         Rule.max(200).warning('Keep image alt text concise (under ~200 characters).'),
       ],
-    }),
-    defineField({
-      name: 'imageSuggestionStatus',
-      title: 'Suggestion workflow',
-      type: 'string',
-      group: 'visual',
-      initialValue: 'none',
-      options: {
-        list: [
-          {
-            title: 'Done — no open suggestion (use after Card image is set)',
-            value: 'none',
-          },
-          {
-            title: 'Review pending — script filled preview fields; add Card image + alt to publish',
-            value: 'pending_review',
-          },
-          {
-            title: 'Dismissed — reject suggestion; do not auto-suggest again for this sighting',
-            value: 'dismissed',
-          },
-        ],
-        layout: 'radio',
-      },
-      description:
-        'There is no separate Approve toggle. **To accept:** set Card image + Card image alt, then choose **Done — no open suggestion** and Publish. **Wrong photo while pending:** run `npm run birding:regenerate-unsplash`, or fill Unsplash search query (manual override), or choose Dismissed. Scripts: `npm run birding:suggest-unsplash` / `npm run birding:regenerate-unsplash`.',
     }),
 
     // ── Accessibility ─────────────────────────────────────────────────────────
