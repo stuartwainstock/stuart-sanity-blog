@@ -223,8 +223,18 @@ export async function POST(request: NextRequest) {
   try {
     const client = getWriteClient()
 
+    const candidateIds = (() => {
+      const base = id.replace(/^drafts\./, '')
+      const draft = `drafts.${base}`
+      // Preserve caller order first; then try the other form.
+      return id.startsWith('drafts.') ? [id, base] : [id, draft]
+    })()
+
     const doc = await client.fetch<BirdSightingForSuggest | null>(
-      `*[_type == "birdSighting" && _id == $id][0]{
+      `*[
+        _type == "birdSighting"
+        && _id in $ids
+      ][0]{
         _id,
         _type,
         speciesName,
@@ -234,13 +244,13 @@ export async function POST(request: NextRequest) {
         suggestedCoverSearchQueryManual,
         suggestedCoverSearchPage
       }`,
-      {id},
+      {ids: candidateIds},
     )
 
     if (!doc) {
       return responseWithCors(
         request,
-        JSON.stringify({message: 'Not found.'}),
+        JSON.stringify({message: 'Not found.', triedIds: candidateIds}),
         404,
         {'Content-Type': 'application/json'},
       )
