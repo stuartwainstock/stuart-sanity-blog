@@ -10,6 +10,18 @@ import {sanityClient} from '@/lib/sanity'
 import {EBIRD_DASHBOARD_QUERY} from '@/lib/queries'
 import type {EbirdDashboard} from '@/lib/types'
 
+type UnsplashSuggestion = {
+  suggestedCoverProvider: 'unsplash'
+  suggestedCoverImageUrl: string
+  suggestedCoverImagePageUrl: string | null
+  suggestedCoverPhotographerName: string | null
+  suggestedCoverPhotographerPageUrl: string | null
+  suggestedCoverAltDraft: string | null
+  suggestedCoverSearchQueryLast: string
+  suggestedCoverSearchPage: number
+  imageSuggestionStatus: 'pending_review'
+}
+
 // ── Sanity write client ───────────────────────────────────────────────────────
 // Uses SANITY_API_WRITE_TOKEN (Editor permission) — server-only, never exposed
 // to the browser. This is NOT the Sanity MCP (a dev tool); it is the standard
@@ -34,6 +46,95 @@ function getWriteClient() {
 
 function toSanityId(observationId: string): string {
   return `birdSighting-${observationId.replace(/[^a-zA-Z0-9_-]/g, '-')}`
+}
+
+function buildUnsplashSearchQuery(
+  speciesName: string,
+  speciesCode: string,
+  locationLabel: string | null
+): string {
+  const name = (speciesName || '').trim() || 'bird'
+  const code = (speciesCode || '').trim()
+  const loc = (locationLabel || '').trim()
+  const parts = [name, code, 'wild bird North America']
+  if (loc) parts.push(loc)
+  return parts.filter(Boolean).join(' ').replace(/\s+/g, ' ').trim()
+}
+
+function buildAltDraft(
+  speciesName: string,
+  locationLabel: string | null,
+  altDescription: string | null
+): string {
+  const name = speciesName?.trim() || 'Bird'
+  const loc = locationLabel?.trim()
+  const locPhrase = loc ? ` Location: ${loc}.` : ''
+  if (altDescription) {
+    const base = `${name}: ${altDescription}.${locPhrase} Verify this photo matches the species before publishing.`
+    return base.replace(/\s+/g, ' ').trim().slice(0, 400)
+  }
+  return `Photograph of a ${name}.${locPhrase} Verify the image matches this eBird species before publishing.`
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 400)
+}
+
+async function suggestUnsplashForBirdSighting(args: {
+  speciesName: string
+  speciesCode: string
+  locationLabel: string | null
+  page?: number
+}): Promise<UnsplashSuggestion | null> {
+  const unsplashKey = process.env.UNSPLASH_ACCESS_KEY?.trim()
+  if (!unsplashKey) return null
+
+  const query = buildUnsplashSearchQuery(
+    args.speciesName,
+    args.speciesCode,
+    args.locationLabel
+  )
+  const apiPage = Math.max(1, Math.min(10, args.page ?? 1))
+  const u = new URL('https://api.unsplash.com/search/photos')
+  u.searchParams.set('query', query)
+  u.searchParams.set('per_page', '1')
+  u.searchParams.set('orientation', 'landscape')
+  u.searchParams.set('page', String(apiPage))
+
+  const res = await fetch(u.toString(), {
+    headers: {
+      Authorization: `Client-ID ${unsplashKey}`,
+      'Accept-Version': 'v1',
+    },
+  })
+
+  if (!res.ok) return null
+  const json = (await res.json().catch(() => null)) as any
+  const hit = Array.isArray(json?.results) ? json.results[0] : null
+  if (!hit) return null
+
+  const urls = hit.urls || {}
+  const user = hit.user || {}
+  const links = hit.links || {}
+  const userLinks = user.links || {}
+  const imageUrl = urls.regular || urls.small || null
+  if (!imageUrl) return null
+
+  const altDescription =
+    (typeof hit.alt_description === 'string' && hit.alt_description.trim()) ||
+    (typeof hit.description === 'string' && hit.description.trim()) ||
+    null
+
+  return {
+    suggestedCoverProvider: 'unsplash',
+    suggestedCoverImageUrl: imageUrl,
+    suggestedCoverImagePageUrl: links.html || null,
+    suggestedCoverPhotographerName: typeof user.name === 'string' ? user.name : null,
+    suggestedCoverPhotographerPageUrl: userLinks.html || null,
+    suggestedCoverAltDraft: buildAltDraft(args.speciesName, args.locationLabel, altDescription),
+    suggestedCoverSearchQueryLast: query,
+    suggestedCoverSearchPage: apiPage,
+    imageSuggestionStatus: 'pending_review',
+  }
 }
 
 // ── Sync result ───────────────────────────────────────────────────────────────
@@ -110,6 +211,7 @@ export async function syncSightingsAction(): Promise<SyncSightingsResult> {
 
     let created = 0
     let skipped = 0
+    const createdIds: string[] = []
 
     const transaction = client.transaction()
 
@@ -155,10 +257,56 @@ export async function syncSightingsAction(): Promise<SyncSightingsResult> {
           suggestedCoverProvider: 'none',
         })
         created++
+        createdIds.push(docId)
       }
     }
 
     await transaction.commit()
+
+    // 5. Smooth editorial workflow: generate Unsplash suggestion for newly created docs
+    // (best-effort; missing UNSPLASH_ACCESS_KEY is fine).
+    if (createdIds.length > 0) {
+      const createdDocs = await client.fetch<
+        {
+          _id: string
+          speciesName: string
+          speciesCode: string
+          locationLabel: string | null
+          cardImage?: unknown
+          imageSuggestionStatus?: string
+          suggestedCoverImageUrl?: string
+        }[]
+      >(
+        `*[_type == "birdSighting" && _id in $ids]{
+          _id,
+          speciesName,
+          speciesCode,
+          locationLabel,
+          cardImage,
+          imageSuggestionStatus,
+          suggestedCoverImageUrl
+        }`,
+        {ids: createdIds}
+      )
+
+      // Keep this bounded so the sync button stays snappy.
+      const maxToSuggest = Math.min(10, createdDocs.length)
+      for (const doc of createdDocs.slice(0, maxToSuggest)) {
+        if (doc.cardImage) continue
+        if (doc.imageSuggestionStatus === 'dismissed') continue
+        if (typeof doc.suggestedCoverImageUrl === 'string' && doc.suggestedCoverImageUrl.trim()) continue
+
+        const suggestion = await suggestUnsplashForBirdSighting({
+          speciesName: doc.speciesName,
+          speciesCode: doc.speciesCode,
+          locationLabel: doc.locationLabel ?? null,
+          page: 1,
+        })
+        if (!suggestion) continue
+
+        await client.patch(doc._id).set(suggestion).commit()
+      }
+    }
 
     return {ok: true, created, skipped}
   } catch (err) {
