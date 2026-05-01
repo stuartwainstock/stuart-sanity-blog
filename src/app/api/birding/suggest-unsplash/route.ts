@@ -176,12 +176,25 @@ async function searchUnsplash(query: string, page: number) {
   const imageUrl = urls.regular || urls.small || null
   if (!imageUrl) return {ok: false as const, reason: 'no_results' as const}
 
+  function withAttributionParams(raw: string | null): string | null {
+    if (!raw) return null
+    try {
+      const u = new URL(raw)
+      // Unsplash API guidelines: include attribution params on links.
+      if (!u.searchParams.get('utm_source')) u.searchParams.set('utm_source', 'stuartwainstock')
+      if (!u.searchParams.get('utm_medium')) u.searchParams.set('utm_medium', 'referral')
+      return u.toString()
+    } catch {
+      return raw
+    }
+  }
+
   return {
     ok: true as const,
     imageUrl,
-    photoPageUrl: links.html || null,
+    photoPageUrl: withAttributionParams(links.html || null),
     photographerName: typeof user.name === 'string' ? user.name : null,
-    photographerPageUrl: userLinks.html || null,
+    photographerPageUrl: withAttributionParams(userLinks.html || null),
     altDescription,
   }
 }

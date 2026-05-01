@@ -196,18 +196,7 @@ export function BirdCard({sighting, highContrast = false}: BirdCardProps) {
           ) : null}
           {showUnsplashAttribution ? (
             <figcaption className={styles.attributionCaption}>
-              {suggestedCoverImagePageUrl?.trim() ? (
-                <a
-                  href={suggestedCoverImagePageUrl.trim()}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Unsplash photo
-                </a>
-              ) : (
-                <span>Unsplash photo</span>
-              )}
-
+              <span>Photo</span>
               {suggestedCoverPhotographerName?.trim() ? (
                 <>
                   <span>by</span>
@@ -224,6 +213,18 @@ export function BirdCard({sighting, highContrast = false}: BirdCardProps) {
                   )}
                 </>
               ) : null}
+              <span>on</span>
+              {suggestedCoverImagePageUrl?.trim() ? (
+                <a
+                  href={suggestedCoverImagePageUrl.trim()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Unsplash
+                </a>
+              ) : (
+                <span>Unsplash</span>
+              )}
             </figcaption>
           ) : null}
         </figure>
