@@ -14,8 +14,22 @@ function applyCors(request: NextRequest, headers: Headers) {
   const origin = request.headers.get('origin')
   if (!origin) return
   const allowed = allowedOrigins()
-  if (!allowed.includes(origin)) return
-  headers.set('Access-Control-Allow-Origin', origin)
+  if (allowed.includes(origin)) {
+    headers.set('Access-Control-Allow-Origin', origin)
+  } else {
+    // Hosted Studio ergonomics: if a proxy secret is configured, allow sanity.studio origins
+    // even when SANITY_BIRDING_CORS_ORIGINS is missing/mis-scoped. The secret remains the
+    // primary access control; CORS is only browser enforcement.
+    const hasProxySecret = Boolean(process.env.BIRDING_SUGGEST_PROXY_SECRET?.trim())
+    if (!hasProxySecret) return
+    try {
+      const h = new URL(origin).hostname
+      if (!h.endsWith('.sanity.studio')) return
+    } catch {
+      return
+    }
+    headers.set('Access-Control-Allow-Origin', origin)
+  }
   headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS')
   headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-birding-suggest-secret')
   headers.append('Vary', 'Origin')
