@@ -7,8 +7,11 @@
  * Requires NEXT_PUBLIC_SANITY_PROJECT_ID, NEXT_PUBLIC_SANITY_DATASET,
  * SANITY_API_WRITE_TOKEN (or SANITY_API_TOKEN).
  *
- *   DRY_RUN=1 node --env-file=.env.local scripts/birding-normalize-observed-on.mjs
- *   node --env-file=.env.local scripts/birding-normalize-observed-on.mjs
+ * From repo root (loads .env.local via npm script):
+ *   DRY_RUN=1 npm run birding:normalize-observed-on
+ *   npm run birding:normalize-observed-on
+ *
+ * Or: node --env-file=.env.local scripts/birding-normalize-observed-on.mjs
  */
 
 import { createClient } from '@sanity/client'

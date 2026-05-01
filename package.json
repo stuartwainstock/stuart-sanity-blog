@@ -25,9 +25,9 @@
     "test:storybook": "vitest run --project storybook",
     "chromatic": "node ./scripts/chromatic.mjs",
     "tripit:transform": "node scripts/tripit-export-to-list-air.mjs",
-    "birding:suggest-unsplash": "node scripts/birding-suggest-unsplash.mjs",
-    "birding:regenerate-unsplash": "REGENERATE=1 node scripts/birding-suggest-unsplash.mjs",
-    "birding:normalize-observed-on": "node scripts/birding-normalize-observed-on.mjs"
+    "birding:suggest-unsplash": "node --env-file=.env.local scripts/birding-suggest-unsplash.mjs",
+    "birding:regenerate-unsplash": "REGENERATE=1 node --env-file=.env.local scripts/birding-suggest-unsplash.mjs",
+    "birding:normalize-observed-on": "node --env-file=.env.local scripts/birding-normalize-observed-on.mjs"
   },
   "dependencies": {
     "@babel/runtime": "^7.29.2",
