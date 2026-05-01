@@ -32,6 +32,29 @@ function truthyString(v: unknown): string {
   return typeof v === 'string' ? v.trim() : ''
 }
 
+function getBirdingSuggestApiUrl(): string {
+  const explicit =
+    (typeof process !== 'undefined' &&
+      process.env &&
+      (process.env.SANITY_STUDIO_BIRDING_SUGGEST_API_URL ||
+        process.env.NEXT_PUBLIC_BIRDING_SUGGEST_API_URL)) ||
+    ''
+  const v = typeof explicit === 'string' ? explicit.trim() : ''
+  if (v) return v
+  // Embedded Studio (same-origin) or local dev.
+  return '/api/birding/suggest-unsplash'
+}
+
+function getBirdingSuggestSecret(): string {
+  const explicit =
+    (typeof process !== 'undefined' &&
+      process.env &&
+      (process.env.SANITY_STUDIO_BIRDING_SUGGEST_SECRET ||
+        process.env.NEXT_PUBLIC_BIRDING_SUGGEST_SECRET)) ||
+    ''
+  return typeof explicit === 'string' ? explicit.trim() : ''
+}
+
 export function BirdSightingUnsplashSuggestionPanel(props: StringInputProps) {
   const {renderDefault, onChange} = props
   const toast = useToast()
@@ -112,9 +135,13 @@ export function BirdSightingUnsplashSuggestionPanel(props: StringInputProps) {
     toast.push({status: 'info', title: `${label}…`})
 
     try {
-      const res = await fetch('/api/birding/suggest-unsplash', {
+      const headers: Record<string, string> = {'content-type': 'application/json'}
+      const secret = getBirdingSuggestSecret()
+      if (secret) headers['x-birding-suggest-secret'] = secret
+
+      const res = await fetch(getBirdingSuggestApiUrl(), {
         method: 'POST',
-        headers: {'content-type': 'application/json'},
+        headers,
         body: JSON.stringify({id: docId, mode}),
         credentials: 'include',
       })
