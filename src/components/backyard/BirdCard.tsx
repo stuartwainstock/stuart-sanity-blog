@@ -162,11 +162,13 @@ export function BirdCard({sighting, highContrast = false}: BirdCardProps) {
       : null
   const heroImageUrl = cardImageUrl || suggestedPreviewUrl
   const isSuggestedPreview = Boolean(suggestedPreviewUrl)
+  const hasUnsplashAttributionBits =
+    Boolean(suggestedCoverImagePageUrl?.trim()) ||
+    Boolean(suggestedCoverPhotographerName?.trim()) ||
+    Boolean(suggestedCoverPhotographerPageUrl?.trim())
   const showUnsplashAttribution =
     (suggestedCoverProvider === 'unsplash' || isSuggestedPreview) &&
-    Boolean(suggestedCoverImagePageUrl?.trim()) &&
-    Boolean(suggestedCoverPhotographerName?.trim()) &&
-    Boolean(suggestedCoverPhotographerPageUrl?.trim())
+    hasUnsplashAttributionBits
 
   return (
     <article
@@ -194,21 +196,34 @@ export function BirdCard({sighting, highContrast = false}: BirdCardProps) {
           ) : null}
           {showUnsplashAttribution ? (
             <figcaption className={styles.attributionCaption}>
-              <a
-                href={suggestedCoverImagePageUrl!.trim()}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Unsplash photo
-              </a>{' '}
-              by{' '}
-              <a
-                href={suggestedCoverPhotographerPageUrl!.trim()}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {suggestedCoverPhotographerName!.trim()}
-              </a>
+              {suggestedCoverImagePageUrl?.trim() ? (
+                <a
+                  href={suggestedCoverImagePageUrl.trim()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Unsplash photo
+                </a>
+              ) : (
+                <span>Unsplash photo</span>
+              )}
+
+              {suggestedCoverPhotographerName?.trim() ? (
+                <>
+                  <span>by</span>
+                  {suggestedCoverPhotographerPageUrl?.trim() ? (
+                    <a
+                      href={suggestedCoverPhotographerPageUrl.trim()}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {suggestedCoverPhotographerName.trim()}
+                    </a>
+                  ) : (
+                    <span>{suggestedCoverPhotographerName.trim()}</span>
+                  )}
+                </>
+              ) : null}
             </figcaption>
           ) : null}
         </figure>
