@@ -1,5 +1,5 @@
 import {LaunchIcon} from '@sanity/icons'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Button, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
 import type {UrlInputProps} from 'sanity'
 import {useFormValue} from 'sanity'
 
@@ -9,15 +9,84 @@ import {useFormValue} from 'sanity'
  */
 export function SuggestedCoverImageUrlInput(props: UrlInputProps) {
   const {renderDefault, value} = props
+  const toast = useToast()
+
+  const docId = useFormValue(['_id']) as string | undefined
+  const speciesName = useFormValue(['speciesName']) as string | undefined
+  const imageSuggestionStatus = useFormValue(['imageSuggestionStatus']) as string | undefined
   const photoPage = useFormValue(['suggestedCoverImagePageUrl']) as string | undefined
   const photographerName = useFormValue(['suggestedCoverPhotographerName']) as string | undefined
   const photographerPage = useFormValue(['suggestedCoverPhotographerPageUrl']) as string | undefined
 
   const url = typeof value === 'string' && value.trim().length > 0 ? value.trim() : ''
+  const canCallApi = Boolean(docId && !String(docId).startsWith('drafts.'))
+
+  async function run(mode: 'suggest' | 'regenerate') {
+    if (!canCallApi) return
+    const label = mode === 'regenerate' ? 'Next suggestion' : 'Suggest image'
+    toast.push({status: 'info', title: `${label}…`})
+    try {
+      const res = await fetch('/api/birding/suggest-unsplash', {
+        method: 'POST',
+        headers: {'content-type': 'application/json'},
+        body: JSON.stringify({id: docId, mode}),
+        credentials: 'include',
+      })
+      const json = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        toast.push({
+          status: 'error',
+          title: json?.message || `Failed (${res.status})`,
+        })
+        return
+      }
+      toast.push({status: 'success', title: 'Suggestion updated.'})
+    } catch (e) {
+      toast.push({
+        status: 'error',
+        title: e instanceof Error ? e.message : 'Request failed.',
+      })
+    }
+  }
 
   return (
     <Stack space={4}>
       {renderDefault(props)}
+      <Card padding={3} radius={2} shadow={0} tone="transparent">
+        <Stack space={3}>
+          <Text size={1} muted>
+            {url
+              ? 'If this photo is wrong, fetch the next Unsplash result.'
+              : 'No suggestion yet. Fetch one from Unsplash so you can review it here.'}
+          </Text>
+          <Flex gap={2} wrap="wrap">
+            <Button
+              mode="default"
+              tone="primary"
+              text={url ? 'Refresh suggestion' : 'Suggest image'}
+              onClick={() => run('suggest')}
+              disabled={!canCallApi}
+            />
+            <Button
+              mode="default"
+              tone="default"
+              text="Next suggestion"
+              onClick={() => run('regenerate')}
+              disabled={!canCallApi || imageSuggestionStatus !== 'pending_review'}
+            />
+          </Flex>
+          {!canCallApi ? (
+            <Text size={1} muted>
+              Suggestions run on published documents only (not drafts). Publish this sighting first, then retry.
+            </Text>
+          ) : null}
+          {speciesName ? (
+            <Text size={1} muted>
+              Searching for: {speciesName}
+            </Text>
+          ) : null}
+        </Stack>
+      </Card>
       {url ? (
         <Card padding={3} radius={2} shadow={1} tone="default">
           <Stack space={3}>
