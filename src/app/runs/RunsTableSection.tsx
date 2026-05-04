@@ -6,8 +6,8 @@ import {buildGearNameMap, gearIdFromRaw} from '@/lib/strava/gear'
 import {
   enrichRunsForTable,
   enrichRunsWithActivityDetailsForLocation,
-  enrichTableRowsWithReverseGeocodePlaceLabels,
 } from '@/lib/strava/runDisplay'
+import {applyCachedReverseGeocodeLabels} from '@/lib/strava/reverseGeocodeCache'
 import {getValidStravaAccessToken} from '@/lib/strava/tokens'
 import type {StravaRunTableRow} from '@/lib/strava/types'
 import type {TypedObject} from '@portabletext/types'
@@ -32,7 +32,7 @@ export default async function RunsTableSection({
   const gearById = await buildGearNameMap(accessToken, gearIds)
   const runsById = new Map(windowRuns.map((r) => [r.id, r]))
   let tableRows: StravaRunTableRow[] = enrichRunsForTable(windowRuns, gearById)
-  tableRows = await enrichTableRowsWithReverseGeocodePlaceLabels(tableRows, runsById)
+  tableRows = await applyCachedReverseGeocodeLabels(tableRows, runsById)
 
   const tableIntro =
     tableSectionIntroduction && tableSectionIntroduction.length > 0 ? (
