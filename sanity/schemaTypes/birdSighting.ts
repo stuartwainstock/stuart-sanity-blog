@@ -1,6 +1,5 @@
 import {defineField, defineType} from 'sanity'
 import {EyeOpenIcon, AccessDeniedIcon, EarthGlobeIcon, ImageIcon} from '@sanity/icons'
-import {SuggestedCoverImageUrlInput} from '../components/SuggestedCoverImageUrlInput'
 import {BirdSightingUnsplashSuggestionPanel} from '../components/BirdSightingUnsplashSuggestionPanel'
 
 export const birdSighting = defineType({
@@ -85,97 +84,19 @@ export const birdSighting = defineType({
       },
     }),
 
-    defineField({
-      name: 'suggestedCoverImageUrl',
-      title: 'Suggested image (preview URL)',
-      type: 'url',
-      group: 'visual',
-      readOnly: true,
-      description:
-        'There is no separate Approve control: add the chosen photo under Card image (Unsplash asset source or upload), then mark the workflow complete below. This URL is a temporary Unsplash CDN preview for review only — do not rely on it for the live site.',
-      components: {
-        input: SuggestedCoverImageUrlInput,
-      },
-    }),
-    defineField({
-      name: 'suggestedCoverImagePageUrl',
-      title: 'Suggested image on Unsplash',
-      type: 'url',
-      group: 'visual',
-      readOnly: true,
-      description: 'Open this link in Studio to verify licensing context before adding Card image.',
-    }),
-    defineField({
-      name: 'suggestedCoverPhotographerName',
-      title: 'Suggested photographer name',
-      type: 'string',
-      group: 'visual',
-      readOnly: true,
-    }),
-    defineField({
-      name: 'suggestedCoverPhotographerPageUrl',
-      title: 'Suggested photographer on Unsplash',
-      type: 'url',
-      group: 'visual',
-      readOnly: true,
-    }),
-    defineField({
-      name: 'suggestedCoverAltDraft',
-      title: 'Suggested alt text (draft)',
-      type: 'text',
-      rows: 2,
-      group: 'visual',
-      readOnly: true,
-      description:
-        'Draft alt text for the suggested photo (from Unsplash metadata when available, plus species / location). Copy into Card image alt text after you verify the image matches the species.',
-      validation: (Rule) => [Rule.max(400).warning('Keep draft alt text under ~400 characters.')],
-    }),
-    defineField({
-      name: 'suggestedCoverSearchQueryManual',
-      title: 'Unsplash search query (manual override)',
-      type: 'string',
-      group: 'visual',
-      description:
-        'Optional. When set, suggestion scripts use this exact Unsplash search string instead of the auto-built query (helpful when the species name is ambiguous or non-local). Clear when you want auto queries again.',
-      validation: (Rule) => [Rule.max(200).warning('Keep queries concise for better matches.')],
-    }),
-    defineField({
-      name: 'suggestedCoverSearchQueryLast',
-      title: 'Last Unsplash search query (auto)',
-      type: 'string',
-      group: 'visual',
-      readOnly: true,
-      description: 'Filled by the suggestion script so editors can see what was searched.',
-    }),
-    defineField({
-      name: 'suggestedCoverSearchPage',
-      title: 'Unsplash search results page',
-      type: 'number',
-      group: 'visual',
-      readOnly: true,
-      initialValue: 1,
-      validation: (Rule) => [
-        Rule.min(1).max(10).error('Unsplash pagination is capped between 1 and 10.'),
-      ],
-      description:
-        'Which Unsplash search results page the last suggestion used. Regenerate bumps this to fetch the next image.',
-    }),
-    defineField({
-      name: 'suggestedCoverProvider',
-      title: 'Suggested cover source',
-      type: 'string',
-      group: 'visual',
-      initialValue: 'none',
-      options: {
-        list: [
-          {title: 'None', value: 'none'},
-          {title: 'Unsplash (search API — editor must still approve)', value: 'unsplash'},
-        ],
-        layout: 'radio',
-      },
-      readOnly: true,
-      description: 'Filled automatically by the suggestion script for traceability.',
-    }),
+    // ── Machine-written suggestion fields (hidden from editor UI) ─────────────
+    // All of these are read/written exclusively by the suggest-unsplash API route.
+    // The BirdSightingUnsplashSuggestionPanel above surfaces everything editors
+    // need — showing these raw fields would only add noise.
+    defineField({name: 'suggestedCoverImageUrl', title: 'Suggested image URL', type: 'url', group: 'visual', readOnly: true, hidden: true}),
+    defineField({name: 'suggestedCoverImagePageUrl', title: 'Suggested image page URL', type: 'url', group: 'visual', readOnly: true, hidden: true}),
+    defineField({name: 'suggestedCoverPhotographerName', title: 'Suggested photographer name', type: 'string', group: 'visual', readOnly: true, hidden: true}),
+    defineField({name: 'suggestedCoverPhotographerPageUrl', title: 'Suggested photographer page URL', type: 'url', group: 'visual', readOnly: true, hidden: true}),
+    defineField({name: 'suggestedCoverAltDraft', title: 'Suggested alt draft', type: 'text', group: 'visual', readOnly: true, hidden: true}),
+    defineField({name: 'suggestedCoverSearchQueryManual', title: 'Unsplash search query override', type: 'string', group: 'visual', hidden: true}),
+    defineField({name: 'suggestedCoverSearchQueryLast', title: 'Last Unsplash search query', type: 'string', group: 'visual', readOnly: true, hidden: true}),
+    defineField({name: 'suggestedCoverSearchPage', title: 'Unsplash search page', type: 'number', group: 'visual', readOnly: true, hidden: true, initialValue: 1}),
+    defineField({name: 'suggestedCoverProvider', title: 'Suggested cover source', type: 'string', group: 'visual', readOnly: true, hidden: true, initialValue: 'none'}),
     defineField({
       name: 'cardImage',
       title: 'Card image (published on dashboard)',
@@ -183,7 +104,7 @@ export const birdSighting = defineType({
       group: 'visual',
       options: {hotspot: true},
       description:
-        'This is how you “approve” a suggested photo for the live site: add the image here using the Unsplash asset picker (pick the same photo) or upload your own. The dashboard uses this Sanity-hosted image, not the temporary preview URL above.',
+        'Live image shown on the dashboard. Click “Use this photo” in the suggestion panel above to fill this automatically, or upload your own.',
     }),
     defineField({
       name: 'cardImageAlt',
@@ -191,7 +112,7 @@ export const birdSighting = defineType({
       type: 'string',
       group: 'visual',
       description:
-        'Short description of the photograph for screen readers. You can paste from Suggested alt text (draft) above, then edit for accuracy.',
+        'Short description of the photograph for screen readers. Keep it concise and species-accurate.',
       validation: (Rule) => [
         Rule.max(200).warning('Keep image alt text concise (under ~200 characters).'),
       ],

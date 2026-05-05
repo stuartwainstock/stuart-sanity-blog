@@ -2,17 +2,11 @@
 
 import React, {useMemo, useState} from 'react'
 import {LaunchIcon} from '@sanity/icons'
-import {
-  Badge,
-  Button,
-  Card,
-  Flex,
-  Stack,
-  Text,
-  useToast,
-} from '@sanity/ui'
+import {Button, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
 import type {StringInputProps} from 'sanity'
 import {PatchEvent, set, useFormValue} from 'sanity'
+
+// ── Types ─────────────────────────────────────────────────────────────────────
 
 type ApiMode = 'suggest' | 'regenerate' | 'dismiss' | 'confirm'
 
@@ -30,105 +24,111 @@ type SuggestionPatch = Partial<{
   cardImageAlt: string | null
 }>
 
-function truthyString(v: unknown): string {
-  return typeof v === 'string' ? v.trim() : ''
-}
+// ── Env helpers ───────────────────────────────────────────────────────────────
 
-type ViteImportMeta = ImportMeta & {
-  env?: Record<string, string | undefined>
-}
+type ViteImportMeta = ImportMeta & {env?: Record<string, string | undefined>}
 
-function getBirdingSuggestApiUrl(): string {
+function getApiUrl(): string {
   const explicit =
     (typeof process !== 'undefined' &&
-      process.env &&
-      (process.env.SANITY_STUDIO_BIRDING_SUGGEST_API_URL ||
-        process.env.NEXT_PUBLIC_BIRDING_SUGGEST_API_URL)) ||
+      process.env?.SANITY_STUDIO_BIRDING_SUGGEST_API_URL?.trim()) ||
     ''
-  const v = typeof explicit === 'string' ? explicit.trim() : ''
-  if (v) return v
-  // Hosted Studio (`*.sanity.studio`) cannot call same-origin `/api/*`.
-  // Fall back to the canonical site origin (same pattern as GA proxy config).
-  if (typeof window !== 'undefined') {
-    const host = window.location?.hostname || ''
-    if (host.endsWith('.sanity.studio')) {
-      return 'https://www.stuartwainstock.com/api/birding/suggest-unsplash'
-    }
+  if (explicit) return explicit
+  if (typeof window !== 'undefined' && window.location?.hostname?.endsWith('.sanity.studio')) {
+    return 'https://www.stuartwainstock.com/api/birding/suggest-unsplash'
   }
-  // Embedded Studio (same-origin) or local dev.
   return '/api/birding/suggest-unsplash'
 }
 
-function getBirdingSuggestSecret(): string {
+function getSecret(): string {
   const fromProcess =
     (typeof process !== 'undefined' &&
-      process.env &&
-      (process.env.SANITY_STUDIO_BIRDING_SUGGEST_SECRET ||
-        process.env.NEXT_PUBLIC_BIRDING_SUGGEST_SECRET)) ||
+      process.env?.SANITY_STUDIO_BIRDING_SUGGEST_SECRET?.trim()) ||
     ''
-  const p = typeof fromProcess === 'string' ? fromProcess.trim() : ''
-  if (p) return p
-
-  // Hosted Studio (Vite) exposes env on import.meta.env at build time.
-  const metaEnv = (import.meta as ViteImportMeta).env
-  const fromMeta =
-    (metaEnv?.SANITY_STUDIO_BIRDING_SUGGEST_SECRET ||
-      metaEnv?.NEXT_PUBLIC_BIRDING_SUGGEST_SECRET ||
-      '') as string
-  return typeof fromMeta === 'string' ? fromMeta.trim() : ''
+  if (fromProcess) return fromProcess
+  const meta = (import.meta as ViteImportMeta).env
+  return meta?.SANITY_STUDIO_BIRDING_SUGGEST_SECRET?.trim() ?? ''
 }
 
+function ts(v: unknown): string {
+  return typeof v === 'string' ? v.trim() : ''
+}
+
+// ── Sub-components ────────────────────────────────────────────────────────────
+
+function Attribution({
+  photographerName,
+  photographerPage,
+  photoPage,
+}: {
+  photographerName: string
+  photographerPage: string
+  photoPage: string
+}) {
+  if (!photographerName && !photoPage) return null
+  return (
+    <Text size={1} muted>
+      {'Photo'}
+      {photographerName ? (
+        <>
+          {' by '}
+          {photographerPage ? (
+            <a href={photographerPage} target="_blank" rel="noreferrer" style={{color: 'inherit'}}>
+              {photographerName}
+            </a>
+          ) : (
+            photographerName
+          )}
+        </>
+      ) : null}
+      {' on '}
+      {photoPage ? (
+        <a href={photoPage} target="_blank" rel="noreferrer" style={{color: 'inherit'}}>
+          {'Unsplash '}
+          <LaunchIcon style={{verticalAlign: 'text-bottom', fontSize: '0.9em'}} />
+        </a>
+      ) : (
+        'Unsplash'
+      )}
+    </Text>
+  )
+}
+
+// ── Main component ────────────────────────────────────────────────────────────
+
+/**
+ * Replaces the imageSuggestionStatus radio field in the Visual tab.
+ * Three clear states: empty → pending review (photo + confirm/next/skip) → confirmed.
+ * Never renders the raw workflow radio or any machine-written suggestedCover* fields.
+ */
 export function BirdSightingUnsplashSuggestionPanel(props: StringInputProps) {
-  const {renderDefault, onChange} = props
+  const {onChange} = props
   const toast = useToast()
 
+  // Read document values for state and optimistic updates
   const docId = useFormValue(['_id']) as string | undefined
-  const speciesName = truthyString(useFormValue(['speciesName']))
-  const locationLabel = truthyString(useFormValue(['locationLabel']))
-  const status = truthyString(useFormValue(['imageSuggestionStatus'])) || 'none'
-
-  const manualQuery = truthyString(useFormValue(['suggestedCoverSearchQueryManual']))
-  const lastQuery = truthyString(useFormValue(['suggestedCoverSearchQueryLast']))
-  const searchPage = Number(useFormValue(['suggestedCoverSearchPage']) ?? 1) || 1
-
-  const urlFromDoc = truthyString(useFormValue(['suggestedCoverImageUrl']))
+  const speciesName = ts(useFormValue(['speciesName']))
+  const status = ts(useFormValue(['imageSuggestionStatus'])) || 'none'
+  const urlFromDoc = ts(useFormValue(['suggestedCoverImageUrl']))
+  const photoPageFromDoc = ts(useFormValue(['suggestedCoverImagePageUrl']))
+  const photographerNameFromDoc = ts(useFormValue(['suggestedCoverPhotographerName']))
+  const photographerPageFromDoc = ts(useFormValue(['suggestedCoverPhotographerPageUrl']))
+  const altDraftFromDoc = ts(useFormValue(['suggestedCoverAltDraft']))
   const hasCardImage = Boolean(useFormValue(['cardImage', 'asset', '_ref']))
-  const photoPageFromDoc = truthyString(useFormValue(['suggestedCoverImagePageUrl']))
-  const photographerNameFromDoc = truthyString(useFormValue(['suggestedCoverPhotographerName']))
-  const photographerPageFromDoc = truthyString(useFormValue(['suggestedCoverPhotographerPageUrl']))
-  const altDraftFromDoc = truthyString(useFormValue(['suggestedCoverAltDraft']))
 
   const [busyMode, setBusyMode] = useState<ApiMode | null>(null)
   const [optimistic, setOptimistic] = useState<SuggestionPatch | null>(null)
 
-  const effective = useMemo(() => {
+  // Merge optimistic state over document values so the UI responds immediately
+  const eff = useMemo(() => {
     const o = optimistic ?? {}
-    const url = truthyString(o.suggestedCoverImageUrl ?? urlFromDoc)
-    const photoPage = truthyString(o.suggestedCoverImagePageUrl ?? photoPageFromDoc)
-    const photographerName = truthyString(
-      o.suggestedCoverPhotographerName ?? photographerNameFromDoc
-    )
-    const photographerPage = truthyString(
-      o.suggestedCoverPhotographerPageUrl ?? photographerPageFromDoc
-    )
-    const altDraft = truthyString(o.suggestedCoverAltDraft ?? altDraftFromDoc)
-    const imageSuggestionStatus = truthyString(o.imageSuggestionStatus ?? status) || 'none'
-    const suggestedCoverProvider = truthyString(o.suggestedCoverProvider) || ''
-    const suggestedCoverSearchQueryLast = truthyString(
-      o.suggestedCoverSearchQueryLast ?? lastQuery
-    )
-    const suggestedCoverSearchPage = Number(o.suggestedCoverSearchPage ?? searchPage) || 1
-
     return {
-      url,
-      photoPage,
-      photographerName,
-      photographerPage,
-      altDraft,
-      imageSuggestionStatus,
-      suggestedCoverProvider,
-      suggestedCoverSearchQueryLast,
-      suggestedCoverSearchPage,
+      url: ts(o.suggestedCoverImageUrl ?? urlFromDoc),
+      photoPage: ts(o.suggestedCoverImagePageUrl ?? photoPageFromDoc),
+      photographerName: ts(o.suggestedCoverPhotographerName ?? photographerNameFromDoc),
+      photographerPage: ts(o.suggestedCoverPhotographerPageUrl ?? photographerPageFromDoc),
+      altDraft: ts(o.suggestedCoverAltDraft ?? altDraftFromDoc),
+      status: ts(o.imageSuggestionStatus ?? status) || 'none',
     }
   }, [
     optimistic,
@@ -138,76 +138,54 @@ export function BirdSightingUnsplashSuggestionPanel(props: StringInputProps) {
     photographerPageFromDoc,
     altDraftFromDoc,
     status,
-    lastQuery,
-    searchPage,
   ])
 
-  async function copyToClipboard(label: string, text: string) {
-    try {
-      await navigator.clipboard.writeText(text)
-      toast.push({status: 'success', title: `${label} copied.`})
-    } catch {
-      toast.push({status: 'error', title: 'Copy failed. Your browser may block clipboard access.'})
-    }
-  }
+  const isBusy = busyMode !== null
+  const isPending = eff.status === 'pending_review' && Boolean(eff.url)
+  const isDismissed = eff.status === 'dismissed'
 
   async function run(mode: ApiMode) {
     if (!docId) return
     setBusyMode(mode)
-    const label =
-      mode === 'suggest'
-        ? 'Suggest image'
-        : mode === 'regenerate'
-          ? 'Next suggestion'
-          : mode === 'confirm'
-            ? 'Confirm image'
-            : 'Dismiss suggestion'
-    toast.push({status: 'info', title: `${label}…`})
-
     try {
       const headers: Record<string, string> = {'content-type': 'application/json'}
-      const secret = getBirdingSuggestSecret()
+      const secret = getSecret()
       if (secret) headers['x-birding-suggest-secret'] = secret
 
-      const res = await fetch(getBirdingSuggestApiUrl(), {
+      const res = await fetch(getApiUrl(), {
         method: 'POST',
         headers,
         body: JSON.stringify({
           id: docId,
           mode,
-          // For confirm: avoid races where the server still sees an older suggestion.
-          suggestedUrl: effective.url || null,
-          suggestedAltDraft: effective.altDraft || null,
+          suggestedUrl: eff.url || null,
+          suggestedAltDraft: eff.altDraft || null,
         }),
-        // Hosted Studio uses shared-secret auth; avoid cookies to keep CORS simple.
         credentials: 'omit',
       })
+
       const json = await res.json().catch(() => ({}))
       if (!res.ok) {
-        toast.push({status: 'error', title: json?.message || `Failed (${res.status})`})
+        toast.push({status: 'error', title: json?.message || `Error ${res.status}`})
         return
       }
 
       const patch = (json?.patch ?? null) as SuggestionPatch | null
       if (patch) setOptimistic(patch)
 
-      // Keep the radio value aligned with the server-side patch and apply card image immediately on confirm.
+      // Keep the workflow field value aligned with the server patch
       if (mode === 'dismiss') {
         onChange(PatchEvent.from(set('dismissed')))
       } else if (mode === 'confirm') {
-        const nextPatches = [set('none')]
-        if (patch?.cardImage) {
-          nextPatches.push(set(patch.cardImage, ['cardImage']))
-        }
-        if (typeof patch?.cardImageAlt === 'string') {
-          nextPatches.push(set(patch.cardImageAlt, ['cardImageAlt']))
-        }
-        onChange(PatchEvent.from(nextPatches))
+        // Server downloaded the image and uploaded it to Sanity — apply the returned asset ref
+        const patches = [set('none')]
+        if (patch?.cardImage) patches.push(set(patch.cardImage, ['cardImage']))
+        if (typeof patch?.cardImageAlt === 'string') patches.push(set(patch.cardImageAlt, ['cardImageAlt']))
+        onChange(PatchEvent.from(patches))
+        toast.push({status: 'success', title: 'Photo added to card image.'})
       } else {
         onChange(PatchEvent.from(set('pending_review')))
       }
-
-      toast.push({status: 'success', title: 'Updated.'})
     } catch (e) {
       toast.push({
         status: 'error',
@@ -218,161 +196,134 @@ export function BirdSightingUnsplashSuggestionPanel(props: StringInputProps) {
     }
   }
 
-  const hasSuggestion = Boolean(effective.url)
-  const isPending = effective.imageSuggestionStatus === 'pending_review'
-  const isDismissed = effective.imageSuggestionStatus === 'dismissed'
-
-  const badgeTone =
-    isPending ? 'caution' : isDismissed ? 'critical' : hasSuggestion ? 'positive' : 'default'
-  const badgeLabel = isPending
-    ? 'Pending review'
-    : isDismissed
-      ? 'Dismissed'
-      : hasSuggestion
-        ? 'Suggested'
-        : 'No suggestion'
-
-  return (
-    <Stack space={4}>
-      <Card padding={4} radius={2} shadow={1} tone="default">
+  // ── State: confirmed ───────────────────────────────────────────────────────
+  // Card image is already set — show a success state. To replace, editors remove
+  // the card image field below and suggest again.
+  if (hasCardImage) {
+    return (
+      <Card padding={4} radius={2} shadow={1} tone="positive">
         <Stack space={3}>
-          <Flex justify="space-between" align="center" gap={3} wrap="wrap">
-            <Text size={1} weight="semibold">
-              Unsplash suggestion
-            </Text>
-            <Badge tone={badgeTone}>{badgeLabel}</Badge>
-          </Flex>
+          <Text size={1} weight="semibold">
+            ✓ Photo added to card image
+          </Text>
+          <Text size={1} muted>
+            The image below is live on the dashboard. To replace it, clear the Card image
+            field and click Suggest an image.
+          </Text>
+        </Stack>
+      </Card>
+    )
+  }
+
+  // ── State: pending review ──────────────────────────────────────────────────
+  // A suggestion exists — show the photo large and surface the three actions.
+  if (isPending) {
+    return (
+      <Card padding={0} radius={2} shadow={1} tone="default" style={{overflow: 'hidden'}}>
+        {/* Full-width preview — plain img, Unsplash CDN, Studio bundle only */}
+        <img
+          src={eff.url}
+          alt={`Suggested photo for ${speciesName || 'this sighting'} — verify species match before confirming`}
+          style={{display: 'block', width: '100%', maxHeight: 300, objectFit: 'cover'}}
+        />
+
+        <Stack space={4} padding={4}>
+          <Attribution
+            photographerName={eff.photographerName}
+            photographerPage={eff.photographerPage}
+            photoPage={eff.photoPage}
+          />
 
           <Text size={1} muted>
-            Editors never need terminal commands. Use the buttons below to fetch a suggestion, cycle to the next photo,
-            or dismiss suggestions for this sighting.
+            Verify the species in the photo matches <strong>{speciesName || 'this sighting'}</strong> before confirming.
           </Text>
 
-          <Flex gap={2} wrap="wrap">
-            <Button
-              tone="primary"
-              mode="default"
-              text={hasSuggestion ? 'Refresh suggestion' : 'Suggest image'}
-              onClick={() => run('suggest')}
-              disabled={!docId || busyMode != null}
-              loading={busyMode === 'suggest'}
-            />
+          <Flex gap={2} wrap="wrap" align="center">
             <Button
               tone="positive"
               mode="default"
-              text={hasCardImage ? 'Card image set' : 'Confirm → set Card image'}
+              text="Use this photo"
               onClick={() => run('confirm')}
-              disabled={!docId || !hasSuggestion || hasCardImage || busyMode != null}
+              disabled={isBusy}
               loading={busyMode === 'confirm'}
             />
             <Button
               tone="default"
-              mode="default"
-              text="Next suggestion"
+              mode="ghost"
+              text="Try another"
               onClick={() => run('regenerate')}
-              disabled={!docId || !isPending || busyMode != null}
+              disabled={isBusy}
               loading={busyMode === 'regenerate'}
             />
-            <Button
-              tone="critical"
-              mode="ghost"
-              text="Dismiss"
-              onClick={() => run('dismiss')}
-              disabled={!docId || busyMode != null}
-              loading={busyMode === 'dismiss'}
-            />
+            {/* Skip sits at the far right — destructive but recoverable */}
+            <div style={{marginLeft: 'auto'}}>
+              <Button
+                tone="critical"
+                mode="bleed"
+                text="Skip"
+                onClick={() => run('dismiss')}
+                disabled={isBusy}
+                loading={busyMode === 'dismiss'}
+              />
+            </div>
           </Flex>
-
-          <Stack space={2}>
-            <Text size={1} muted>
-              <strong>Search</strong>: {manualQuery ? 'Manual override' : 'Auto'} · page {effective.suggestedCoverSearchPage}
-            </Text>
-            {effective.suggestedCoverSearchQueryLast ? (
-              <Text size={1} muted>
-                <strong>Query</strong>: {effective.suggestedCoverSearchQueryLast}
-              </Text>
-            ) : null}
-            {speciesName ? (
-              <Text size={1} muted>
-                <strong>Species</strong>: {speciesName}
-                {locationLabel ? ` · ${locationLabel}` : ''}
-              </Text>
-            ) : null}
-          </Stack>
-
-          {hasSuggestion ? (
-            <Card padding={3} radius={2} tone="transparent" shadow={0}>
-              <Stack space={3}>
-                {/* Plain img: Studio bundle; external Unsplash CDN URL is intentional here. */}
-                <img
-                  src={effective.url}
-                  alt=""
-                  width={640}
-                  height={360}
-                  style={{
-                    display: 'block',
-                    width: '100%',
-                    maxHeight: 320,
-                    height: 'auto',
-                    objectFit: 'cover',
-                    borderRadius: 4,
-                  }}
-                />
-
-                <Flex gap={3} wrap="wrap" align="center">
-                  {effective.photoPage ? (
-                    <Text size={1}>
-                      <a href={effective.photoPage} target="_blank" rel="noreferrer">
-                        <LaunchIcon style={{verticalAlign: 'text-bottom', marginRight: 6}} />
-                        Open on Unsplash
-                      </a>
-                    </Text>
-                  ) : null}
-                  {effective.photographerName && effective.photographerPage ? (
-                    <Text size={1}>
-                      Photo by{' '}
-                      <a href={effective.photographerPage} target="_blank" rel="noreferrer">
-                        {effective.photographerName}
-                      </a>{' '}
-                      / Unsplash
-                    </Text>
-                  ) : null}
-                </Flex>
-
-                <Flex gap={2} wrap="wrap">
-                  <Button
-                    mode="ghost"
-                    text="Copy preview URL"
-                    onClick={() => copyToClipboard('Preview URL', effective.url)}
-                    disabled={!effective.url}
-                  />
-                  <Button
-                    mode="ghost"
-                    text="Copy alt draft"
-                    onClick={() => copyToClipboard('Alt draft', effective.altDraft)}
-                    disabled={!effective.altDraft}
-                  />
-                </Flex>
-              </Stack>
-            </Card>
-          ) : (
-            <Card padding={3} radius={2} tone="transparent" shadow={0}>
-              <Text size={1} muted>
-                No preview yet. Click <strong>Suggest image</strong> to fetch one.
-              </Text>
-            </Card>
-          )}
-
-          <Text size={1} muted>
-            To publish the image on the dashboard: add the photo under <strong>Card image</strong> (Unsplash asset source or upload),
-            set <strong>Card image alt text</strong>, then set the workflow radio to <strong>Done</strong> and publish.
-          </Text>
         </Stack>
       </Card>
+    )
+  }
 
-      {/* Keep the underlying workflow field editable for power users */}
-      {renderDefault(props)}
-    </Stack>
+  // ── State: dismissed ───────────────────────────────────────────────────────
+  if (isDismissed) {
+    return (
+      <Card padding={4} radius={2} shadow={1} tone="caution">
+        <Stack space={3}>
+          <Text size={1} weight="semibold">Skipped</Text>
+          <Text size={1} muted>
+            Unsplash suggestions are turned off for this sighting. Click below to try again.
+          </Text>
+          <div>
+            <Button
+              tone="default"
+              mode="default"
+              text="Suggest an image"
+              onClick={() => run('suggest')}
+              disabled={isBusy || !docId}
+              loading={busyMode === 'suggest'}
+            />
+          </div>
+        </Stack>
+      </Card>
+    )
+  }
+
+  // ── State: empty / initial ─────────────────────────────────────────────────
+  return (
+    <Card padding={4} radius={2} shadow={1} tone="default">
+      <Stack space={4}>
+        <Stack space={2}>
+          <Text size={1} weight="semibold">No image yet</Text>
+          <Text size={1} muted>
+            Get an Unsplash photo matched to{' '}
+            <strong>{speciesName || 'this species'}</strong>. You&apos;ll preview it here
+            before anything is published to the dashboard.
+          </Text>
+        </Stack>
+        <div>
+          <Button
+            tone="primary"
+            mode="default"
+            text="Suggest an image"
+            onClick={() => run('suggest')}
+            disabled={isBusy || !docId}
+            loading={busyMode === 'suggest'}
+          />
+        </div>
+        {!docId ? (
+          <Text size={1} muted>
+            Save this sighting first, then suggest an image.
+          </Text>
+        ) : null}
+      </Stack>
+    </Card>
   )
 }
-
