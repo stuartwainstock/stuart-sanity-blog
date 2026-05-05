@@ -58,6 +58,7 @@ This project does **not** use Tailwind. Use **design tokens**, **CSS Modules**, 
 - Colocate **`ComponentName.module.css`** with the component or route; import as `styles` and use `className={styles.foo}`.
 - **`src/lib/pageTypography.ts`** re-exports classes from **`src/styles/pageTypography.module.css`** for shared shell/banner/body copy on CMS pages. Use these for tool/project pages and long-form layouts when appropriate.
 - Storybook stories may use small **`*.stories.module.css`** files for layout-only wrappers.
+- **Design system first**: Before creating new UI, look for an existing component/pattern (atoms/molecules/organisms, existing tool pages, table/map shells, etc.) and reuse it. Prefer extracting a shared component/style when a pattern repeats across routes.
 
 ## Map components (Dynamic/Static split)
 

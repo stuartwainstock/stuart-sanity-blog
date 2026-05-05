@@ -3,12 +3,11 @@
 import {useMemo, useState} from 'react'
 import type {ReactNode} from 'react'
 import Link from 'next/link'
-import Button from '@/components/atoms/Button'
+import {Pagination} from '@/components/atoms/Pagination'
 import {pageBodyGap, pageBodyParagraph, pageSectionHeading} from '@/lib/pageTypography'
 import type {StravaRunTableRow} from '@/lib/strava/types'
 import {RUNS_MAP_WINDOW_DAYS} from '@/lib/strava/constants'
 import dt from '@/components/ui/DataTable.module.css'
-import styles from './StravaRunsTable.module.css'
 
 type Props = {
   runs: StravaRunTableRow[]
@@ -76,34 +75,31 @@ export default function StravaRunsTable({
       </h2>
       {intro !== undefined ? intro : defaultTableIntro(limit)}
       {totalRows > 0 && totalPages > 1 ? (
-        <div className={styles.controls} aria-label="Runs table pagination controls">
-          <div className={styles.controlsLeft}>
-            <Button
-              variant="secondary"
-              size="sm"
-              disabled={!canPrev}
-              onClick={() => setPage((p) => Math.max(0, p - 1))}
-            >
-              Previous
-            </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              disabled={!canNext}
-              onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-            >
-              Next
-            </Button>
-          </div>
-          <div className={styles.controlsRight}>
-            <span className={styles.pageMeta}>
-              Showing {range.from}–{range.to} of {totalRows}
-            </span>
-            <span className={styles.pageMeta}>
-              Page {safePage + 1} of {totalPages}
-            </span>
-          </div>
-        </div>
+        <Pagination
+          ariaLabel="Runs table pagination"
+          prev={{
+            kind: 'button',
+            label: 'Previous',
+            disabled: !canPrev,
+            onClick: () => setPage((p) => Math.max(0, p - 1)),
+          }}
+          next={{
+            kind: 'button',
+            label: 'Next',
+            disabled: !canNext,
+            onClick: () => setPage((p) => Math.min(totalPages - 1, p + 1)),
+          }}
+          meta={
+            <>
+              <span>
+                Showing {range.from}–{range.to} of {totalRows}
+              </span>
+              <span>
+                Page {safePage + 1} of {totalPages}
+              </span>
+            </>
+          }
+        />
       ) : null}
       <div className={`${dt.wrap} ${dt.wrapOnWhite}`}>
         <table className={dt.table}>
@@ -183,24 +179,21 @@ export default function StravaRunsTable({
         </table>
       </div>
       {totalRows > 0 && totalPages > 1 ? (
-        <div className={styles.controlsBottom}>
-          <Button
-            variant="secondary"
-            size="sm"
-            disabled={!canPrev}
-            onClick={() => setPage((p) => Math.max(0, p - 1))}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            disabled={!canNext}
-            onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-          >
-            Next
-          </Button>
-        </div>
+        <Pagination
+          ariaLabel="Runs table pagination"
+          prev={{
+            kind: 'button',
+            label: 'Previous',
+            disabled: !canPrev,
+            onClick: () => setPage((p) => Math.max(0, p - 1)),
+          }}
+          next={{
+            kind: 'button',
+            label: 'Next',
+            disabled: !canNext,
+            onClick: () => setPage((p) => Math.min(totalPages - 1, p + 1)),
+          }}
+        />
       ) : null}
     </section>
   )

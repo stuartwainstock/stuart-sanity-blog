@@ -6,6 +6,7 @@ import {BirdCard} from '@/components/backyard/BirdCard'
 import type {BirdSighting} from '@/components/backyard/BirdCard'
 import PortableText from '@/components/molecules/PortableText'
 import {pageBodyTypography} from '@/lib/pageTypography'
+import {Pagination} from '@/components/atoms/Pagination'
 import styles from './page.module.css'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -16,11 +17,19 @@ interface BirdingGridProps {
   sectionTitle: string
   /** Optional Portable Text intro above the grid. */
   sectionIntroduction?: TypedObject[]
+  pagination: {
+    currentPage: number
+    totalPages: number
+    totalCount: number
+    pageSize: number
+    prevHref: string | null
+    nextHref: string | null
+  }
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export function BirdingGrid({sightings, sectionTitle, sectionIntroduction}: BirdingGridProps) {
+export function BirdingGrid({sightings, sectionTitle, sectionIntroduction, pagination}: BirdingGridProps) {
   const [highContrast, setHighContrast] = useState(true)
 
   if (sightings.length === 0) {
@@ -67,6 +76,27 @@ export function BirdingGrid({sightings, sectionTitle, sectionIntroduction}: Bird
         </div>
       )}
 
+      {pagination.totalPages > 1 ? (
+        <Pagination
+          ariaLabel="Sightings pagination"
+          prev={pagination.prevHref ? {kind: 'link', href: pagination.prevHref, label: 'Previous'} : null}
+          next={pagination.nextHref ? {kind: 'link', href: pagination.nextHref, label: 'Next'} : null}
+          meta={
+            <>
+              <span>
+                Page {pagination.currentPage} of {pagination.totalPages}
+              </span>
+              <span>
+                Showing{' '}
+                {(pagination.currentPage - 1) * pagination.pageSize + 1}–
+                {Math.min(pagination.totalCount, pagination.currentPage * pagination.pageSize)} of{' '}
+                {pagination.totalCount}
+              </span>
+            </>
+          }
+        />
+      ) : null}
+
       <ul className={styles.grid} role="list" aria-label="Bird sightings">
         {sightings.map((sighting) => (
           <li key={sighting._id} className={styles.gridItem}>
@@ -74,6 +104,21 @@ export function BirdingGrid({sightings, sectionTitle, sectionIntroduction}: Bird
           </li>
         ))}
       </ul>
+
+      {pagination.totalPages > 1 ? (
+        <Pagination
+          ariaLabel="Sightings pagination"
+          prev={pagination.prevHref ? {kind: 'link', href: pagination.prevHref, label: 'Previous'} : null}
+          next={pagination.nextHref ? {kind: 'link', href: pagination.nextHref, label: 'Next'} : null}
+          meta={
+            <>
+              <span>
+                Page {pagination.currentPage} of {pagination.totalPages}
+              </span>
+            </>
+          }
+        />
+      ) : null}
     </section>
   )
 }

@@ -2,7 +2,7 @@ import type {Metadata} from 'next'
 import {redirect} from 'next/navigation'
 import Link from 'next/link'
 import {sanityClient, fetchToolProjectPageBirding, getImageUrl} from '@/lib/sanity'
-import {BIRD_SIGHTINGS_QUERY} from '@/lib/queries'
+import {BIRD_SIGHTINGS_COUNT_QUERY, BIRD_SIGHTINGS_PAGE_QUERY} from '@/lib/queries'
 import {syncSightingsAction} from '@/lib/ebird/syncSightings'
 import type {BirdSighting} from '@/components/backyard/BirdCard'
 import type {SanityImage} from '@/lib/types'
@@ -20,6 +20,8 @@ import styles from './page.module.css'
 // ── Revalidation ──────────────────────────────────────────────────────────────
 
 export const revalidate = 60
+
+const SIGHTINGS_PER_PAGE = 24
 
 // ── Metadata ──────────────────────────────────────────────────────────────────
 
@@ -75,6 +77,7 @@ interface BirdingDashboardPageProps {
     created?: string
     skipped?: string
     sync_error?: string
+    page?: string
   }>
 }
 
@@ -85,15 +88,36 @@ type BirdSightingSanityRow = BirdSighting & {
 }
 
 export default async function BirdingDashboardPage({searchParams}: BirdingDashboardPageProps) {
-  const [params, pageCopy, rawSightings] = await Promise.all([
-    searchParams,
-    fetchToolProjectPageBirding(),
-    sanityClient.fetch<BirdSightingSanityRow[]>(
-      BIRD_SIGHTINGS_QUERY,
-      {},
-      {useCdn: false, next: {revalidate}},
-    ),
-  ])
+  const params = await searchParams
+  const pageCopy = await fetchToolProjectPageBirding()
+
+  const requestedPage = Math.max(1, Number(params.page ?? 1) || 1)
+
+  const totalSightings = await sanityClient.fetch<number>(
+    BIRD_SIGHTINGS_COUNT_QUERY,
+    {},
+    {useCdn: false, next: {revalidate}},
+  )
+  const totalPages = Math.max(1, Math.ceil(totalSightings / SIGHTINGS_PER_PAGE))
+  const currentPage = Math.min(requestedPage, totalPages)
+
+  if (requestedPage !== currentPage) {
+    const sp = new URLSearchParams()
+    if (params.synced) sp.set('synced', params.synced)
+    if (params.created) sp.set('created', params.created)
+    if (params.skipped) sp.set('skipped', params.skipped)
+    if (params.sync_error) sp.set('sync_error', params.sync_error)
+    if (currentPage > 1) sp.set('page', String(currentPage))
+    redirect(`/birding-dashboard?${sp.toString()}`)
+  }
+
+  const start = (currentPage - 1) * SIGHTINGS_PER_PAGE
+  const end = start + SIGHTINGS_PER_PAGE
+  const rawSightings = await sanityClient.fetch<BirdSightingSanityRow[]>(
+    BIRD_SIGHTINGS_PAGE_QUERY,
+    {start, end},
+    {useCdn: false, next: {revalidate}},
+  )
 
   const sightings: BirdSighting[] = rawSightings.map((s) => ({
     _id: s._id,
@@ -128,6 +152,19 @@ export default async function BirdingDashboardPage({searchParams}: BirdingDashbo
   const syncError = params.sync_error
     ? decodeURIComponent(params.sync_error)
     : null
+
+  const pagingParams = new URLSearchParams()
+  if (params.synced) pagingParams.set('synced', params.synced)
+  if (params.created) pagingParams.set('created', params.created)
+  if (params.skipped) pagingParams.set('skipped', params.skipped)
+  if (params.sync_error) pagingParams.set('sync_error', params.sync_error)
+  const pageHref = (page: number) => {
+    const sp = new URLSearchParams(pagingParams)
+    if (page > 1) sp.set('page', String(page))
+    else sp.delete('page')
+    const qs = sp.toString()
+    return qs ? `/birding-dashboard?${qs}` : '/birding-dashboard'
+  }
 
   const heroIntro =
     pageCopy?.heroIntroduction && pageCopy.heroIntroduction.length > 0 ? (
@@ -206,7 +243,7 @@ export default async function BirdingDashboardPage({searchParams}: BirdingDashbo
           </form>
 
           <p className={styles.syncMeta}>
-            {sightings.length} sighting{sightings.length !== 1 ? 's' : ''} in Sanity
+            {totalSightings} sighting{totalSightings !== 1 ? 's' : ''} in Sanity
           </p>
 
           {synced && (
@@ -226,6 +263,14 @@ export default async function BirdingDashboardPage({searchParams}: BirdingDashbo
           sightings={sightings}
           sectionTitle={sightingsSectionTitle}
           sectionIntroduction={pageCopy?.birdingSightingsIntroduction}
+          pagination={{
+            currentPage,
+            totalPages,
+            totalCount: totalSightings,
+            pageSize: SIGHTINGS_PER_PAGE,
+            prevHref: currentPage > 1 ? pageHref(currentPage - 1) : null,
+            nextHref: currentPage < totalPages ? pageHref(currentPage + 1) : null,
+          }}
         />
       </main>
     </div>

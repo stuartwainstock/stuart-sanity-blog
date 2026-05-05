@@ -558,6 +558,45 @@ export const BIRD_SIGHTINGS_QUERY = groq`
   }
 `
 
+/** Paginated bird sightings for /birding-dashboard (newest first). */
+export const BIRD_SIGHTINGS_PAGE_QUERY = groq`
+  *[
+    _type == "birdSighting"
+  ] | order(observedOn desc) [$start...$end] {
+    _id,
+    speciesName,
+    speciesCode,
+    observedOn,
+    locationLabel,
+    altText,
+    plumageColors,
+    callAudioUrl,
+    ebirdChecklistUri,
+    latitude,
+    longitude,
+    cardImage {
+      asset->{
+        _id,
+        url
+      },
+      alt
+    },
+    cardImageAlt,
+    imageSuggestionStatus,
+    suggestedCoverProvider,
+    suggestedCoverImageUrl,
+    suggestedCoverImagePageUrl,
+    suggestedCoverPhotographerName,
+    suggestedCoverPhotographerPageUrl,
+    suggestedCoverAltDraft
+  }
+`
+
+/** Total count of bird sightings (for pagination). */
+export const BIRD_SIGHTINGS_COUNT_QUERY = groq`
+  count(*[_type == "birdSighting"])
+`
+
 export const PUBLISHED_RESOURCES_QUERY = groq`
   *[
     _type == "resource" &&
