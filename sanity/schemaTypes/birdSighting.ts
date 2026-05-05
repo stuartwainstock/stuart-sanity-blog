@@ -1,6 +1,7 @@
 import {defineField, defineType} from 'sanity'
 import {EyeOpenIcon, AccessDeniedIcon, EarthGlobeIcon, ImageIcon} from '@sanity/icons'
 import {BirdSightingUnsplashSuggestionPanel} from '../components/BirdSightingUnsplashSuggestionPanel'
+import {BirdSightingAudioSuggestionPanel} from '../components/BirdSightingAudioSuggestionPanel'
 
 export const birdSighting = defineType({
   name: 'birdSighting',
@@ -152,12 +153,42 @@ export const birdSighting = defineType({
       validation: (Rule) => [Rule.max(8).warning('Limit to 8 swatches for visual clarity.')],
     }),
     defineField({
+      name: 'audioSuggestionStatus',
+      title: 'Audio suggestion',
+      type: 'string',
+      group: 'accessibility',
+      initialValue: 'none',
+      options: {
+        list: [
+          {title: 'Done \u2014 no open suggestion', value: 'none'},
+          {title: 'Review pending \u2014 suggestion exists', value: 'pending_review'},
+          {title: 'Dismissed \u2014 do not auto-suggest again', value: 'dismissed'},
+        ],
+        layout: 'radio',
+      },
+      components: {
+        input: BirdSightingAudioSuggestionPanel,
+      },
+    }),
+
+    // \u2500\u2500 Machine-written audio suggestion fields (hidden from editor UI) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+    // All read/written exclusively by the suggest-audio API route.
+    // The BirdSightingAudioSuggestionPanel surfaces everything editors need.
+    defineField({name: 'suggestedAudioUrl', title: 'Suggested audio URL', type: 'url', group: 'accessibility', readOnly: true, hidden: true}),
+    defineField({name: 'suggestedAudioRecordist', title: 'Suggested audio recordist', type: 'string', group: 'accessibility', readOnly: true, hidden: true}),
+    defineField({name: 'suggestedAudioSourceUrl', title: 'Suggested audio source URL', type: 'url', group: 'accessibility', readOnly: true, hidden: true}),
+    defineField({name: 'suggestedAudioType', title: 'Suggested audio type', type: 'string', group: 'accessibility', readOnly: true, hidden: true}),
+    defineField({name: 'suggestedAudioQuality', title: 'Suggested audio quality', type: 'string', group: 'accessibility', readOnly: true, hidden: true}),
+    defineField({name: 'suggestedAudioLength', title: 'Suggested audio length', type: 'string', group: 'accessibility', readOnly: true, hidden: true}),
+    defineField({name: 'suggestedAudioPage', title: 'Suggested audio page', type: 'number', group: 'accessibility', readOnly: true, hidden: true, initialValue: 1}),
+
+    defineField({
       name: 'callAudioUrl',
       title: 'Call Audio URL',
       type: 'url',
       group: 'accessibility',
       description:
-        'Direct URL to an audio file (.mp3 or .ogg) of this species\u2019 call or song. Macaulay Library links are preferred.',
+        'Direct URL to an audio file (.mp3 or .ogg) of this species\u2019 call or song. Set automatically when you confirm a Xeno-canto suggestion above, or enter a URL manually.',
       validation: (Rule) => [
         Rule.uri({scheme: ['http', 'https']}).error('Must be a valid http or https URL.'),
       ],

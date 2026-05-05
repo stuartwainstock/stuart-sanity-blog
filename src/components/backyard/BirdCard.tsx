@@ -34,6 +34,9 @@ export interface BirdSighting {
   suggestedCoverAltDraft?: string | null
   suggestedCoverProvider?: string | null
   imageSuggestionStatus?: string | null
+  /** Xeno-canto attribution — persists after confirm so BirdCard can credit the recordist. */
+  suggestedAudioRecordist?: string | null
+  suggestedAudioSourceUrl?: string | null
 }
 
 interface BirdCardProps {
@@ -144,6 +147,8 @@ export function BirdCard({sighting, highContrast = false}: BirdCardProps) {
     suggestedCoverAltDraft,
     suggestedCoverProvider,
     imageSuggestionStatus,
+    suggestedAudioRecordist,
+    suggestedAudioSourceUrl,
   } = sighting
 
   const formattedDate = observedOn
@@ -284,7 +289,29 @@ export function BirdCard({sighting, highContrast = false}: BirdCardProps) {
 
       <footer className={styles.cardFooter}>
         {callAudioUrl && (
-          <AudioButton url={callAudioUrl} speciesName={speciesName} />
+          <>
+            <AudioButton url={callAudioUrl} speciesName={speciesName} />
+            {(suggestedAudioRecordist?.trim() || suggestedAudioSourceUrl?.trim()) && (
+              <p className={styles.audioAttribution}>
+                {suggestedAudioRecordist?.trim() ? (
+                  <>Recording by {suggestedAudioRecordist.trim()} on </>
+                ) : (
+                  <>Recording on </>
+                )}
+                {suggestedAudioSourceUrl?.trim() ? (
+                  <a
+                    href={suggestedAudioSourceUrl.trim()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Xeno-canto
+                  </a>
+                ) : (
+                  'Xeno-canto'
+                )}
+              </p>
+            )}
+          </>
         )}
 
         {ebirdChecklistUri && (

@@ -85,6 +85,8 @@ type BirdSightingSanityRow = BirdSighting & {
   cardImage?: SanityImage | null
   cardImageAlt?: string | null
   suggestedCoverAltDraft?: string | null
+  suggestedAudioRecordist?: string | null
+  suggestedAudioSourceUrl?: string | null
 }
 
 export default async function BirdingDashboardPage({searchParams}: BirdingDashboardPageProps) {
@@ -140,6 +142,8 @@ export default async function BirdingDashboardPage({searchParams}: BirdingDashbo
     suggestedCoverAltDraft: s.suggestedCoverAltDraft?.trim() || null,
     suggestedCoverProvider: s.suggestedCoverProvider ?? null,
     imageSuggestionStatus: s.imageSuggestionStatus ?? null,
+    suggestedAudioRecordist: s.suggestedAudioRecordist?.trim() || null,
+    suggestedAudioSourceUrl: s.suggestedAudioSourceUrl?.trim() || null,
   }))
 
   const pageTitle = pageCopy?.pageTitle?.trim() || 'Birding Dashboard'

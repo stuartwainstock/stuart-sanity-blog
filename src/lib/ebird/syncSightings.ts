@@ -5,6 +5,7 @@ import {
   fetchAllSpeciesObservations,
   observedOnToSanityDate,
 } from '@/lib/ebird/client'
+import {normalizeXenocantoFileUrl} from '@/lib/birding/xenocantoFileUrl'
 import {sanityClient} from '@/lib/sanity'
 import {getSanityWriteClient} from '@/lib/sanity.server'
 import {EBIRD_DASHBOARD_QUERY} from '@/lib/queries'
@@ -127,6 +128,84 @@ async function suggestUnsplashForBirdSighting(args: {
     suggestedCoverSearchPage: apiPage,
     imageSuggestionStatus: 'pending_review',
   }
+}
+
+// ── Xeno-canto audio suggestion ───────────────────────────────────────────────
+
+type XenocantoAudioSuggestion = {
+  audioSuggestionStatus: 'pending_review'
+  suggestedAudioUrl: string
+  suggestedAudioRecordist: string | null
+  suggestedAudioSourceUrl: string | null
+  suggestedAudioType: string | null
+  suggestedAudioQuality: string | null
+  suggestedAudioLength: string | null
+  suggestedAudioPage: number
+}
+
+function buildXenocantoQuery(speciesName: string, speciesCode: string): string[] {
+  const name = `"${(speciesName || '').trim() || 'bird'}"`
+  const code = (speciesCode || '').trim()
+  const candidates = [
+    `${name} q:A type:song`,
+    `${name} q:A type:call`,
+    `${name} q:A`,
+    `${name} q:B type:song`,
+    `${name} q:B`,
+    `${name}`,
+    ...(code ? [`${code} q:A`, code] : []),
+  ]
+  return [...new Set(candidates)]
+}
+
+async function suggestXenocantoForBirdSighting(args: {
+  speciesName: string
+  speciesCode: string
+  page?: number
+}): Promise<XenocantoAudioSuggestion | null> {
+  const queries = buildXenocantoQuery(args.speciesName, args.speciesCode)
+  const page = Math.max(1, args.page ?? 1)
+
+  for (const q of queries) {
+    try {
+      const u = new URL('https://xeno-canto.org/api/2/recordings')
+      u.searchParams.set('query', q)
+      u.searchParams.set('page', String(page))
+
+      const res = await fetch(u.toString(), {
+        headers: {'User-Agent': 'stuartwainstock.com birding dashboard'},
+      })
+      if (!res.ok) continue
+
+      const json = await res.json().catch(() => null)
+      if (!json || !Array.isArray(json.recordings) || json.recordings.length === 0) continue
+
+      const rec = json.recordings[0] as Record<string, unknown>
+      const fileUrl = typeof rec.file === 'string' ? rec.file.trim() : ''
+      if (!fileUrl) continue
+
+      const sourceUrl =
+        typeof rec.url === 'string'
+          ? rec.url.startsWith('http')
+            ? rec.url.trim()
+            : `https:${rec.url.trim()}`
+          : null
+
+      return {
+        audioSuggestionStatus: 'pending_review',
+        suggestedAudioUrl: normalizeXenocantoFileUrl(fileUrl),
+        suggestedAudioRecordist: typeof rec.rec === 'string' ? rec.rec.trim() || null : null,
+        suggestedAudioSourceUrl: sourceUrl,
+        suggestedAudioType: typeof rec.type === 'string' ? rec.type.trim() || null : null,
+        suggestedAudioQuality: typeof rec.q === 'string' ? rec.q.trim() || null : null,
+        suggestedAudioLength: typeof rec.length === 'string' ? rec.length.trim() || null : null,
+        suggestedAudioPage: page,
+      }
+    } catch {
+      // Non-blocking — try next query
+    }
+  }
+  return null
 }
 
 // ── Sync result ───────────────────────────────────────────────────────────────
@@ -255,8 +334,8 @@ export async function syncSightingsAction(): Promise<SyncSightingsResult> {
 
     await transaction.commit()
 
-    // 5. Smooth editorial workflow: generate Unsplash suggestion for newly created docs
-    // (best-effort; missing UNSPLASH_ACCESS_KEY is fine).
+    // 5. Smooth editorial workflow: generate Unsplash image + Xeno-canto audio suggestions
+    // for newly created docs (best-effort; failures are non-blocking).
     if (createdIds.length > 0) {
       const createdDocs = await client.fetch<
         {
@@ -267,6 +346,9 @@ export async function syncSightingsAction(): Promise<SyncSightingsResult> {
           cardImage?: unknown
           imageSuggestionStatus?: string
           suggestedCoverImageUrl?: string
+          callAudioUrl?: string
+          audioSuggestionStatus?: string
+          suggestedAudioUrl?: string
         }[]
       >(
         `*[_type == "birdSighting" && _id in $ids]{
@@ -276,7 +358,10 @@ export async function syncSightingsAction(): Promise<SyncSightingsResult> {
           locationLabel,
           cardImage,
           imageSuggestionStatus,
-          suggestedCoverImageUrl
+          suggestedCoverImageUrl,
+          callAudioUrl,
+          audioSuggestionStatus,
+          suggestedAudioUrl
         }`,
         {ids: createdIds}
       )
@@ -284,19 +369,37 @@ export async function syncSightingsAction(): Promise<SyncSightingsResult> {
       // Keep this bounded so the sync button stays snappy.
       const maxToSuggest = Math.min(10, createdDocs.length)
       for (const doc of createdDocs.slice(0, maxToSuggest)) {
-        if (doc.cardImage) continue
-        if (doc.imageSuggestionStatus === 'dismissed') continue
-        if (typeof doc.suggestedCoverImageUrl === 'string' && doc.suggestedCoverImageUrl.trim()) continue
+        // Run image and audio suggestions in parallel — both are best-effort.
+        const [imageSuggestion, audioSuggestion] = await Promise.all([
+          // Image: skip if card image already set, dismissed, or suggestion already pending.
+          (doc.cardImage || doc.imageSuggestionStatus === 'dismissed' ||
+           (typeof doc.suggestedCoverImageUrl === 'string' && doc.suggestedCoverImageUrl.trim()))
+            ? Promise.resolve(null)
+            : suggestUnsplashForBirdSighting({
+                speciesName: doc.speciesName,
+                speciesCode: doc.speciesCode,
+                locationLabel: doc.locationLabel ?? null,
+                page: 1,
+              }),
 
-        const suggestion = await suggestUnsplashForBirdSighting({
-          speciesName: doc.speciesName,
-          speciesCode: doc.speciesCode,
-          locationLabel: doc.locationLabel ?? null,
-          page: 1,
-        })
-        if (!suggestion) continue
+          // Audio: skip if callAudioUrl already set, dismissed, or suggestion already pending.
+          (doc.callAudioUrl || doc.audioSuggestionStatus === 'dismissed' ||
+           (typeof doc.suggestedAudioUrl === 'string' && doc.suggestedAudioUrl.trim()))
+            ? Promise.resolve(null)
+            : suggestXenocantoForBirdSighting({
+                speciesName: doc.speciesName,
+                speciesCode: doc.speciesCode,
+                page: 1,
+              }),
+        ])
 
-        await client.patch(doc._id).set(suggestion).commit()
+        const patch = {
+          ...(imageSuggestion ?? {}),
+          ...(audioSuggestion ?? {}),
+        }
+        if (Object.keys(patch).length > 0) {
+          await client.patch(doc._id).set(patch).commit()
+        }
       }
     }
 

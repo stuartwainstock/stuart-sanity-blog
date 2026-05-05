@@ -187,8 +187,8 @@
 .cardFooter {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 0.75rem;
+  align-items: flex-start;
+  gap: 0.5rem 0.75rem;
   margin-top: auto;
   padding-top: 0.5rem;
   border-top: 1px solid var(--card-border);
@@ -260,6 +260,26 @@
   font-size: 0.8125rem;
   color: var(--card-meta);
   margin: 0;
+}
+
+/* ── Audio attribution ─────────────────────────────────────────────────────── */
+
+.audioAttribution {
+  font-size: 0.75rem;
+  color: var(--card-meta);
+  margin: 0;
+  line-height: 1.5;
+  flex-basis: 100%; /* pushes to its own row below the button */
+}
+
+.audioAttribution a {
+  color: var(--card-caption-link);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.audioAttribution a:hover {
+  color: var(--color-link-hover);
 }
 
 /* ── Checklist link ────────────────────────────────────────────────────────── */

@@ -554,7 +554,9 @@ export const BIRD_SIGHTINGS_QUERY = groq`
     suggestedCoverImagePageUrl,
     suggestedCoverPhotographerName,
     suggestedCoverPhotographerPageUrl,
-    suggestedCoverAltDraft
+    suggestedCoverAltDraft,
+    suggestedAudioRecordist,
+    suggestedAudioSourceUrl
   }
 `
 
@@ -588,7 +590,9 @@ export const BIRD_SIGHTINGS_PAGE_QUERY = groq`
     suggestedCoverImagePageUrl,
     suggestedCoverPhotographerName,
     suggestedCoverPhotographerPageUrl,
-    suggestedCoverAltDraft
+    suggestedCoverAltDraft,
+    suggestedAudioRecordist,
+    suggestedAudioSourceUrl
   }
 `
 
