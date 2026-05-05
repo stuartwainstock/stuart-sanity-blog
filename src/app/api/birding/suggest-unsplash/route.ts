@@ -1,5 +1,5 @@
 import type {NextRequest} from 'next/server'
-import {createClient} from '@sanity/client'
+import {getSanityWriteClient} from '@/lib/sanity.server'
 import {hasValidAdminSession} from '@/lib/admin/session'
 
 export const dynamic = 'force-dynamic'
@@ -103,20 +103,6 @@ type UnsplashSuggestionPatch = {
   imageSuggestionStatus: 'pending_review'
 }
 
-function getWriteClient() {
-  const token = process.env.SANITY_API_WRITE_TOKEN
-  if (!token) throw new Error('SANITY_API_WRITE_TOKEN is not set.')
-  const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
-  const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET ?? 'production'
-  if (!projectId) throw new Error('NEXT_PUBLIC_SANITY_PROJECT_ID is not set.')
-  return createClient({
-    projectId,
-    dataset,
-    apiVersion: '2023-05-03',
-    token,
-    useCdn: false,
-  })
-}
 
 function buildSearchQuery(speciesName: string, speciesCode: string, locationLabel: string | null): string {
   const name = (speciesName || '').trim() || 'bird'
@@ -311,7 +297,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const client = getWriteClient()
+    const client = getSanityWriteClient()
 
     const candidateIds = (() => {
       const base = id.replace(/^drafts\./, '')

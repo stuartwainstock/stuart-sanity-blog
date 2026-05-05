@@ -71,6 +71,7 @@ export const toolProjectPage = defineType({
       type: 'string',
       group: 'content',
       initialValue: 'Map',
+      hidden: ({document}) => document?.projectKey !== 'runs',
       description: 'Heading above the map (H2).',
     }),
     defineField({
@@ -78,6 +79,7 @@ export const toolProjectPage = defineType({
       title: 'Map section introduction',
       type: 'blockContent',
       group: 'content',
+      hidden: ({document}) => document?.projectKey !== 'runs',
       description: 'Paragraph(s) above the map widget.',
     }),
     defineField({
@@ -86,6 +88,7 @@ export const toolProjectPage = defineType({
       type: 'string',
       group: 'content',
       initialValue: 'Recent runs',
+      hidden: ({document}) => document?.projectKey !== 'runs',
       description: 'Heading above the data table (H2).',
     }),
     defineField({
@@ -93,6 +96,7 @@ export const toolProjectPage = defineType({
       title: 'Table section introduction',
       type: 'blockContent',
       group: 'content',
+      hidden: ({document}) => document?.projectKey !== 'runs',
       description: 'Paragraph(s) above the table.',
     }),
     defineField({

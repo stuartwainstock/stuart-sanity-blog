@@ -1,12 +1,12 @@
 'use server'
 
-import {createClient} from '@sanity/client'
 import {resolveEbirdDashboard} from '@/lib/ebird/resolveConfig'
 import {
   fetchAllSpeciesObservations,
   observedOnToSanityDate,
 } from '@/lib/ebird/client'
 import {sanityClient} from '@/lib/sanity'
+import {getSanityWriteClient} from '@/lib/sanity.server'
 import {EBIRD_DASHBOARD_QUERY} from '@/lib/queries'
 import type {EbirdDashboard} from '@/lib/types'
 
@@ -20,24 +20,6 @@ type UnsplashSuggestion = {
   suggestedCoverSearchQueryLast: string
   suggestedCoverSearchPage: number
   imageSuggestionStatus: 'pending_review'
-}
-
-// ── Sanity write client ───────────────────────────────────────────────────────
-// Uses SANITY_API_WRITE_TOKEN (Editor permission) — server-only, never exposed
-// to the browser. This is NOT the Sanity MCP (a dev tool); it is the standard
-// @sanity/client write path used by production Server Actions.
-
-function getWriteClient() {
-  const token = process.env.SANITY_API_WRITE_TOKEN
-  if (!token) throw new Error('SANITY_API_WRITE_TOKEN is not set.')
-
-  return createClient({
-    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET ?? 'production',
-    apiVersion: '2023-05-03',
-    token,
-    useCdn: false,
-  })
 }
 
 // ── ID sanitisation ───────────────────────────────────────────────────────────
@@ -209,7 +191,7 @@ export async function syncSightingsAction(): Promise<SyncSightingsResult> {
     }
 
     // 4. Upsert into Sanity
-    const client = getWriteClient()
+    const client = getSanityWriteClient()
 
     // Check which _ids already exist so we don't overwrite accessibility fields
     const incomingIds = observations.map((o) => toSanityId(o.id))

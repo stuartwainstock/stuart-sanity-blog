@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@sanity/client'
+import { getSanityWriteClient } from '@/lib/sanity.server'
 import ogs from 'open-graph-scraper'
 import { promises as dns } from 'node:dns'
 
@@ -151,13 +151,7 @@ async function createResourceFromUrl(url: string) {
     const normalizedUrl = normalizeUrl(url)
     const sourceDomain = getSourceDomain(normalizedUrl)
 
-    const client = createClient({
-      projectId,
-      dataset,
-      apiVersion: '2023-05-03',
-      token: sanityWriteToken,
-      useCdn: false,
-    })
+    const client = getSanityWriteClient()
 
     const existing = await client.fetch<{
       _id: string

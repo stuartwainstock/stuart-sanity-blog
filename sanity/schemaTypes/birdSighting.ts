@@ -77,8 +77,6 @@ export const birdSighting = defineType({
         ],
         layout: 'radio',
       },
-      description:
-        'Use the panel above to fetch suggestions from Unsplash. There is no separate approve toggle: publishing means setting Card image + Card image alt.',
       components: {
         input: BirdSightingUnsplashSuggestionPanel,
       },
@@ -128,8 +126,8 @@ export const birdSighting = defineType({
       description:
         'Screen reader description of this sighting. Describe what a sighted person would see: species, plumage, posture, setting.',
       validation: (Rule) => [
-        Rule.required().warning(
-          'Alt text is required for screen reader accessibility. Add a descriptive sentence.'
+        Rule.required().error(
+          'Alt text is required for screen reader accessibility. Add a descriptive sentence before publishing.'
         ),
         Rule.min(20).warning('Alt text should be at least 20 characters to be useful.'),
         Rule.max(300).warning('Keep alt text under 300 characters.'),
