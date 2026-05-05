@@ -177,11 +177,11 @@ export function BirdSightingUnsplashSuggestionPanel(props: StringInputProps) {
       if (mode === 'dismiss') {
         onChange(PatchEvent.from(set('dismissed')))
       } else if (mode === 'confirm') {
-        // Server downloaded the image and uploaded it to Sanity — apply the returned asset ref
-        const patches = [set('none')]
-        if (patch?.cardImage) patches.push(set(patch.cardImage, ['cardImage']))
-        if (typeof patch?.cardImageAlt === 'string') patches.push(set(patch.cardImageAlt, ['cardImageAlt']))
-        onChange(PatchEvent.from(patches))
+        // The API route already wrote cardImage, cardImageAlt, and imageSuggestionStatus:'none'
+        // directly to Sanity server-side. Only update this field's local value here —
+        // passing doc-root paths through onChange would scope them to
+        // imageSuggestionStatus.cardImage instead of the document-level field.
+        onChange(PatchEvent.from(set('none')))
         toast.push({status: 'success', title: 'Photo added to card image.'})
       } else {
         onChange(PatchEvent.from(set('pending_review')))
