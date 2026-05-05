@@ -1,3 +1,5 @@
+import 'server-only'
+
 /**
  * Server-only Sanity write client factory.
  *
