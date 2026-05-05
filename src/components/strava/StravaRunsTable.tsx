@@ -91,12 +91,8 @@ export default function StravaRunsTable({
           }}
           meta={
             <>
-              <span>
-                Showing {range.from}–{range.to} of {totalRows}
-              </span>
-              <span>
-                Page {safePage + 1} of {totalPages}
-              </span>
+              <span>Page {safePage + 1} of {totalPages}</span>
+              <span>Showing {range.from}–{range.to} of {totalRows}</span>
             </>
           }
         />
@@ -193,6 +189,12 @@ export default function StravaRunsTable({
             disabled: !canNext,
             onClick: () => setPage((p) => Math.min(totalPages - 1, p + 1)),
           }}
+          meta={
+            <>
+              <span>Page {safePage + 1} of {totalPages}</span>
+              <span>Showing {range.from}–{range.to} of {totalRows}</span>
+            </>
+          }
         />
       ) : null}
     </section>

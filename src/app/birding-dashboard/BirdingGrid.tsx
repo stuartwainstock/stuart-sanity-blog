@@ -83,9 +83,7 @@ export function BirdingGrid({sightings, sectionTitle, sectionIntroduction, pagin
           next={pagination.nextHref ? {kind: 'link', href: pagination.nextHref, label: 'Next'} : null}
           meta={
             <>
-              <span>
-                Page {pagination.currentPage} of {pagination.totalPages}
-              </span>
+              <span>Page {pagination.currentPage} of {pagination.totalPages}</span>
               <span>
                 Showing{' '}
                 {(pagination.currentPage - 1) * pagination.pageSize + 1}–
@@ -112,8 +110,12 @@ export function BirdingGrid({sightings, sectionTitle, sectionIntroduction, pagin
           next={pagination.nextHref ? {kind: 'link', href: pagination.nextHref, label: 'Next'} : null}
           meta={
             <>
+              <span>Page {pagination.currentPage} of {pagination.totalPages}</span>
               <span>
-                Page {pagination.currentPage} of {pagination.totalPages}
+                Showing{' '}
+                {(pagination.currentPage - 1) * pagination.pageSize + 1}–
+                {Math.min(pagination.totalCount, pagination.currentPage * pagination.pageSize)} of{' '}
+                {pagination.totalCount}
               </span>
             </>
           }
