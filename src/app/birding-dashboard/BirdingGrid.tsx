@@ -21,7 +21,7 @@ interface BirdingGridProps {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export function BirdingGrid({sightings, sectionTitle, sectionIntroduction}: BirdingGridProps) {
-  const [highContrast, setHighContrast] = useState(false)
+  const [highContrast, setHighContrast] = useState(true)
 
   if (sightings.length === 0) {
     return (
