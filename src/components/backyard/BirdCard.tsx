@@ -2,6 +2,9 @@
 
 import Image from 'next/image'
 import {useRef, useState} from 'react'
+import type {ImageLoader} from 'next/image'
+import {urlFor} from '@/lib/sanity'
+import type {SanityImage} from '@/lib/types'
 import styles from './BirdCard.module.css'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -18,8 +21,8 @@ export interface BirdSighting {
   ebirdChecklistUri: string | null
   latitude: number | null
   longitude: number | null
-  /** Resolved Sanity CDN URL (server maps `cardImage` → URL for next/image). */
-  cardImageUrl?: string | null
+  /** Sanity image for the published card image. */
+  cardImage?: SanityImage | null
   /** Alt text for the card photo; falls back to `altText` when empty. */
   cardImageAlt?: string | null
   /** Unsplash suggestion URL (dashboard only: shown while pending review and no `cardImage`). */
@@ -27,6 +30,8 @@ export interface BirdSighting {
   suggestedCoverImagePageUrl?: string | null
   suggestedCoverPhotographerName?: string | null
   suggestedCoverPhotographerPageUrl?: string | null
+  /** Draft alt text suggestion for the Unsplash preview (Studio-only helper). */
+  suggestedCoverAltDraft?: string | null
   suggestedCoverProvider?: string | null
   imageSuggestionStatus?: string | null
 }
@@ -130,12 +135,13 @@ export function BirdCard({sighting, highContrast = false}: BirdCardProps) {
     plumageColors,
     callAudioUrl,
     ebirdChecklistUri,
-    cardImageUrl,
+    cardImage,
     cardImageAlt,
     suggestedCoverImageUrl,
     suggestedCoverImagePageUrl,
     suggestedCoverPhotographerName,
     suggestedCoverPhotographerPageUrl,
+    suggestedCoverAltDraft,
     suggestedCoverProvider,
     imageSuggestionStatus,
   } = sighting
@@ -155,12 +161,12 @@ export function BirdCard({sighting, highContrast = false}: BirdCardProps) {
     `${speciesName} — sighting card`
 
   const suggestedPreviewUrl =
-    !cardImageUrl &&
+    !cardImage?.asset &&
     imageSuggestionStatus === 'pending_review' &&
     suggestedCoverImageUrl?.trim()
       ? suggestedCoverImageUrl.trim()
       : null
-  const heroImageUrl = cardImageUrl || suggestedPreviewUrl
+  const heroImageUrl = cardImage?.asset ? cardImage : suggestedPreviewUrl
   const isSuggestedPreview = Boolean(suggestedPreviewUrl)
   const hasUnsplashAttributionBits =
     Boolean(suggestedCoverImagePageUrl?.trim()) ||
@@ -169,6 +175,20 @@ export function BirdCard({sighting, highContrast = false}: BirdCardProps) {
   const showUnsplashAttribution =
     (suggestedCoverProvider === 'unsplash' || isSuggestedPreview) &&
     hasUnsplashAttributionBits
+  const trimmedAltText = altText?.trim() || null
+  const trimmedSuggestedCoverAltDraft = suggestedCoverAltDraft?.trim() || null
+  const sanityCardImageLoader: ImageLoader | undefined =
+    cardImage?.asset
+      ? ({width, quality}) =>
+          urlFor(cardImage)
+            // Keep a consistent 3:2 card aspect; Next will request multiple widths via srcset.
+            .width(width)
+            .height(Math.round((width * 2) / 3))
+            .fit('crop')
+            .auto('format')
+            .quality(quality ?? 85)
+            .url()
+      : undefined
 
   return (
     <article
@@ -182,16 +202,23 @@ export function BirdCard({sighting, highContrast = false}: BirdCardProps) {
           data-preview={isSuggestedPreview || undefined}
         >
           <Image
-            src={heroImageUrl}
+            src={typeof heroImageUrl === 'string' ? heroImageUrl : urlFor(heroImageUrl).width(64).height(43).fit('crop').auto('format').quality(60).url()}
             alt={imageAlt}
             width={720}
             height={480}
             className={styles.cardImage}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            loader={sanityCardImageLoader}
           />
           {isSuggestedPreview ? (
             <figcaption className={styles.previewCaption}>
               Suggested preview — add Card image in Studio to finalize
+              {trimmedSuggestedCoverAltDraft ? (
+                <span className={styles.previewDraftAlt}>
+                  {' '}
+                  (draft alt: {trimmedSuggestedCoverAltDraft})
+                </span>
+              ) : null}
             </figcaption>
           ) : null}
           {showUnsplashAttribution ? (
@@ -245,6 +272,8 @@ export function BirdCard({sighting, highContrast = false}: BirdCardProps) {
           </p>
         )}
       </header>
+
+      {trimmedAltText ? <p className={styles.altText}>{trimmedAltText}</p> : null}
 
       {plumageColors && plumageColors.length > 0 && (
         <div className={styles.swatchSection}>

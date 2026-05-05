@@ -8,6 +8,10 @@ import {useFormValue} from 'sanity'
  * Studio-only: shows an inline preview of the suggested Unsplash image URL so
  * editors do not need to copy the URL into a browser tab to verify the pick.
  */
+type ViteImportMeta = ImportMeta & {
+  env?: Record<string, string | undefined>
+}
+
 export function SuggestedCoverImageUrlInput(props: UrlInputProps) {
   const {renderDefault, value} = props
   const toast = useToast()
@@ -31,7 +35,7 @@ export function SuggestedCoverImageUrlInput(props: UrlInputProps) {
       ''
     const p = typeof fromProcess === 'string' ? fromProcess.trim() : ''
     if (p) return p
-    const metaEnv = (import.meta as any)?.env
+    const metaEnv = (import.meta as ViteImportMeta).env
     const fromMeta =
       (metaEnv?.SANITY_STUDIO_BIRDING_SUGGEST_SECRET ||
         metaEnv?.NEXT_PUBLIC_BIRDING_SUGGEST_SECRET ||

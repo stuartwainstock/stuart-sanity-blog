@@ -108,28 +108,38 @@ async function suggestUnsplashForBirdSighting(args: {
   })
 
   if (!res.ok) return null
-  const json = (await res.json().catch(() => null)) as any
-  const hit = Array.isArray(json?.results) ? json.results[0] : null
+  const json: unknown = await res.json().catch(() => null)
+  const hit =
+    typeof json === 'object' &&
+    json != null &&
+    'results' in json &&
+    Array.isArray((json as {results?: unknown}).results)
+      ? (json as {results: unknown[]}).results[0]
+      : null
   if (!hit) return null
 
-  const urls = hit.urls || {}
-  const user = hit.user || {}
-  const links = hit.links || {}
-  const userLinks = user.links || {}
-  const imageUrl = urls.regular || urls.small || null
+  const hitRecord = hit as Record<string, unknown>
+  const urls = (hitRecord.urls as Record<string, unknown> | undefined) ?? {}
+  const user = (hitRecord.user as Record<string, unknown> | undefined) ?? {}
+  const links = (hitRecord.links as Record<string, unknown> | undefined) ?? {}
+  const userLinks = (user.links as Record<string, unknown> | undefined) ?? {}
+  const imageUrl =
+    (typeof urls.regular === 'string' && urls.regular) ||
+    (typeof urls.small === 'string' && urls.small) ||
+    null
   if (!imageUrl) return null
 
   const altDescription =
-    (typeof hit.alt_description === 'string' && hit.alt_description.trim()) ||
-    (typeof hit.description === 'string' && hit.description.trim()) ||
+    (typeof hitRecord.alt_description === 'string' && hitRecord.alt_description.trim()) ||
+    (typeof hitRecord.description === 'string' && hitRecord.description.trim()) ||
     null
 
   return {
     suggestedCoverProvider: 'unsplash',
     suggestedCoverImageUrl: imageUrl,
-    suggestedCoverImagePageUrl: links.html || null,
+    suggestedCoverImagePageUrl: typeof links.html === 'string' ? links.html : null,
     suggestedCoverPhotographerName: typeof user.name === 'string' ? user.name : null,
-    suggestedCoverPhotographerPageUrl: userLinks.html || null,
+    suggestedCoverPhotographerPageUrl: typeof userLinks.html === 'string' ? userLinks.html : null,
     suggestedCoverAltDraft: buildAltDraft(args.speciesName, args.locationLabel, altDescription),
     suggestedCoverSearchQueryLast: query,
     suggestedCoverSearchPage: apiPage,

@@ -1,4 +1,4 @@
-import {NextResponse, type NextRequest} from 'next/server'
+import type {NextRequest} from 'next/server'
 import {createClient} from '@sanity/client'
 import {hasValidAdminSession} from '@/lib/admin/session'
 
@@ -160,20 +160,30 @@ async function searchUnsplash(query: string, page: number) {
   })
   if (!res.ok) return {ok: false as const, reason: 'http_error' as const}
 
-  const json = (await res.json().catch(() => null)) as any
-  const hit = Array.isArray(json?.results) ? json.results[0] : null
+  const json: unknown = await res.json().catch(() => null)
+  const hit =
+    typeof json === 'object' &&
+    json != null &&
+    'results' in json &&
+    Array.isArray((json as {results?: unknown}).results)
+      ? (json as {results: unknown[]}).results[0]
+      : null
   if (!hit) return {ok: false as const, reason: 'no_results' as const}
 
-  const urls = hit.urls || {}
-  const user = hit.user || {}
-  const links = hit.links || {}
-  const userLinks = user.links || {}
+  const hitRecord = hit as Record<string, unknown>
+  const urls = (hitRecord.urls as Record<string, unknown> | undefined) ?? {}
+  const user = (hitRecord.user as Record<string, unknown> | undefined) ?? {}
+  const links = (hitRecord.links as Record<string, unknown> | undefined) ?? {}
+  const userLinks = (user.links as Record<string, unknown> | undefined) ?? {}
   const altDescription =
-    (typeof hit.alt_description === 'string' && hit.alt_description.trim()) ||
-    (typeof hit.description === 'string' && hit.description.trim()) ||
+    (typeof hitRecord.alt_description === 'string' && hitRecord.alt_description.trim()) ||
+    (typeof hitRecord.description === 'string' && hitRecord.description.trim()) ||
     null
 
-  const imageUrl = urls.regular || urls.small || null
+  const imageUrl =
+    (typeof urls.regular === 'string' && urls.regular) ||
+    (typeof urls.small === 'string' && urls.small) ||
+    null
   if (!imageUrl) return {ok: false as const, reason: 'no_results' as const}
 
   function withAttributionParams(raw: string | null): string | null {
@@ -192,9 +202,11 @@ async function searchUnsplash(query: string, page: number) {
   return {
     ok: true as const,
     imageUrl,
-    photoPageUrl: withAttributionParams(links.html || null),
+    photoPageUrl: withAttributionParams(typeof links.html === 'string' ? links.html : null),
     photographerName: typeof user.name === 'string' ? user.name : null,
-    photographerPageUrl: withAttributionParams(userLinks.html || null),
+    photographerPageUrl: withAttributionParams(
+      typeof userLinks.html === 'string' ? userLinks.html : null
+    ),
     altDescription,
   }
 }
@@ -458,7 +470,7 @@ export async function POST(request: NextRequest) {
     const currentPage = Number(doc.suggestedCoverSearchPage) || 1
     const nextPage = mode === 'regenerate' ? Math.min(10, currentPage + 1) : 1
 
-    let picked: {query: string; hit: any} | null = null
+    let picked: {query: string; hit: Awaited<ReturnType<typeof searchUnsplash>> & {ok: true}} | null = null
     let lastReason: string | null = null
     for (const q of queries) {
       const res = await searchUnsplash(q, nextPage)

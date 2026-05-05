@@ -112,16 +112,15 @@ export const getImageUrl = (source: SanityImage, width?: number, height?: number
   try {
     let imageBuilder = urlFor(source)
     
-    if (width) {
-      imageBuilder = imageBuilder.width(width)
+    if (width && height) {
+      imageBuilder = imageBuilder.width(width).height(height).fit('max')
+    } else if (width) {
+      imageBuilder = imageBuilder.width(width).fit('max')
+    } else if (height) {
+      imageBuilder = imageBuilder.height(height).fit('max')
     }
-    
-    if (height) {
-      imageBuilder = imageBuilder.height(height)
-    }
-    
-    // Add quality parameter for better optimization
-    imageBuilder = imageBuilder.quality(85)
+
+    imageBuilder = imageBuilder.auto('format').quality(85)
     
     const url = imageBuilder.url()
     return url

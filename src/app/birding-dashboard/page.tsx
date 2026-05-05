@@ -81,6 +81,7 @@ interface BirdingDashboardPageProps {
 type BirdSightingSanityRow = BirdSighting & {
   cardImage?: SanityImage | null
   cardImageAlt?: string | null
+  suggestedCoverAltDraft?: string | null
 }
 
 export default async function BirdingDashboardPage({searchParams}: BirdingDashboardPageProps) {
@@ -106,12 +107,13 @@ export default async function BirdingDashboardPage({searchParams}: BirdingDashbo
     ebirdChecklistUri: s.ebirdChecklistUri,
     latitude: s.latitude,
     longitude: s.longitude,
-    cardImageUrl: s.cardImage?.asset ? getImageUrl(s.cardImage, 720, 480) : null,
+    cardImage: s.cardImage?.asset ? s.cardImage : null,
     cardImageAlt: s.cardImageAlt?.trim() || null,
     suggestedCoverImageUrl: s.suggestedCoverImageUrl?.trim() || null,
     suggestedCoverImagePageUrl: s.suggestedCoverImagePageUrl?.trim() || null,
     suggestedCoverPhotographerName: s.suggestedCoverPhotographerName?.trim() || null,
     suggestedCoverPhotographerPageUrl: s.suggestedCoverPhotographerPageUrl?.trim() || null,
+    suggestedCoverAltDraft: s.suggestedCoverAltDraft?.trim() || null,
     suggestedCoverProvider: s.suggestedCoverProvider ?? null,
     imageSuggestionStatus: s.imageSuggestionStatus ?? null,
   }))

@@ -26,10 +26,16 @@ type SuggestionPatch = Partial<{
   suggestedCoverSearchQueryLast: string
   suggestedCoverSearchPage: number
   imageSuggestionStatus: 'none' | 'pending_review' | 'dismissed'
+  cardImage: unknown
+  cardImageAlt: string | null
 }>
 
 function truthyString(v: unknown): string {
   return typeof v === 'string' ? v.trim() : ''
+}
+
+type ViteImportMeta = ImportMeta & {
+  env?: Record<string, string | undefined>
 }
 
 function getBirdingSuggestApiUrl(): string {
@@ -64,7 +70,7 @@ function getBirdingSuggestSecret(): string {
   if (p) return p
 
   // Hosted Studio (Vite) exposes env on import.meta.env at build time.
-  const metaEnv = (import.meta as any)?.env
+  const metaEnv = (import.meta as ViteImportMeta).env
   const fromMeta =
     (metaEnv?.SANITY_STUDIO_BIRDING_SUGGEST_SECRET ||
       metaEnv?.NEXT_PUBLIC_BIRDING_SUGGEST_SECRET ||
@@ -190,11 +196,11 @@ export function BirdSightingUnsplashSuggestionPanel(props: StringInputProps) {
         onChange(PatchEvent.from(set('dismissed')))
       } else if (mode === 'confirm') {
         const nextPatches = [set('none')]
-        if (patch && (patch as any).cardImage) {
-          nextPatches.push(set((patch as any).cardImage, ['cardImage']))
+        if (patch?.cardImage) {
+          nextPatches.push(set(patch.cardImage, ['cardImage']))
         }
-        if (patch && typeof (patch as any).cardImageAlt === 'string') {
-          nextPatches.push(set((patch as any).cardImageAlt, ['cardImageAlt']))
+        if (typeof patch?.cardImageAlt === 'string') {
+          nextPatches.push(set(patch.cardImageAlt, ['cardImageAlt']))
         }
         onChange(PatchEvent.from(nextPatches))
       } else {
