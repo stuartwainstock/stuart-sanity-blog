@@ -1,4 +1,8 @@
 import type {NextRequest} from 'next/server'
+import {
+  fetchBirdSightingByEditorId,
+  pairedBirdSightingId,
+} from '@/lib/birding/fetchBirdSightingByEditorId'
 import {normalizeXenocantoFileUrl} from '@/lib/birding/xenocantoFileUrl'
 import {getSanityWriteClient} from '@/lib/sanity.server'
 import {hasValidAdminSession} from '@/lib/admin/session'
@@ -222,13 +226,11 @@ export async function POST(request: NextRequest) {
   try {
     const client = getSanityWriteClient()
 
-    // Resolve draft + published IDs
-    const base = id.replace(/^drafts\./, '')
-    const draft = `drafts.${base}`
-    const candidateIds = id.startsWith('drafts.') ? [id, base] : [id, draft]
-
-    const doc = await client.fetch<BirdSightingDoc | null>(
-      `*[_type == "birdSighting" && _id in $ids][0]{
+    const triedIds = [id, pairedBirdSightingId(id)]
+    const doc = await fetchBirdSightingByEditorId<BirdSightingDoc>(
+      client,
+      id,
+      `{
         _id,
         speciesName,
         speciesCode,
@@ -239,13 +241,16 @@ export async function POST(request: NextRequest) {
         suggestedAudioSourceUrl,
         suggestedAudioPage
       }`,
-      {ids: candidateIds},
     )
 
     if (!doc) {
       return responseWithCors(
         request,
-        JSON.stringify({message: 'Not found.', triedIds: candidateIds}),
+        JSON.stringify({
+          message: 'Bird sighting not found for this id.',
+          code: 'BIRD_SIGHTING_NOT_FOUND',
+          triedIds,
+        }),
         404,
         {'Content-Type': 'application/json'},
       )
@@ -324,9 +329,10 @@ export async function POST(request: NextRequest) {
         request,
         JSON.stringify({
           message: lastReason === 'no_results' ? 'No Xeno-canto results found.' : `Xeno-canto error: ${lastReason}`,
+          code: lastReason === 'no_results' ? 'NO_XENO_CANTO_RESULTS' : 'XENO_CANTO_ERROR',
           triedQueries: queries.slice(0, 4),
         }),
-        404,
+        422,
         {'Content-Type': 'application/json'},
       )
     }

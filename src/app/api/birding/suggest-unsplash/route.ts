@@ -1,4 +1,8 @@
 import type {NextRequest} from 'next/server'
+import {
+  fetchBirdSightingByEditorId,
+  pairedBirdSightingId,
+} from '@/lib/birding/fetchBirdSightingByEditorId'
 import {getSanityWriteClient} from '@/lib/sanity.server'
 import {hasValidAdminSession} from '@/lib/admin/session'
 
@@ -299,24 +303,17 @@ export async function POST(request: NextRequest) {
   try {
     const client = getSanityWriteClient()
 
-    const candidateIds = (() => {
-      const base = id.replace(/^drafts\./, '')
-      const draft = `drafts.${base}`
-      // Preserve caller order first; then try the other form.
-      return id.startsWith('drafts.') ? [id, base] : [id, draft]
-    })()
-
-    const doc = await client.fetch<
-      (BirdSightingForSuggest & {
+    const triedIds = [id, pairedBirdSightingId(id)]
+    const doc = await fetchBirdSightingByEditorId<
+      BirdSightingForSuggest & {
         suggestedCoverImageUrl?: string | null
         suggestedCoverAltDraft?: string | null
         cardImageAlt?: string | null
-      }) | null
+      }
     >(
-      `*[
-        _type == "birdSighting"
-        && _id in $ids
-      ][0]{
+      client,
+      id,
+      `{
         _id,
         _type,
         speciesName,
@@ -329,13 +326,16 @@ export async function POST(request: NextRequest) {
         suggestedCoverSearchQueryManual,
         suggestedCoverSearchPage
       }`,
-      {ids: candidateIds},
     )
 
     if (!doc) {
       return responseWithCors(
         request,
-        JSON.stringify({message: 'Not found.', triedIds: candidateIds}),
+        JSON.stringify({
+          message: 'Bird sighting not found for this id.',
+          code: 'BIRD_SIGHTING_NOT_FOUND',
+          triedIds,
+        }),
         404,
         {'Content-Type': 'application/json'},
       )
