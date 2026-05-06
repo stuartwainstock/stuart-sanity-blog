@@ -114,16 +114,45 @@ type XenocantoHit = {
  * Prefers quality-A songs, then quality-A any type, then any quality.
  */
 function buildQueries(speciesName: string, speciesCode: string): string[] {
-  const name = `"${speciesName.trim() || 'bird'}"`
+  const raw = (speciesName || '').trim() || 'bird'
   const code = (speciesCode || '').trim()
-  const candidates: string[] = [
-    `${name} q:A type:song`,
-    `${name} q:A type:call`,
-    `${name} q:A`,
-    `${name} q:B type:song`,
-    `${name} q:B`,
-    `${name}`,
+
+  // Xeno-canto is sensitive to punctuation/quotes; try multiple name variants.
+  const cleaned = raw
+    .replace(/\s*\([^)]*\)\s*/g, ' ') // drop parentheticals
+    .replace(/[“”‘’"'.,/#!$%^&*;:{}=\-_`~()]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  const twoWords = cleaned.split(' ').slice(0, 2).join(' ').trim()
+
+  const nameCandidates = [
+    raw,
+    cleaned,
+    twoWords,
   ]
+    .map((s) => s.trim())
+    .filter(Boolean)
+
+  const candidates: string[] = []
+  for (const name of nameCandidates) {
+    // Quoted form can help with multi-word common names, but fails sometimes.
+    const quoted = `"${name}"`
+    candidates.push(
+      `${quoted} q:A type:song`,
+      `${quoted} q:A type:call`,
+      `${quoted} q:A`,
+      `${quoted} q:B type:song`,
+      `${quoted} q:B`,
+      `${quoted}`,
+      `${name} q:A type:song`,
+      `${name} q:A type:call`,
+      `${name} q:A`,
+      `${name} q:B type:song`,
+      `${name} q:B`,
+      `${name}`,
+    )
+  }
   // Fall back to species code in case the common name isn't indexed
   if (code) {
     candidates.push(`${code} q:A`, code)

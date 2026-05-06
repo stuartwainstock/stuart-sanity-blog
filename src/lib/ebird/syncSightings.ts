@@ -144,17 +144,40 @@ type XenocantoAudioSuggestion = {
 }
 
 function buildXenocantoQuery(speciesName: string, speciesCode: string): string[] {
-  const name = `"${(speciesName || '').trim() || 'bird'}"`
+  const raw = (speciesName || '').trim() || 'bird'
+  const cleaned = raw
+    .replace(/\s*\([^)]*\)\s*/g, ' ')
+    .replace(/[“”‘’"'.,/#!$%^&*;:{}=\-_`~()]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+  const twoWords = cleaned.split(' ').slice(0, 2).join(' ').trim()
+
+  const names = [raw, cleaned, twoWords]
+    .map((s) => s.trim())
+    .filter(Boolean)
+
   const code = (speciesCode || '').trim()
-  const candidates = [
-    `${name} q:A type:song`,
-    `${name} q:A type:call`,
-    `${name} q:A`,
-    `${name} q:B type:song`,
-    `${name} q:B`,
-    `${name}`,
-    ...(code ? [`${code} q:A`, code] : []),
-  ]
+
+  const candidates: string[] = []
+  for (const name of names) {
+    const quoted = `"${name}"`
+    candidates.push(
+      `${quoted} q:A type:song`,
+      `${quoted} q:A type:call`,
+      `${quoted} q:A`,
+      `${quoted} q:B type:song`,
+      `${quoted} q:B`,
+      `${quoted}`,
+      `${name} q:A type:song`,
+      `${name} q:A type:call`,
+      `${name} q:A`,
+      `${name} q:B type:song`,
+      `${name} q:B`,
+      `${name}`,
+    )
+  }
+
+  if (code) candidates.push(`${code} q:A`, code)
   return [...new Set(candidates)]
 }
 
