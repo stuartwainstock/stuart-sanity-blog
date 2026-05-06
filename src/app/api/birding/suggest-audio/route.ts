@@ -139,15 +139,15 @@ function buildQueries(speciesName: string, speciesCode: string): string[] {
     // Quoted form can help with multi-word common names, but fails sometimes.
     const quoted = `"${name}"`
     candidates.push(
-      `en:${quoted} q:A type:song`,
-      `en:${quoted} q:A type:call`,
-      `en:${quoted} q:A`,
-      `en:${quoted} q:B type:song`,
-      `en:${quoted} q:B`,
       `en:${quoted}`,
       `en:${quoted} type:song`,
       `en:${quoted} type:call`,
-      `en:${quoted}`,
+      // Quality filters are later fallbacks (XC v3 can reject some combos)
+      `en:${quoted} q:A`,
+      `en:${quoted} q:A type:song`,
+      `en:${quoted} q:A type:call`,
+      `en:${quoted} q:B`,
+      `en:${quoted} q:B type:song`,
       `${quoted} q:A type:song`,
       `${quoted} q:A type:call`,
       `${quoted} q:A`,
@@ -183,7 +183,11 @@ async function searchXenocanto(
     headers: {'User-Agent': 'stuartwainstock.com birding dashboard'},
   })
 
-  if (!res.ok) return {ok: false, reason: `xc_http_${res.status}`}
+  if (!res.ok) {
+    const errJson = (await res.json().catch(() => null)) as {message?: unknown} | null
+    const msg = errJson && typeof errJson.message === 'string' ? errJson.message.trim() : ''
+    return {ok: false, reason: `xc_http_${res.status}${msg ? `:${msg}` : ''}`}
+  }
 
   const json = (await res.json().catch(() => null)) as XenocantoResponse | null
   if (!json || !Array.isArray(json.recordings) || json.recordings.length === 0) {
@@ -379,7 +383,12 @@ export async function POST(request: NextRequest) {
       return responseWithCors(
         request,
         JSON.stringify({
-          message: lastReason === 'no_results' ? 'No Xeno-canto results found.' : `Xeno-canto error: ${lastReason}`,
+          message:
+            lastReason === 'no_results'
+              ? 'No Xeno-canto results found.'
+              : lastReason.startsWith('xc_http_')
+                ? `Xeno-canto error: ${lastReason}`
+                : `Xeno-canto error: ${lastReason}`,
           code: lastReason === 'no_results' ? 'NO_XENO_CANTO_RESULTS' : 'XENO_CANTO_ERROR',
           triedQueries: queries.slice(0, 4),
         }),

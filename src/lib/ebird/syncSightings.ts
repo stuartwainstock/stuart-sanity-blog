@@ -162,15 +162,14 @@ function buildXenocantoQuery(speciesName: string, speciesCode: string): string[]
   for (const name of names) {
     const quoted = `"${name}"`
     candidates.push(
-      `en:${quoted} q:A type:song`,
-      `en:${quoted} q:A type:call`,
-      `en:${quoted} q:A`,
-      `en:${quoted} q:B type:song`,
-      `en:${quoted} q:B`,
       `en:${quoted}`,
       `en:${quoted} type:song`,
       `en:${quoted} type:call`,
-      `en:${quoted}`,
+      `en:${quoted} q:A`,
+      `en:${quoted} q:A type:song`,
+      `en:${quoted} q:A type:call`,
+      `en:${quoted} q:B`,
+      `en:${quoted} q:B type:song`,
       `${quoted} q:A type:song`,
       `${quoted} q:A type:call`,
       `${quoted} q:A`,
