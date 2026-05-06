@@ -139,17 +139,22 @@ function buildQueries(speciesName: string, speciesCode: string): string[] {
     // Quoted form can help with multi-word common names, but fails sometimes.
     const quoted = `"${name}"`
     candidates.push(
+      `en:${quoted} q:A type:song`,
+      `en:${quoted} q:A type:call`,
+      `en:${quoted} q:A`,
+      `en:${quoted} q:B type:song`,
+      `en:${quoted} q:B`,
+      `en:${quoted}`,
+      `en:${quoted} type:song`,
+      `en:${quoted} type:call`,
+      `en:${quoted}`,
       `${quoted} q:A type:song`,
       `${quoted} q:A type:call`,
       `${quoted} q:A`,
-      `${quoted} q:B type:song`,
-      `${quoted} q:B`,
       `${quoted}`,
       `${name} q:A type:song`,
       `${name} q:A type:call`,
       `${name} q:A`,
-      `${name} q:B type:song`,
-      `${name} q:B`,
       `${name}`,
     )
   }
@@ -165,9 +170,14 @@ async function searchXenocanto(
   query: string,
   page: number,
 ): Promise<{ok: true; hit: XenocantoHit} | {ok: false; reason: string}> {
-  const u = new URL('https://xeno-canto.org/api/2/recordings')
+  const key = process.env.XENO_CANTO_API_KEY?.trim()
+  if (!key) return {ok: false, reason: 'missing_xc_key'}
+
+  const u = new URL('https://xeno-canto.org/api/3/recordings')
   u.searchParams.set('query', query)
   u.searchParams.set('page', String(Math.max(1, page)))
+  u.searchParams.set('per_page', '1')
+  u.searchParams.set('key', key)
 
   const res = await fetch(u.toString(), {
     headers: {'User-Agent': 'stuartwainstock.com birding dashboard'},
@@ -354,6 +364,18 @@ export async function POST(request: NextRequest) {
     }
 
     if (!picked) {
+      if (lastReason === 'missing_xc_key') {
+        return responseWithCors(
+          request,
+          JSON.stringify({
+            message:
+              'Xeno-canto API key is not configured on the site. Set XENO_CANTO_API_KEY (server env var) and redeploy.',
+            code: 'MISSING_XENO_CANTO_API_KEY',
+          }),
+          503,
+          {'Content-Type': 'application/json'},
+        )
+      }
       return responseWithCors(
         request,
         JSON.stringify({

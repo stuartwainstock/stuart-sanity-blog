@@ -162,17 +162,22 @@ function buildXenocantoQuery(speciesName: string, speciesCode: string): string[]
   for (const name of names) {
     const quoted = `"${name}"`
     candidates.push(
+      `en:${quoted} q:A type:song`,
+      `en:${quoted} q:A type:call`,
+      `en:${quoted} q:A`,
+      `en:${quoted} q:B type:song`,
+      `en:${quoted} q:B`,
+      `en:${quoted}`,
+      `en:${quoted} type:song`,
+      `en:${quoted} type:call`,
+      `en:${quoted}`,
       `${quoted} q:A type:song`,
       `${quoted} q:A type:call`,
       `${quoted} q:A`,
-      `${quoted} q:B type:song`,
-      `${quoted} q:B`,
       `${quoted}`,
       `${name} q:A type:song`,
       `${name} q:A type:call`,
       `${name} q:A`,
-      `${name} q:B type:song`,
-      `${name} q:B`,
       `${name}`,
     )
   }
@@ -186,14 +191,19 @@ async function suggestXenocantoForBirdSighting(args: {
   speciesCode: string
   page?: number
 }): Promise<XenocantoAudioSuggestion | null> {
+  const key = process.env.XENO_CANTO_API_KEY?.trim()
+  if (!key) return null
+
   const queries = buildXenocantoQuery(args.speciesName, args.speciesCode)
   const page = Math.max(1, args.page ?? 1)
 
   for (const q of queries) {
     try {
-      const u = new URL('https://xeno-canto.org/api/2/recordings')
+      const u = new URL('https://xeno-canto.org/api/3/recordings')
       u.searchParams.set('query', q)
       u.searchParams.set('page', String(page))
+      u.searchParams.set('per_page', '1')
+      u.searchParams.set('key', key)
 
       const res = await fetch(u.toString(), {
         headers: {'User-Agent': 'stuartwainstock.com birding dashboard'},
