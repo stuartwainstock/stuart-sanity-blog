@@ -90,7 +90,7 @@ type XenocantoRecording = {
   file: string       // Direct audio file URL
   'file-name': string
   lic: string        // License URL
-  q: string          // Quality (A–E)
+  q: string          // Quality (A-E)
   length: string     // Duration string e.g. "1:23"
 }
 
@@ -109,60 +109,54 @@ type XenocantoHit = {
   license: string
 }
 
+function xcTagValue(raw: string): string {
+  const t = raw.trim()
+  if (!t) return t
+  // Tag values containing spaces must be quoted, otherwise XC parses the extra
+  // words as bare terms and returns 400.
+  if (/[\s"]/u.test(t)) return `"${t.replaceAll('"', '')}"`
+  return t
+}
+
 /**
- * Build a ranked list of Xeno-canto query strings to try for a given species.
- * Prefers quality-A songs, then quality-A any type, then any quality.
+ * Build a ranked list of Xeno-canto v3 tag-only query strings for a species.
+ *
+ * Xeno-canto v3 rejects any query that contains bare (non-tag) terms.
+ * All search terms must use the `tag:value` format -- no bare words/phrases.
+ *
+ * Strategy:
+ *  1. Full English name (XC taxonomy can differ from eBird -- try all word counts)
+ *  2. First two words (common in XC names like "House Wren" for "Northern House Wren")
+ *  3. First word only (last resort genus-level match)
+ *
+ * Within each name variant, prefer quality-A songs -> calls -> any quality.
  */
-function buildQueries(speciesName: string, speciesCode: string): string[] {
+function buildQueries(speciesName: string): string[] {
   const raw = (speciesName || '').trim() || 'bird'
-  const code = (speciesCode || '').trim()
 
-  // Xeno-canto is sensitive to punctuation/quotes; try multiple name variants.
-  const cleaned = raw
-    .replace(/\s*\([^)]*\)\s*/g, ' ') // drop parentheticals
-    .replace(/[“”‘’"'.,/#!$%^&*;:{}=\-_`~()]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
+  // Lowercase -- XC tag values are case-insensitive in practice, but lowercase
+  // avoids any edge cases in v3's tag parser.
+  const words = raw.toLowerCase().split(/\s+/).filter(Boolean)
+  const fullName  = words.join(' ')
+  const twoWords  = words.slice(0, 2).join(' ')
+  const oneWord   = words[0]
 
-  const twoWords = cleaned.split(' ').slice(0, 2).join(' ').trim()
-
-  const nameCandidates = [
-    raw,
-    cleaned,
-    twoWords,
-  ]
-    .map((s) => s.trim())
-    .filter(Boolean)
+  // Dedupe while preserving order (full -> two -> one)
+  const namesToTry = [...new Set([fullName, twoWords, oneWord])].filter(Boolean)
 
   const candidates: string[] = []
-  for (const name of nameCandidates) {
-    // Quoted form can help with multi-word common names, but fails sometimes.
-    const quoted = `"${name}"`
+  for (const name of namesToTry) {
+    const en = xcTagValue(name)
     candidates.push(
-      `en:${quoted}`,
-      `en:${quoted} type:song`,
-      `en:${quoted} type:call`,
-      // Quality filters are later fallbacks (XC v3 can reject some combos)
-      `en:${quoted} q:A`,
-      `en:${quoted} q:A type:song`,
-      `en:${quoted} q:A type:call`,
-      `en:${quoted} q:B`,
-      `en:${quoted} q:B type:song`,
-      `${quoted} q:A type:song`,
-      `${quoted} q:A type:call`,
-      `${quoted} q:A`,
-      `${quoted}`,
-      `${name} q:A type:song`,
-      `${name} q:A type:call`,
-      `${name} q:A`,
-      `${name}`,
+      `en:${en} type:song q:A`,
+      `en:${en} type:call q:A`,
+      `en:${en} q:A`,
+      `en:${en} type:song`,
+      `en:${en} type:call`,
+      `en:${en}`,
     )
   }
-  // Fall back to species code in case the common name isn't indexed
-  if (code) {
-    candidates.push(`${code} q:A`, code)
-  }
-  // Dedupe
+
   return [...new Set(candidates)]
 }
 
@@ -176,7 +170,7 @@ async function searchXenocanto(
   const u = new URL('https://xeno-canto.org/api/3/recordings')
   u.searchParams.set('query', query)
   u.searchParams.set('page', String(Math.max(1, page)))
-  u.searchParams.set('per_page', '1')
+  // Note: per_page is not a documented v3 parameter -- omit it.
   u.searchParams.set('key', key)
 
   const res = await fetch(u.toString(), {
@@ -185,7 +179,9 @@ async function searchXenocanto(
 
   if (!res.ok) {
     const errJson = (await res.json().catch(() => null)) as {message?: unknown} | null
-    const msg = errJson && typeof errJson.message === 'string' ? errJson.message.trim() : ''
+    const msg = errJson && typeof errJson.message === 'string'
+      ? errJson.message.slice(0, 120).trim()
+      : ''
     return {ok: false, reason: `xc_http_${res.status}${msg ? `:${msg}` : ''}`}
   }
 
@@ -350,13 +346,13 @@ export async function POST(request: NextRequest) {
 
     // ── Suggest / Regenerate ─────────────────────────────────────────────────
     const speciesName = doc.speciesName?.trim() || 'bird'
-    const speciesCode = doc.speciesCode?.trim() || ''
-    const queries = buildQueries(speciesName, speciesCode)
+    const queries = buildQueries(speciesName)
     const currentPage = Number(doc.suggestedAudioPage) || 1
     const nextPage = mode === 'regenerate' ? Math.min(20, currentPage + 1) : 1
 
     let picked: XenocantoHit | null = null
     let lastReason = 'no_results'
+    let lastFailedQuery = ''
 
     for (const q of queries) {
       const result = await searchXenocanto(q, nextPage)
@@ -365,6 +361,7 @@ export async function POST(request: NextRequest) {
         break
       }
       lastReason = result.reason
+      lastFailedQuery = q
     }
 
     if (!picked) {
@@ -385,12 +382,12 @@ export async function POST(request: NextRequest) {
         JSON.stringify({
           message:
             lastReason === 'no_results'
-              ? 'No Xeno-canto results found.'
-              : lastReason.startsWith('xc_http_')
-                ? `Xeno-canto error: ${lastReason}`
-                : `Xeno-canto error: ${lastReason}`,
+              ? 'No Xeno-canto results found for this species.'
+              : `Xeno-canto error: ${lastReason}`,
           code: lastReason === 'no_results' ? 'NO_XENO_CANTO_RESULTS' : 'XENO_CANTO_ERROR',
-          triedQueries: queries.slice(0, 4),
+          // Keep payload bounded; full list can be large.
+          triedQueries: queries.slice(0, 12),
+          lastFailedQuery,
         }),
         422,
         {'Content-Type': 'application/json'},

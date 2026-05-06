@@ -25,7 +25,7 @@ type UnsplashSuggestion = {
 
 // ── ID sanitisation ───────────────────────────────────────────────────────────
 // Sanity _ids cannot contain colons or forward-slashes.
-// BirdObservation.id is `${subId}:${speciesCode}:${obsDt}` — sanitise it.
+// BirdObservation.id is `${subId}:${speciesCode}:${obsDt}` -- sanitise it.
 
 function toSanityId(observationId: string): string {
   return `birdSighting-${observationId.replace(/[^a-zA-Z0-9_-]/g, '-')}`
@@ -143,45 +143,35 @@ type XenocantoAudioSuggestion = {
   suggestedAudioPage: number
 }
 
-function buildXenocantoQuery(speciesName: string, speciesCode: string): string[] {
+function xcTagValue(raw: string): string {
+  const t = raw.trim()
+  if (!t) return t
+  if (/[\s"]/u.test(t)) return `"${t.replaceAll('"', '')}"`
+  return t
+}
+
+// Xeno-canto v3 requires all query terms to be tag-based (tag:value).
+// Bare words/phrases without a tag prefix return 400 "only accepts queries using tags".
+function buildXenocantoQuery(speciesName: string): string[] {
   const raw = (speciesName || '').trim() || 'bird'
-  const cleaned = raw
-    .replace(/\s*\([^)]*\)\s*/g, ' ')
-    .replace(/[“”‘’"'.,/#!$%^&*;:{}=\-_`~()]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-  const twoWords = cleaned.split(' ').slice(0, 2).join(' ').trim()
+  const words = raw.toLowerCase().split(/\s+/).filter(Boolean)
+  const fullName = words.join(' ')
+  const twoWords = words.slice(0, 2).join(' ')
+  const oneWord  = words[0]
 
-  const names = [raw, cleaned, twoWords]
-    .map((s) => s.trim())
-    .filter(Boolean)
-
-  const code = (speciesCode || '').trim()
-
+  const namesToTry = [...new Set([fullName, twoWords, oneWord])].filter(Boolean)
   const candidates: string[] = []
-  for (const name of names) {
-    const quoted = `"${name}"`
+  for (const name of namesToTry) {
+    const en = xcTagValue(name)
     candidates.push(
-      `en:${quoted}`,
-      `en:${quoted} type:song`,
-      `en:${quoted} type:call`,
-      `en:${quoted} q:A`,
-      `en:${quoted} q:A type:song`,
-      `en:${quoted} q:A type:call`,
-      `en:${quoted} q:B`,
-      `en:${quoted} q:B type:song`,
-      `${quoted} q:A type:song`,
-      `${quoted} q:A type:call`,
-      `${quoted} q:A`,
-      `${quoted}`,
-      `${name} q:A type:song`,
-      `${name} q:A type:call`,
-      `${name} q:A`,
-      `${name}`,
+      `en:${en} type:song q:A`,
+      `en:${en} type:call q:A`,
+      `en:${en} q:A`,
+      `en:${en} type:song`,
+      `en:${en} type:call`,
+      `en:${en}`,
     )
   }
-
-  if (code) candidates.push(`${code} q:A`, code)
   return [...new Set(candidates)]
 }
 
@@ -193,7 +183,7 @@ async function suggestXenocantoForBirdSighting(args: {
   const key = process.env.XENO_CANTO_API_KEY?.trim()
   if (!key) return null
 
-  const queries = buildXenocantoQuery(args.speciesName, args.speciesCode)
+  const queries = buildXenocantoQuery(args.speciesName)
   const page = Math.max(1, args.page ?? 1)
 
   for (const q of queries) {
@@ -201,7 +191,6 @@ async function suggestXenocantoForBirdSighting(args: {
       const u = new URL('https://xeno-canto.org/api/3/recordings')
       u.searchParams.set('query', q)
       u.searchParams.set('page', String(page))
-      u.searchParams.set('per_page', '1')
       u.searchParams.set('key', key)
 
       const res = await fetch(u.toString(), {
@@ -234,7 +223,7 @@ async function suggestXenocantoForBirdSighting(args: {
         suggestedAudioPage: page,
       }
     } catch {
-      // Non-blocking — try next query
+      // Non-blocking -- try next query
     }
   }
   return null
@@ -250,7 +239,7 @@ export interface SyncSightingsResult {
 }
 
 /**
- * Server Action — syncs recent eBird observations into Sanity `birdSighting`
+ * Server Action -- syncs recent eBird observations into Sanity `birdSighting`
  * documents. Designed to be called from a <form action={syncSightingsAction}>
  * on the /birding-dashboard page.
  *
@@ -261,7 +250,7 @@ export interface SyncSightingsResult {
  *  4. Upsert each observation as a birdSighting document.
  *     - _id is deterministic so re-running is idempotent.
  *     - Accessibility fields (altText, plumageColors, callAudioUrl) are NOT
- *       overwritten on existing docs — editors enrich those in Sanity Studio.
+ *       overwritten on existing docs -- editors enrich those in Sanity Studio.
  */
 export async function syncSightingsAction(): Promise<SyncSightingsResult> {
   try {
@@ -278,7 +267,7 @@ export async function syncSightingsAction(): Promise<SyncSightingsResult> {
         created: 0,
         skipped: 0,
         message:
-          'No Birding Dashboard eBird config found in Sanity. Configure it in Studio → Birding Dashboard sync scope (eBird).',
+          'No Birding Dashboard eBird config found in Sanity. Configure it in Studio -> Birding Dashboard sync scope (eBird).',
       }
     }
 
@@ -327,7 +316,7 @@ export async function syncSightingsAction(): Promise<SyncSightingsResult> {
         )
 
       if (existingIdSet.has(docId)) {
-        // Document exists — only update non-accessibility fields to preserve
+        // Document exists -- only update non-accessibility fields to preserve
         // any alt text, plumage colors, or audio URLs the editor has added.
         transaction.patch(docId, {
           set: {
@@ -340,7 +329,7 @@ export async function syncSightingsAction(): Promise<SyncSightingsResult> {
         })
         skipped++
       } else {
-        // New document — create with full eBird data; accessibility fields left
+        // New document -- create with full eBird data; accessibility fields left
         // blank for editors to enrich in Sanity Studio.
         transaction.createIfNotExists({
           _id: docId,
@@ -352,7 +341,7 @@ export async function syncSightingsAction(): Promise<SyncSightingsResult> {
           latitude: obs.latitude,
           longitude: obs.longitude,
           ebirdChecklistUri: obs.checklistUri ?? null,
-          // Accessibility fields — left for Studio editorial workflow:
+          // Accessibility fields -- left for Studio editorial workflow:
           altText: '',
           plumageColors: [],
           callAudioUrl: null,
@@ -401,7 +390,7 @@ export async function syncSightingsAction(): Promise<SyncSightingsResult> {
       // Keep this bounded so the sync button stays snappy.
       const maxToSuggest = Math.min(10, createdDocs.length)
       for (const doc of createdDocs.slice(0, maxToSuggest)) {
-        // Run image and audio suggestions in parallel — both are best-effort.
+        // Run image and audio suggestions in parallel -- both are best-effort.
         const [imageSuggestion, audioSuggestion] = await Promise.all([
           // Image: skip if card image already set, dismissed, or suggestion already pending.
           (doc.cardImage || doc.imageSuggestionStatus === 'dismissed' ||
