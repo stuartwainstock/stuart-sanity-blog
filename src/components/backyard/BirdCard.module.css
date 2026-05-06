@@ -15,9 +15,12 @@
   --card-meta: var(--color-custom-600);
   --card-swatch-outline: transparent;
   --card-audio-bg: var(--color-custom-100);
+  --card-audio-bg-hover: var(--color-custom-200);
+  --card-audio-bg-pressed: var(--color-custom-300);
   --card-audio-color: var(--color-heading);
   --card-audio-border: var(--color-custom-300);
   --card-link-color: var(--color-link);
+  --card-link-hover: var(--color-link-hover);
   --card-caption-bg: var(--color-custom-100);
   --card-caption-text: var(--card-meta);
   --card-caption-link: var(--card-link-color);
@@ -49,9 +52,12 @@
   --card-meta: #cccccc;
   --card-swatch-outline: #ffffff;
   --card-audio-bg: #1a1a1a;
+  --card-audio-bg-hover: #333333;
+  --card-audio-bg-pressed: #4d4d4d;
   --card-audio-color: #ffff00;
   --card-audio-border: #ffffff;
   --card-link-color: #66b3ff;
+  --card-link-hover: #99ccff;
   --card-caption-bg: #000000;
   --card-caption-text: #ffffff;
   --card-caption-link: #66b3ff;
@@ -105,7 +111,7 @@
 }
 
 .attributionCaption a:hover {
-  color: var(--color-link-hover);
+  color: var(--card-link-hover);
 }
 
 .cardImage {
@@ -211,7 +217,8 @@
   /* Minimum tap target */
   min-width: 48px;
   min-height: 48px;
-  padding: 0 0.875rem;
+  /* Align with design-system Button (md) while preserving tap target */
+  padding: 0.5rem 1rem;
 
   background: var(--card-audio-bg);
   color: var(--card-audio-color);
@@ -227,20 +234,34 @@
 
   transition:
     background-color 0.15s ease,
-    border-color 0.15s ease;
+    color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .audioButton:hover {
-  background: var(--color-custom-200);
+  background: var(--card-audio-bg-hover);
+}
+
+.audioButton:hover:not(:disabled):not([aria-pressed='true']) {
+  border-color: var(--card-audio-border);
 }
 
 .audioButton:focus-visible {
-  outline: 2px solid var(--card-audio-color);
+  outline: 2px solid transparent;
   outline-offset: 2px;
+  /* Mirror DS Button focus ring, but scoped to card tokens */
+  box-shadow:
+    0 0 0 2px var(--card-bg),
+    0 0 0 4px var(--card-audio-border);
+}
+
+.audioButton:active:not(:disabled) {
+  background: var(--card-audio-bg-pressed);
 }
 
 .audioButton[aria-pressed='true'] {
-  background: var(--color-custom-300);
+  background: var(--card-audio-bg-pressed);
 }
 
 .audioIcon {
@@ -279,7 +300,7 @@
 }
 
 .audioAttribution a:hover {
-  color: var(--color-link-hover);
+  color: var(--card-link-hover);
 }
 
 /* ── Checklist link ────────────────────────────────────────────────────────── */
@@ -293,7 +314,7 @@
 }
 
 .checklistLink:hover {
-  color: var(--color-link-hover);
+  color: var(--card-link-hover);
 }
 
 .checklistLink:focus-visible {
