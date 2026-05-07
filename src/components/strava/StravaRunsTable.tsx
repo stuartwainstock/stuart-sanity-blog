@@ -112,7 +112,7 @@ export default function StravaRunsTable({
               </th>
               <th
                 scope="col"
-                className={dt.th}
+                className={`${dt.th} ${dt.hideSm}`}
                 title="Strava Relative Effort (suffer_score); requires heart rate when Strava computes it"
               >
                 Rel. effort
@@ -120,7 +120,7 @@ export default function StravaRunsTable({
               <th scope="col" className={dt.th}>
                 Distance
               </th>
-              <th scope="col" className={dt.th}>
+              <th scope="col" className={`${dt.th} ${dt.hideSm}`}>
                 Shoe
               </th>
               <th scope="col" className={dt.th}>
@@ -131,7 +131,7 @@ export default function StravaRunsTable({
           <tbody className={dt.tbody}>
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={6} className={dt.tdCenter}>
+                <td colSpan={4} className={dt.tdCenter}>
                   No runs in this window yet.
                 </td>
               </tr>
@@ -148,13 +148,13 @@ export default function StravaRunsTable({
                   <td className={`${dt.td} ${dt.tdMuted} ${dt.maxW28}`} title={r.locationLabel ?? ''}>
                     {r.locationLabel ?? '—'}
                   </td>
-                  <td className={`${dt.td} ${dt.nowrap} ${dt.tdMuted} ${dt.tabular}`} title="Relative effort">
+                  <td className={`${dt.td} ${dt.hideSm} ${dt.nowrap} ${dt.tdMuted} ${dt.tabular}`} title="Relative effort">
                     {formatEffort(r.relativeEffort)}
                   </td>
                   <td className={`${dt.td} ${dt.nowrap} ${dt.tdMuted} ${dt.tabular}`}>
                     {formatKm(r.distance_m)}
                   </td>
-                  <td className={`${dt.td} ${dt.tdMuted} ${dt.maxW20} ${dt.truncate}`} title={r.shoeLabel ?? ''}>
+                  <td className={`${dt.td} ${dt.hideSm} ${dt.tdMuted} ${dt.maxW20} ${dt.truncate}`} title={r.shoeLabel ?? ''}>
                     {r.shoeLabel ?? '—'}
                   </td>
                   <td className={`${dt.td} ${dt.nowrap}`}>

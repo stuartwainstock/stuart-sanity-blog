@@ -22,7 +22,7 @@ export default function BackyardObservationsTable({
   intro = `Recent eBird rows for ${focusSpeciesLabel} in your configured area. Observers are credited on each checklist. Open the checklist link for full details.`,
   emptyMessage = `No recent ${focusSpeciesLabel} sightings with coordinates in this window. Widen the geographic area or increase days back in Studio (max 30), or confirm your eBird species code.`,
 }: Props) {
-  const colCount = 7
+  const colCount = 5
 
   return (
     <section id={sectionId} className="scroll-mt-24" aria-labelledby={headingId}>
@@ -54,10 +54,10 @@ export default function BackyardObservationsTable({
               <th scope="col" className={dt.th}>
                 Observer
               </th>
-              <th scope="col" className={dt.th}>
+              <th scope="col" className={`${dt.th} ${dt.hideSm}`}>
                 Latitude
               </th>
-              <th scope="col" className={dt.th}>
+              <th scope="col" className={`${dt.th} ${dt.hideSm}`}>
                 Longitude
               </th>
               <th scope="col" className={dt.th}>
@@ -91,10 +91,10 @@ export default function BackyardObservationsTable({
                   <td className={`${dt.td} ${dt.tdMuted} ${dt.maxW10} ${dt.truncate}`}>
                     {o.observerDisplayName || '—'}
                   </td>
-                  <td className={`${dt.td} ${dt.mono} ${dt.tdMuted} ${dt.tabular}`}>
+                  <td className={`${dt.td} ${dt.hideSm} ${dt.mono} ${dt.tdMuted} ${dt.tabular}`}>
                     {o.latitude.toFixed(5)}
                   </td>
-                  <td className={`${dt.td} ${dt.mono} ${dt.tdMuted} ${dt.tabular}`}>
+                  <td className={`${dt.td} ${dt.hideSm} ${dt.mono} ${dt.tdMuted} ${dt.tabular}`}>
                     {o.longitude.toFixed(5)}
                   </td>
                   <td className={dt.td}>
