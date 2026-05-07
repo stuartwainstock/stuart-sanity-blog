@@ -5,7 +5,6 @@ import "./globals.css";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/organisms/Footer";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
-import {OverflowDebug} from "@/components/utils/OverflowDebug";
 import { sanityClient } from "@/lib/sanity";
 import { SITE_SETTINGS_QUERY, NAVIGATION_QUERY } from "@/lib/queries";
 import { SiteSettings, Page } from "@/lib/types";
@@ -80,7 +79,6 @@ export default async function RootLayout({
         <Suspense fallback={null}>
           <GoogleAnalytics />
         </Suspense>
-        <OverflowDebug />
         <Navigation siteSettings={siteSettings || undefined} navigationPages={navigationPages} />
         <main className="layout-main" id="main-content">
           {children}
