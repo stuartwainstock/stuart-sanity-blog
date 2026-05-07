@@ -2,6 +2,7 @@
 @import "../styles/generated/tokens.css";
 
 /* Base (replaces former Tailwind preflight + our overrides) */
+/* Deploy trigger: harmless whitespace-only change */
 *,
 *::before,
 *::after {
