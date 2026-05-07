@@ -2,6 +2,12 @@
 @import "../styles/generated/tokens.css";
 
 /* Base (replaces former Tailwind preflight + our overrides) */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   background-color: var(--color-background);
   font-family: var(--font-work-sans);
