@@ -14,6 +14,11 @@ A modern, full-featured blog built with Next.js 16 and Sanity CMS. This project 
 - 👤 Author profiles and bios
 - 🔍 SEO optimized with meta tags and Open Graph
 - 📊 TypeScript for type safety
+- 🗺️ Data-backed “Projects” pages with maps + tables:
+  - **`/runs`** (Strava + Supabase)
+  - **`/pileated-watch`** (eBird map + table)
+  - **`/birding-dashboard`** (eBird → Sanity sightings grid + editorial enrichment)
+  - **`/flights`** (TripIt-derived flight map; prefers committed JSON export)
 
 ### Content Management
 - 🎛️ Sanity Studio for content management
@@ -25,6 +30,7 @@ A modern, full-featured blog built with Next.js 16 and Sanity CMS. This project 
 - 🖼️ Image management with alt text
 - 🔧 SEO fields for all content types
 - 🦅 Pileated Watch: map + sightings table on one page via the [eBird API 2.0](https://science.ebird.org/en/use-ebird-data/download-ebird-data-products/ebird-api/) (see below)
+- 🔊 Bird call audio suggestions (Xeno-canto API v3) for `birdSighting` docs (see “Birding Dashboard + audio”)
 
 ## Quick Start
 
@@ -57,7 +63,7 @@ A modern, full-featured blog built with Next.js 16 and Sanity CMS. This project 
    NEXT_PUBLIC_SANITY_DATASET=production
    ```
 
-4. **Deploy Sanity Studio**
+4. **Deploy Sanity Studio (hosted)**
    ```bash
    cd sanity
    npm run deploy
@@ -325,6 +331,34 @@ STRAVA_REDIRECT_URI=https://yourdomain.com/api/strava/callback
 - `EBIRD_API_KEY` powers `/pileated-watch` (server-only; get a key at [ebird.org/api/keygen](https://ebird.org/api/keygen)).
 - `SUPABASE_*` and `STRAVA_*` power **`/runs`** (see [Strava runs & Supabase](#strava-runs--supabase)).
 
+## Birding Dashboard + audio (Sanity + eBird + Xeno-canto)
+
+**`/birding-dashboard`** shows recent eBird sightings synced into Sanity as `birdSighting` documents, then enriched editorially (alt text, plumage colors, optional call audio).
+
+### eBird sync
+
+- Sync scope is configured in Sanity (singleton) and the page triggers a server action to pull recent sightings from eBird.
+- Requires **`EBIRD_API_KEY`** (server-only).
+
+### Bird call audio suggestions (Xeno-canto API v3)
+
+Editors can suggest and preview a recording inside Sanity Studio, then confirm to publish it to the dashboard card.
+
+- **Server env var (required for audio suggestions):** `XENO_CANTO_API_KEY`
+- **Hosted Studio (`*.sanity.studio`) setup (optional):**
+  - In Studio build env:
+    - `SANITY_STUDIO_BIRDING_SUGGEST_API_URL=https://www.your-domain.com/api/birding/suggest-unsplash`
+    - `SANITY_STUDIO_BIRDING_SUGGEST_SECRET=YOUR_RANDOM_SECRET`
+  - On the site (Vercel server env):
+    - `BIRDING_SUGGEST_PROXY_SECRET=YOUR_RANDOM_SECRET`
+    - `SANITY_BIRDING_CORS_ORIGINS=https://YOUR_PROJECT.sanity.studio` (comma-separated allowed origins)
+
+If `XENO_CANTO_API_KEY` is missing, the suggest-audio endpoint returns a 503 with `code: MISSING_XENO_CANTO_API_KEY`.
+
+## Flights (TripIt)
+
+**`/flights`** renders a flight path map from TripIt data. Production prefers a committed export at `src/data/tripit/list-air-historical.json`; the live TripIt OAuth client is a development fallback.
+
 ### Quick-Add Link Bookmarklet
 
 This project includes a secure endpoint at `/api/add-link` that creates `resource` documents in Sanity by scraping Open Graph metadata from a URL.
@@ -424,6 +458,11 @@ npm run lint
 
 # Regenerate CSS variables from tokens/*.json (also runs automatically before build / build-storybook)
 npm run tokens:build
+
+# After schema changes (recommended workflow)
+cd sanity && npx sanity schema validate
+cd sanity && npx sanity schema deploy
+npm run typegen
 
 # Storybook + Vitest browser tests (includes @storybook/addon-a11y in error mode; run `npx playwright install chromium` once locally)
 npm run test:storybook
