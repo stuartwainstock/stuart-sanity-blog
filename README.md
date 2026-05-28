@@ -35,7 +35,7 @@ A modern, full-featured blog built with Next.js 16 and Sanity CMS. This project 
 ## Quick Start
 
 ### Prerequisites
-- Node.js 20+
+- Node.js 22+ (matches GitHub Actions; required by Chromatic, Style Dictionary 5, and Puppeteer 25 in devDependencies)
 - npm or yarn
 - A Sanity account (free at [sanity.io](https://sanity.io))
 
