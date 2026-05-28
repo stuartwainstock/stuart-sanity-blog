@@ -44,6 +44,18 @@ This guide will help you deploy your Sanity blog to production.
 3. **Access your Studio**
    Your Studio will be available at `https://your-studio-name.sanity.studio`
 
+### When to redeploy Studio (hosted)
+
+Production editors use **hosted** `*.sanity.studio`. Re-run **`npm run studio:deploy`** (from repo root) whenever you change anything editors see in the form UI:
+
+- Field titles, descriptions, or validation
+- New fields or document types in the sidebar
+- Custom Studio components (`sanity/components/`)
+
+**`npx sanity schema deploy`** updates the Content Lake / API schema; it does **not** refresh hosted Studio forms. If production still shows old labels (e.g. “Path” instead of “URL”) after a code change, you need a Studio deploy—not another schema deploy.
+
+The embedded Studio at `https://your-domain.com/studio` picks up schema UI changes on the next **Next.js** (Vercel) deploy instead.
+
 ## Step 3: Add Initial Content
 
 1. **Access your deployed Studio**

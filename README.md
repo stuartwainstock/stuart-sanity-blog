@@ -182,7 +182,7 @@ sanity-blog/
 - Site title and description
 - Logo and favicon
 - Social media links
-- **Projects menu** (optional): top-level label (e.g. “Projects”) and links to **site paths** (`/pileated-watch`, `/runs`) or **external URLs** (`https://…`, opens in a new tab). On-site routes implement their own data layer (eBird, Strava, etc.) in the Next.js app—not in this menu.
+- **Projects menu** (optional): top-level label (e.g. “Projects”) and links to **site paths** (`/pileated-watch`, `/runs`) or **external URLs** (`https://…`, opens in a new tab). On-site routes implement their own data layer (eBird, Strava, etc.) in the Next.js app—not in this menu. After changing project-link fields in schema, run **`npm run studio:deploy`** so hosted Studio (`*.sanity.studio`) shows the new form—not `schema deploy` alone.
 - Footer configuration
 - Default SEO settings
 
@@ -461,8 +461,9 @@ npm run tokens:build
 
 # After schema changes (recommended workflow)
 cd sanity && npx sanity schema validate
-cd sanity && npx sanity schema deploy
+cd sanity && npx sanity schema deploy   # Content Lake / API — does not update hosted Studio forms
 npm run typegen
+npm run studio:deploy                   # required for production editors on *.sanity.studio
 
 # Storybook + Vitest browser tests (includes @storybook/addon-a11y in error mode; run `npx playwright install chromium` once locally)
 npm run test:storybook

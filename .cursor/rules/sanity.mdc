@@ -27,6 +27,22 @@ stuart-sanity-blog-main/
 
 Project ID: `ojv692hs` · Dataset: `production` · Studio basePath: `/studio`
 
+## Production Studio: hosted `*.sanity.studio` (default for editors)
+
+**Editors use hosted Studio** (`npm run studio:deploy` → `https://<hostname>.sanity.studio`), not only the embedded app at `/studio` on the Next site.
+
+Field **titles**, **descriptions**, **validation messages**, and **custom input components** come from the **Studio static build** (`sanity/schemaTypes/` bundled in `sanity deploy`). They do **not** update in hosted Studio when you only run `sanity schema deploy`.
+
+| What changed | Hosted Studio (`*.sanity.studio`) | Embedded Studio (`/studio` on the live site) |
+|--------------|-----------------------------------|-----------------------------------------------|
+| Schema UI (labels, descriptions, validation, custom inputs) | **`npm run studio:deploy`** from repo root | **Redeploy Next.js** (e.g. Vercel production build) |
+| Content Lake / API schema (`schema deploy`) | `cd sanity && npx sanity schema deploy` | Same (optional for API; embedded UI still needs Next deploy for form changes) |
+| TypeGen output | `npm run typegen` | Same |
+
+**Do not** tell the user that `schema deploy` alone updates hosted Studio forms. After schema type changes that affect the Studio UI, **always include `npm run studio:deploy`** (or confirm a recent deploy) when production editing is on `*.sanity.studio`.
+
+Symptom of a missed Studio deploy: production still shows old field names (e.g. “Path” instead of “URL”) while local `sanity dev` or `/studio` on a fresh Vercel deploy looks correct.
+
 ## Sanity Studio schema types
 
 ### Content modelling
@@ -143,15 +159,18 @@ npm run typecheck      # cd sanity && tsc --noEmit
 
 ONLY write manual TypeScript types for Sanity data if TypeGen cannot generate them.
 
-## After any schema change — run all three
+## After any schema change
 
 ```bash
 cd sanity && npx sanity schema validate   # validate schema
-cd sanity && npx sanity schema deploy     # deploy to hosted Studio
+cd sanity && npx sanity schema deploy     # Content Lake / API schema (not Studio UI)
 npm run typegen                           # regenerate types
+npm run studio:deploy                     # required for hosted *.sanity.studio UI (labels, inputs, validation copy)
 ```
 
 Then add the new schema type to `sanity/sanity.config.ts` `schema.types` array and to the Studio structure if it needs a sidebar entry.
+
+If the change only affects the **embedded** `/studio` route and editors do not use `*.sanity.studio`, a **Next.js production deploy** replaces `studio:deploy` for Studio UI updates.
 
 ## Writing content
 

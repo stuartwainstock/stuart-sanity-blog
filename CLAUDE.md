@@ -150,4 +150,5 @@ Before starting any session that touches content or schema:
 - [ ] Confirm Filesystem MCP is scoped to `src/data/` (for TripIt queries)
 - [ ] Run `npm run typegen` if any schema changes are pending
 - [ ] Run `npm run tokens:build` if `tokens/**/*.json` has been edited
+- [ ] After schema **UI** changes: run **`npm run studio:deploy`** for hosted `*.sanity.studio` (see `.cursor/rules/sanity.mdc` — `schema deploy` alone is not enough)
 - [ ] Coding standards → `.cursor/rules/` (tokens, CSS Modules, Sanity schema, integrations)
