@@ -6,6 +6,10 @@ import {usePathname} from 'next/navigation'
 import {useState, useRef, useEffect} from 'react'
 import {SiteSettings, Page} from '@/lib/types'
 import {getImageUrl} from '@/lib/sanity'
+import {
+  normalizeProjectsMenuItems,
+  type ProjectsMenuNavItem,
+} from '@/lib/projectsMenuLink'
 import styles from './Navigation.module.css'
 
 interface NavigationProps {
@@ -14,12 +18,73 @@ interface NavigationProps {
 }
 
 function useProjectsMenu(siteSettings?: SiteSettings) {
-  const raw = siteSettings?.projectsMenu?.items ?? []
-  const items = raw.filter(
-    (i) => i.title?.trim() && i.href?.trim()?.startsWith('/'),
-  )
+  const items = normalizeProjectsMenuItems(siteSettings?.projectsMenu?.items)
   const label = siteSettings?.projectsMenu?.label?.trim() || 'Projects'
   return {items, label}
+}
+
+function ProjectsExternalLinkIcon({className}: {className?: string}) {
+  return (
+    <svg
+      className={className}
+      width={14}
+      height={14}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      aria-hidden="true"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+      />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15 3h6v6" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M10 14 21 3" />
+    </svg>
+  )
+}
+
+function ProjectsMenuItemLink({
+  item,
+  className,
+  onNavigate,
+}: {
+  item: ProjectsMenuNavItem
+  className: string
+  onNavigate?: () => void
+}) {
+  const rowClass = `${className} ${styles.projectsItemRow}`
+  const label = (
+    <>
+      <span className={styles.projectsItemTitle}>{item.title}</span>
+      {item.external ? (
+        <ProjectsExternalLinkIcon className={styles.projectsExternalIcon} />
+      ) : null}
+    </>
+  )
+
+  if (item.external) {
+    return (
+      <a
+        href={item.href}
+        className={rowClass}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={onNavigate}
+        aria-label={`${item.title} (opens in new tab)`}
+      >
+        {label}
+      </a>
+    )
+  }
+
+  return (
+    <Link href={item.href} className={rowClass} onClick={onNavigate}>
+      {label}
+    </Link>
+  )
 }
 
 export default function Navigation({siteSettings, navigationPages = []}: NavigationProps) {
@@ -168,13 +233,11 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
                     <ul className={styles.projectsList} role="list">
                       {projectItems.map((item) => (
                         <li key={item._key}>
-                          <Link
-                            href={item.href}
+                          <ProjectsMenuItemLink
+                            item={item}
                             className={styles.projectsItemLink}
-                            onClick={() => setProjectsOpen(false)}
-                          >
-                            {item.title}
-                          </Link>
+                            onNavigate={() => setProjectsOpen(false)}
+                          />
                         </li>
                       ))}
                     </ul>
@@ -281,13 +344,11 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
                     >
                       {projectItems.map((item) => (
                         <li key={item._key}>
-                          <Link
-                            href={item.href}
+                          <ProjectsMenuItemLink
+                            item={item}
                             className={styles.mobileLink}
-                            onClick={closeMenu}
-                          >
-                            {item.title}
-                          </Link>
+                            onNavigate={closeMenu}
+                          />
                         </li>
                       ))}
                     </ul>

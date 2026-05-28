@@ -121,6 +121,25 @@
   list-style: none;
 }
 
+.projectsItemRow.projectsItemLink,
+.projectsItemRow.mobileLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.projectsItemTitle {
+  min-width: 0;
+}
+
+.projectsExternalIcon {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
 .projectsItemLink {
   display: block;
   padding: 0.5rem 1rem;

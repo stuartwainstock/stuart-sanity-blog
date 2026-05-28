@@ -13,6 +13,14 @@ export const fullSiteSettings: SiteSettings = {
     github: 'example',
     linkedin: 'example',
   },
+  projectsMenu: {
+    label: 'Projects',
+    items: [
+      {_key: 'runs', title: 'Runs', href: '/runs'},
+      {_key: 'pileated', title: 'Pileated Watch', href: '/pileated-watch'},
+      {_key: 'external', title: 'Other project', href: 'https://example.com/project'},
+    ],
+  },
   footer: {
     copyright: '© 2026 Stuart Wainstock',
     sections: [

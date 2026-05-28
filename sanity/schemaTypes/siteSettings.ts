@@ -177,7 +177,7 @@ export const siteSettings = defineType({
       title: 'Projects menu',
       type: 'object',
       description:
-        'Optional “Projects” dropdown in the main header. Each item is a link to a route on this site; APIs (eBird, Strava, etc.) are implemented in code for that route—not here.',
+        'Optional “Projects” dropdown in the main header. Use a site path (/runs) for pages on this site, or https://… for an external project. Data APIs for on-site routes are implemented in code—not here.',
       fields: [
         defineField({
           name: 'label',
@@ -205,16 +205,31 @@ export const siteSettings = defineType({
                 }),
                 defineField({
                   name: 'href',
-                  title: 'Path',
+                  title: 'URL',
                   type: 'string',
                   description:
-                    'Internal URL path starting with / (e.g. /pileated-watch). Use your Next.js app route.',
+                    'Site path starting with / (e.g. /pileated-watch), or full https:// URL for an external project (opens in a new tab).',
                   validation: (Rule) =>
                     Rule.required().custom((val) => {
                       if (typeof val !== 'string' || !val) return true
                       const t = val.trim()
-                      if (!t.startsWith('/')) return 'Path must start with /'
-                      if (t.startsWith('//')) return 'Use a site path like /my-project, not a protocol URL'
+                      if (/^https?:\/\//i.test(t)) {
+                        try {
+                          const u = new URL(t)
+                          if (u.protocol !== 'http:' && u.protocol !== 'https:') {
+                            return 'Use an http:// or https:// URL'
+                          }
+                          return true
+                        } catch {
+                          return 'Enter a valid http:// or https:// URL'
+                        }
+                      }
+                      if (!t.startsWith('/')) {
+                        return 'Use a site path starting with / or a full https:// URL'
+                      }
+                      if (t.startsWith('//')) {
+                        return 'Use a site path like /my-project or https://example.com'
+                      }
                       return true
                     }),
                 }),
