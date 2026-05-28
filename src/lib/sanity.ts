@@ -1,6 +1,6 @@
 import { cache } from 'react'
 import { createClient } from 'next-sanity'
-import imageUrlBuilder from '@sanity/image-url'
+import { createImageUrlBuilder } from '@sanity/image-url'
 import {
   EBIRD_BIRDING_QUERY,
   TOOL_PROJECT_PAGE_BIRDING_QUERY,
@@ -26,7 +26,7 @@ export const config = {
 }
 
 export const sanityClient = createClient(config)
-const builder = imageUrlBuilder(sanityClient)
+const builder = createImageUrlBuilder(sanityClient)
 
 /**
  * Pileated Watch singleton: useCdn false + short Next revalidate so Studio

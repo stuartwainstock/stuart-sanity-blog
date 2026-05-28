@@ -17,17 +17,17 @@
     "sanity"
   ],
   "dependencies": {
-    "@sanity/vision": "^5.24.0",
-    "react": "19.2.5",
-    "react-dom": "19.2.5",
-    "sanity": "^5.24.0",
-    "sanity-plugin-asset-source-unsplash": "^7.0.5",
+    "@sanity/vision": "5.28.0",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "sanity": "^5.28.0",
+    "sanity-plugin-asset-source-unsplash": "^7.0.7",
     "sanity-plugin-ga-dashboard": "^1.0.6",
-    "styled-components": "6.4.1"
+    "styled-components": "6.4.2"
   },
   "devDependencies": {
     "@sanity/eslint-config-studio": "^5.0.2",
-    "@types/react": "19.2.14",
+    "@types/react": "^19.2.15",
     "eslint": "9.39.4",
     "prettier": "3.8.3",
     "typescript": "^5.8"
@@ -41,7 +41,8 @@
     },
     "sanity": {
       "uuid": "11.1.1"
-    }
+    },
+    "js-yaml": "3.14.2"
   },
   "prettier": {
     "semi": false,

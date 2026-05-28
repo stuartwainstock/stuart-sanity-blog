@@ -2426,6 +2426,27 @@
         },
         "optional": true
       },
+      "imageSuggestionStatus": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "none"
+            },
+            {
+              "type": "string",
+              "value": "pending_review"
+            },
+            {
+              "type": "string",
+              "value": "dismissed"
+            }
+          ]
+        },
+        "optional": true
+      },
       "suggestedCoverImageUrl": {
         "type": "objectAttribute",
         "value": {
@@ -2485,17 +2506,7 @@
       "suggestedCoverProvider": {
         "type": "objectAttribute",
         "value": {
-          "type": "union",
-          "of": [
-            {
-              "type": "string",
-              "value": "none"
-            },
-            {
-              "type": "string",
-              "value": "unsplash"
-            }
-          ]
+          "type": "string"
         },
         "optional": true
       },
@@ -2553,7 +2564,24 @@
         },
         "optional": true
       },
-      "imageSuggestionStatus": {
+      "altText": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "plumageColors": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "array",
+          "of": {
+            "type": "string"
+          }
+        },
+        "optional": true
+      },
+      "audioSuggestionStatus": {
         "type": "objectAttribute",
         "value": {
           "type": "union",
@@ -2574,20 +2602,52 @@
         },
         "optional": true
       },
-      "altText": {
+      "suggestedAudioUrl": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
         },
         "optional": true
       },
-      "plumageColors": {
+      "suggestedAudioRecordist": {
         "type": "objectAttribute",
         "value": {
-          "type": "array",
-          "of": {
-            "type": "string"
-          }
+          "type": "string"
+        },
+        "optional": true
+      },
+      "suggestedAudioSourceUrl": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "suggestedAudioType": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "suggestedAudioQuality": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "suggestedAudioLength": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "suggestedAudioPage": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "number"
         },
         "optional": true
       },

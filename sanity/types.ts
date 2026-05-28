@@ -390,6 +390,7 @@ export type BirdSighting = {
   speciesCode?: string
   observedOn?: string
   locationLabel?: string
+  imageSuggestionStatus?: 'none' | 'pending_review' | 'dismissed'
   suggestedCoverImageUrl?: string
   suggestedCoverImagePageUrl?: string
   suggestedCoverPhotographerName?: string
@@ -398,7 +399,7 @@ export type BirdSighting = {
   suggestedCoverSearchQueryManual?: string
   suggestedCoverSearchQueryLast?: string
   suggestedCoverSearchPage?: number
-  suggestedCoverProvider?: 'none' | 'unsplash'
+  suggestedCoverProvider?: string
   cardImage?: {
     asset?: SanityImageAssetReference
     media?: unknown
@@ -407,9 +408,16 @@ export type BirdSighting = {
     _type: 'image'
   }
   cardImageAlt?: string
-  imageSuggestionStatus?: 'none' | 'pending_review' | 'dismissed'
   altText?: string
   plumageColors?: Array<string>
+  audioSuggestionStatus?: 'none' | 'pending_review' | 'dismissed'
+  suggestedAudioUrl?: string
+  suggestedAudioRecordist?: string
+  suggestedAudioSourceUrl?: string
+  suggestedAudioType?: string
+  suggestedAudioQuality?: string
+  suggestedAudioLength?: string
+  suggestedAudioPage?: number
   callAudioUrl?: string
   latitude?: number
   longitude?: number
