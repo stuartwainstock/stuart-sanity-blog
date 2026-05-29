@@ -7,7 +7,7 @@ import type {BirdObservation} from '@/lib/ebird/types'
 import {pageBodyGap, pageBodyParagraph, pageSectionHeading} from '@/lib/pageTypography'
 import dt from '@/components/ui/DataTable.module.css'
 
-const COL_COUNT = 7
+const COL_COUNT = 6
 
 type Props = {
   observations: BirdObservation[]
@@ -23,7 +23,7 @@ type Props = {
 }
 
 function defaultIntro(focusSpeciesLabel: string, limit: number) {
-  return `Recent eBird rows for ${focusSpeciesLabel} in your configured area (${limit} rows per page). Observers are credited on each checklist. Open the checklist link for full details.`
+  return `Recent eBird rows for ${focusSpeciesLabel} in your configured area (${limit} rows per page). Open the checklist link for observer details and full sighting info.`
 }
 
 export default function BackyardObservationsTable({
@@ -106,8 +106,7 @@ export default function BackyardObservationsTable({
       <div className={dt.wrap}>
         <table className={dt.table}>
           <caption className="sr-only">
-            Recent eBird sightings: date, species, location, observer, coordinates,
-            checklist link
+            Recent eBird sightings: date, species, location, coordinates, checklist link
           </caption>
           <thead className={dt.thead}>
             <tr>
@@ -119,9 +118,6 @@ export default function BackyardObservationsTable({
               </th>
               <th scope="col" className={dt.th}>
                 Location
-              </th>
-              <th scope="col" className={dt.th}>
-                Observer
               </th>
               <th scope="col" className={`${dt.th} ${dt.hideSm}`}>
                 Latitude
@@ -154,11 +150,11 @@ export default function BackyardObservationsTable({
                       : '—'}
                   </td>
                   <td className={`${dt.td} ${dt.tdStrong}`}>{o.speciesName}</td>
-                  <td className={`${dt.td} ${dt.tdMuted} ${dt.maxW12} ${dt.truncate}`}>
+                  <td
+                    className={`${dt.td} ${dt.tdMuted} ${dt.maxW28}`}
+                    title={o.locationLabel || undefined}
+                  >
                     {o.locationLabel || '—'}
-                  </td>
-                  <td className={`${dt.td} ${dt.tdMuted} ${dt.maxW10} ${dt.truncate}`}>
-                    {o.observerDisplayName || '—'}
                   </td>
                   <td className={`${dt.td} ${dt.hideSm} ${dt.mono} ${dt.tdMuted} ${dt.tabular}`}>
                     {o.latitude.toFixed(5)}
