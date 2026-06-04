@@ -17,10 +17,10 @@
     "sanity"
   ],
   "dependencies": {
-    "@sanity/vision": "5.28.0",
+    "@sanity/vision": "^5.30.0",
     "react": "19.2.6",
     "react-dom": "19.2.6",
-    "sanity": "^5.28.0",
+    "sanity": "^5.30.0",
     "sanity-plugin-asset-source-unsplash": "^7.0.7",
     "sanity-plugin-ga-dashboard": "^1.0.6",
     "styled-components": "6.4.2"
