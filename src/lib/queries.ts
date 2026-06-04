@@ -1,5 +1,46 @@
 import { groq } from 'next-sanity'
 
+const postBodyProjection = `
+  body[]{
+    _type,
+    _key,
+    style,
+    listItem,
+    level,
+    children[]{
+      _type,
+      _key,
+      text,
+      marks
+    },
+    markDefs[]{
+      _key,
+      _type,
+      href
+    },
+    asset->{
+      _id,
+      url,
+      metadata {
+        dimensions {
+          width,
+          height,
+          aspectRatio
+        }
+      }
+    },
+    hotspot,
+    crop,
+    alt,
+    caption,
+    credit,
+    language,
+    code,
+    url,
+    title
+  }
+`
+
 // Get all posts with authors and categories
 export const POSTS_QUERY = groq`
   *[_type == "post"] | order(publishedAt desc) {
@@ -61,7 +102,7 @@ export const POST_QUERY = groq`
     },
     publishedAt,
     featured,
-    body,
+    ${postBodyProjection},
     author->{
       _id,
       name,

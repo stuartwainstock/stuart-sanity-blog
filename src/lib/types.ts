@@ -1,10 +1,33 @@
 import type {TypedObject} from '@portabletext/types'
 
+export interface SanityImageHotspot {
+  x?: number
+  y?: number
+  height?: number
+  width?: number
+}
+
+export interface SanityImageCrop {
+  top?: number
+  bottom?: number
+  left?: number
+  right?: number
+}
+
 export interface SanityImage {
   asset: {
     _id: string
     url: string
+    metadata?: {
+      dimensions?: {
+        width?: number
+        height?: number
+        aspectRatio?: number
+      }
+    }
   }
+  hotspot?: SanityImageHotspot
+  crop?: SanityImageCrop
   alt?: string
   caption?: string
   credit?: string

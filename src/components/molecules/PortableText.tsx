@@ -2,7 +2,10 @@ import type {ReactNode} from 'react'
 import {PortableText as BasePortableText, type PortableTextComponents} from '@portabletext/react'
 import type {TypedObject} from '@portabletext/types'
 import Image from 'next/image'
-import { getImageUrl } from '@/lib/sanity'
+import {
+  getSanityImageDisplay,
+  PORTABLE_TEXT_IMAGE_MAX_WIDTH,
+} from '@/lib/sanityImage'
 import type {SanityImage} from '@/lib/types'
 import {parseYouTubeVideoId, youtubeNocookieEmbedSrc} from '@/lib/youtube'
 import styles from './PortableText.module.css'
@@ -30,14 +33,16 @@ function buildComponents(pageBody: boolean): PortableTextComponents {
 
   return {
   types: {
-    image: ({value}: {value: PortableTextImageValue}) => (
+    image: ({value}: {value: PortableTextImageValue}) => {
+      const display = getSanityImageDisplay(value, PORTABLE_TEXT_IMAGE_MAX_WIDTH)
+      return (
       <div className={styles.imageBlock}>
         <Image
-          src={getImageUrl(value, 800, 600)}
+          src={display.src}
           alt={value.alt || 'Blog image'}
-          width={800}
-          height={600}
-          sizes="(min-width: 960px) 800px, 100vw"
+          width={display.width}
+          height={display.height}
+          sizes="(min-width: 960px) 896px, 100vw"
           className={styles.image}
         />
         {value.caption && (
@@ -51,7 +56,8 @@ function buildComponents(pageBody: boolean): PortableTextComponents {
           </p>
         )}
       </div>
-    ),
+      )
+    },
     codeBlock: ({value}: {value: PortableTextCodeValue}) => (
       <div className={styles.codeBlockWrap}>
         <pre 
