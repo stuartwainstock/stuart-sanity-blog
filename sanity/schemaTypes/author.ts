@@ -24,29 +24,7 @@ export const author = defineType({
     defineField({
       name: 'image',
       title: 'Image',
-      type: 'image',
-      options: {
-        hotspot: true,
-      },
-      fields: [
-        {
-          name: 'alt',
-          type: 'string',
-          title: 'Alternative Text',
-          description: 'Describe the image for screen readers. This is required for accessibility.',
-          validation: (Rule) => 
-            Rule.required()
-              .min(10)
-              .max(125)
-              .warning('Alt text should be 10-125 characters for optimal accessibility'),
-        },
-        {
-          name: 'credit',
-          type: 'string',
-          title: 'Photo Credit',
-          description: 'Credit the photographer (auto-populated for Unsplash images)',
-        },
-      ],
+      type: 'creditedImage',
     }),
     defineField({
       name: 'bio',

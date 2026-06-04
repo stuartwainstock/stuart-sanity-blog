@@ -1,6 +1,7 @@
 export { author } from './author'
 export { birdSighting } from './birdSighting'
 export { blockContent } from './blockContent'
+export { creditedImage } from './creditedImage'
 export { category } from './category'
 export { homepage } from './homepage'
 export { ebirdBirding } from './ebirdBirding'

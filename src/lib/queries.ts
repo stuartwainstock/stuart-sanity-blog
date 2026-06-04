@@ -1,6 +1,28 @@
 import { groq } from 'next-sanity'
 
-const postBodyProjection = `
+const creditedImageAssetProjection = `
+  _id,
+  url,
+  creditLine,
+  source
+`
+
+const creditedImageValueProjection = `
+  asset->{
+    ${creditedImageAssetProjection}
+  },
+  alt,
+  caption,
+  credit
+`
+
+const postMainImageProjection = `
+  mainImage {
+    ${creditedImageValueProjection}
+  }
+`
+
+const blockContentBodyProjection = `
   body[]{
     _type,
     _key,
@@ -19,8 +41,7 @@ const postBodyProjection = `
       href
     },
     asset->{
-      _id,
-      url,
+      ${creditedImageAssetProjection},
       metadata {
         dimensions {
           width,
@@ -48,15 +69,7 @@ export const POSTS_QUERY = groq`
     title,
     slug,
     excerpt,
-    mainImage {
-      asset->{
-        _id,
-        url
-      },
-      alt,
-      caption,
-      credit
-    },
+    ${postMainImageProjection},
     publishedAt,
     featured,
     author->{
@@ -65,8 +78,7 @@ export const POSTS_QUERY = groq`
       slug,
       image {
         asset->{
-          _id,
-          url
+          ${creditedImageAssetProjection}
         },
         alt,
         credit
@@ -91,18 +103,10 @@ export const POST_QUERY = groq`
     title,
     slug,
     excerpt,
-    mainImage {
-      asset->{
-        _id,
-        url
-      },
-      alt,
-      caption,
-      credit
-    },
+    ${postMainImageProjection},
     publishedAt,
     featured,
-    ${postBodyProjection},
+    ${blockContentBodyProjection},
     author->{
       _id,
       name,
@@ -110,8 +114,7 @@ export const POST_QUERY = groq`
       bio,
       image {
         asset->{
-          _id,
-          url
+          ${creditedImageAssetProjection}
         },
         alt,
         credit
@@ -139,15 +142,7 @@ export const FEATURED_POSTS_QUERY = groq`
     title,
     slug,
     excerpt,
-    mainImage {
-      asset->{
-        _id,
-        url
-      },
-      alt,
-      caption,
-      credit
-    },
+    ${postMainImageProjection},
     publishedAt,
     author->{
       _id,
@@ -155,8 +150,7 @@ export const FEATURED_POSTS_QUERY = groq`
       slug,
       image {
         asset->{
-          _id,
-          url
+          ${creditedImageAssetProjection}
         },
         alt,
         credit
@@ -180,15 +174,7 @@ export const PAGES_QUERY = groq`
     title,
     slug,
     excerpt,
-    mainImage {
-      asset->{
-        _id,
-        url
-      },
-      alt,
-      caption,
-      credit
-    },
+    ${postMainImageProjection},
     showInNavigation,
     navigationOrder
   }
@@ -204,16 +190,8 @@ export const PAGE_QUERY = groq`
     title,
     slug,
     excerpt,
-    mainImage {
-      asset->{
-        _id,
-        url
-      },
-      alt,
-      caption,
-      credit
-    },
-    body,
+    ${postMainImageProjection},
+    ${blockContentBodyProjection},
     showInNavigation,
     navigationOrder,
     speakingEngagements[] {
@@ -247,12 +225,7 @@ export const SITE_SETTINGS_QUERY = groq`
     description,
     journalDescription,
     logo {
-      asset->{
-        _id,
-        url
-      },
-      alt,
-      credit
+      ${creditedImageValueProjection}
     },
     favicon {
       asset->{
@@ -319,8 +292,7 @@ export const POSTS_BY_CATEGORY_QUERY = groq`
       slug,
       image {
         asset->{
-          _id,
-          url
+          ${creditedImageAssetProjection}
         },
         alt,
         credit
@@ -421,12 +393,7 @@ export const HOMEPAGE_QUERY = groq`
       metaTitle,
       metaDescription,
       openGraphImage {
-        asset->{
-          _id,
-          url
-        },
-        alt,
-        credit
+        ${creditedImageValueProjection}
       },
       keywords,
       noIndex
@@ -449,12 +416,7 @@ export const TOOL_PROJECT_PAGE_FLIGHTS_QUERY = groq`
       metaTitle,
       metaDescription,
       openGraphImage {
-        asset->{
-          _id,
-          url
-        },
-        alt,
-        credit
+        ${creditedImageValueProjection}
       },
       keywords,
       noIndex
@@ -477,12 +439,7 @@ export const TOOL_PROJECT_PAGE_RUNS_QUERY = groq`
       metaTitle,
       metaDescription,
       openGraphImage {
-        asset->{
-          _id,
-          url
-        },
-        alt,
-        credit
+        ${creditedImageValueProjection}
       },
       keywords,
       noIndex
@@ -503,12 +460,7 @@ export const TOOL_PROJECT_PAGE_BIRDING_QUERY = groq`
       metaTitle,
       metaDescription,
       openGraphImage {
-        asset->{
-          _id,
-          url
-        },
-        alt,
-        credit
+        ${creditedImageValueProjection}
       },
       keywords,
       noIndex
@@ -538,12 +490,7 @@ export const EBIRD_BIRDING_QUERY = groq`
       metaTitle,
       metaDescription,
       openGraphImage {
-        asset->{
-          _id,
-          url
-        },
-        alt,
-        credit
+        ${creditedImageValueProjection}
       },
       keywords,
       noIndex

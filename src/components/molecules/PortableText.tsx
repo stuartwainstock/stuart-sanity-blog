@@ -7,6 +7,7 @@ import {
   PORTABLE_TEXT_IMAGE_MAX_WIDTH,
 } from '@/lib/sanityImage'
 import type {SanityImage} from '@/lib/types'
+import {resolveImageCredit} from '@/lib/unsplashCredit'
 import {parseYouTubeVideoId, youtubeNocookieEmbedSrc} from '@/lib/youtube'
 import styles from './PortableText.module.css'
 
@@ -25,6 +26,25 @@ interface PortableTextProps {
   pageBodyTypography?: boolean
 }
 
+function PortableTextImageBlock({value}: {value: PortableTextImageValue}) {
+  const display = getSanityImageDisplay(value, PORTABLE_TEXT_IMAGE_MAX_WIDTH)
+  const imageCredit = resolveImageCredit(value)
+  return (
+    <div className={styles.imageBlock}>
+      <Image
+        src={display.src}
+        alt={value.alt || 'Blog image'}
+        width={display.width}
+        height={display.height}
+        sizes="(min-width: 960px) 896px, 100vw"
+        className={styles.image}
+      />
+      {value.caption && <p className={styles.caption}>{value.caption}</p>}
+      {imageCredit && <p className={styles.credit}>Photo by {imageCredit}</p>}
+    </div>
+  )
+}
+
 function buildComponents(pageBody: boolean): PortableTextComponents {
   const normalClass = pageBody ? styles.normalPageBody : styles.normalDefault
   const ulClass = `${pageBody ? styles.listPageBody : styles.listDefault} ${styles.ulDisc}`
@@ -33,31 +53,12 @@ function buildComponents(pageBody: boolean): PortableTextComponents {
 
   return {
   types: {
-    image: ({value}: {value: PortableTextImageValue}) => {
-      const display = getSanityImageDisplay(value, PORTABLE_TEXT_IMAGE_MAX_WIDTH)
-      return (
-      <div className={styles.imageBlock}>
-        <Image
-          src={display.src}
-          alt={value.alt || 'Blog image'}
-          width={display.width}
-          height={display.height}
-          sizes="(min-width: 960px) 896px, 100vw"
-          className={styles.image}
-        />
-        {value.caption && (
-          <p className={styles.caption}>
-            {value.caption}
-          </p>
-        )}
-        {value.credit && (
-          <p className={styles.credit}>
-            Photo by {value.credit}
-          </p>
-        )}
-      </div>
-      )
-    },
+    image: ({value}: {value: PortableTextImageValue}) => (
+      <PortableTextImageBlock value={value} />
+    ),
+    creditedImage: ({value}: {value: PortableTextImageValue}) => (
+      <PortableTextImageBlock value={value} />
+    ),
     codeBlock: ({value}: {value: PortableTextCodeValue}) => (
       <div className={styles.codeBlockWrap}>
         <pre 

@@ -18,6 +18,8 @@ export interface SanityImage {
   asset: {
     _id: string
     url: string
+    creditLine?: string
+    source?: {name?: string}
     metadata?: {
       dimensions?: {
         width?: number

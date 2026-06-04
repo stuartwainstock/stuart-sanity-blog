@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Post } from '@/lib/types'
 import { getImageUrl } from '@/lib/sanity'
+import { resolveImageCredit } from '@/lib/unsplashCredit'
 import styles from './PostCard.module.css'
 
 interface PostCardProps {
@@ -37,6 +38,8 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
     }
   }
 
+  const mainImageCredit = post.mainImage ? resolveImageCredit(post.mainImage) : undefined
+
   return (
     <article className={`${styles.card} ${featured ? styles.featured : ''}`}>
       {post.mainImage && (
@@ -51,9 +54,9 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
               className={styles.image}
             />
           </Link>
-          {post.mainImage.credit && (
+          {mainImageCredit && (
             <div className={styles.credit}>
-              Photo by {post.mainImage.credit}
+              Photo by {mainImageCredit}
             </div>
           )}
         </div>

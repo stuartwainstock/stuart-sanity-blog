@@ -4,6 +4,7 @@ import { sanityClient } from '@/lib/sanity'
 import { PAGE_QUERY, PAGES_QUERY, PUBLISHED_RESOURCES_QUERY } from '@/lib/queries'
 import { Page, Resource } from '@/lib/types'
 import { getImageUrl } from '@/lib/sanity'
+import { resolveImageCredit } from '@/lib/unsplashCredit'
 import PortableText from '@/components/molecules/PortableText'
 import {
   pageBanner,
@@ -87,6 +88,8 @@ export default async function PageComponent({ params }: PageProps) {
     notFound()
   }
 
+  const mainImageCredit = page.mainImage ? resolveImageCredit(page.mainImage) : undefined
+
   let readingListResources: Resource[] = []
   if (slug === 'reading-list') {
     const resources = await sanityClient.fetch<Resource[]>(PUBLISHED_RESOURCES_QUERY)
@@ -128,8 +131,8 @@ export default async function PageComponent({ params }: PageProps) {
             className={styles.featuredImage}
             priority
           />
-          {page.mainImage.credit && (
-            <div className={styles.credit}>Photo by {page.mainImage.credit}</div>
+          {mainImageCredit && (
+            <div className={styles.credit}>Photo by {mainImageCredit}</div>
           )}
         </div>
       )}

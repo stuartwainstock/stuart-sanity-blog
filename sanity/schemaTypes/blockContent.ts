@@ -1,5 +1,6 @@
 import {defineType, defineArrayMember, defineField} from 'sanity'
 import {parseYouTubeVideoId} from '../../src/lib/youtube'
+import {creditedImageFields, unsplashCreditImageInput} from './creditedImage'
 
 export const blockContent = defineType({
   title: 'Block Content',
@@ -42,32 +43,11 @@ export const blockContent = defineType({
     }),
     defineArrayMember({
       type: 'image',
+      components: {
+        input: unsplashCreditImageInput,
+      },
       options: {hotspot: true},
-      fields: [
-        {
-          name: 'alt',
-          type: 'string',
-          title: 'Alternative Text',
-          description: 'Describe the image for screen readers. This is required for accessibility.',
-          validation: (Rule) => 
-            Rule.required()
-              .min(10)
-              .max(125)
-              .warning('Alt text should be 10-125 characters for optimal accessibility'),
-        },
-        {
-          name: 'caption',
-          type: 'string',
-          title: 'Caption',
-          description: 'Optional caption that will be displayed below the image',
-        },
-        {
-          name: 'credit',
-          type: 'string',
-          title: 'Photo Credit',
-          description: 'Credit the photographer (auto-populated for Unsplash images)',
-        },
-      ],
+      fields: creditedImageFields,
     }),
     defineArrayMember({
       name: 'codeBlock',
