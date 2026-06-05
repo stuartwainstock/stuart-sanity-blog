@@ -55,7 +55,7 @@
       "prose-body": { "$type": "color", "$value": "#374151" },
       "prose-heading": { "$type": "color", "$value": "#111827" },
       "selection-bg": { "$type": "color", "$value": "#ff9e9e" },
-      "selection-fg": { "$type": "color", "$value": "#f9fafb" }
+      "selection-fg": { "$type": "color", "$value": "#374151" }
     }
   }
 }
