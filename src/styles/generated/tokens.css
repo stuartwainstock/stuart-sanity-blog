@@ -24,6 +24,6 @@
   --color-documented-prose-body: #374151;
   --color-documented-prose-heading: #111827;
   --color-documented-selection-bg: #ff9e9e;
-  --color-documented-selection-fg: #374151;
+  --color-documented-selection-fg: #111827;
   --font-work-sans: 'Work Sans', sans-serif; /** Primary UI font (matches Google Fonts / layout) */
 }
