@@ -35,28 +35,20 @@ export type ToolProjectPage = {
   seo?: Seo
 }
 
+export type Seo = {
+  _type: 'seo'
+  metaTitle?: string
+  metaDescription?: string
+  openGraphImage?: CreditedImage
+  keywords?: Array<string>
+  noIndex?: boolean
+}
+
 export type SanityImageAssetReference = {
   _ref: string
   _type: 'reference'
   _weak?: boolean
   [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-}
-
-export type Seo = {
-  _type: 'seo'
-  metaTitle?: string
-  metaDescription?: string
-  openGraphImage?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    credit?: string
-    _type: 'image'
-  }
-  keywords?: Array<string>
-  noIndex?: boolean
 }
 
 export type BlockContent = Array<
@@ -113,15 +105,7 @@ export type SiteSettings = {
   title?: string
   description?: string
   journalDescription?: string
-  logo?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    credit?: string
-    _type: 'image'
-  }
+  logo?: CreditedImage
   favicon?: {
     asset?: SanityImageAssetReference
     media?: unknown
@@ -179,6 +163,17 @@ export type SanityImageHotspot = {
   width?: number
 }
 
+export type CreditedImage = {
+  _type: 'creditedImage'
+  asset?: SanityImageAssetReference
+  media?: unknown
+  hotspot?: SanityImageHotspot
+  crop?: SanityImageCrop
+  alt?: string
+  caption?: string
+  credit?: string
+}
+
 export type Resource = {
   _id: string
   _type: 'resource'
@@ -224,16 +219,7 @@ export type Post = {
       _key: string
     } & AuthorReference
   >
-  mainImage?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    caption?: string
-    credit?: string
-    _type: 'image'
-  }
+  mainImage?: CreditedImage
   categories?: Array<
     {
       _key: string
@@ -260,16 +246,7 @@ export type Page = {
   _rev: string
   title?: string
   slug?: Slug
-  mainImage?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    caption?: string
-    credit?: string
-    _type: 'image'
-  }
+  mainImage?: CreditedImage
   excerpt?: string
   body?: BlockContent
   showInNavigation?: 'true' | 'false'
@@ -432,15 +409,7 @@ export type Author = {
   _rev: string
   name?: string
   slug?: Slug
-  image?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    credit?: string
-    _type: 'image'
-  }
+  image?: CreditedImage
   bio?: Array<{
     children?: Array<{
       marks?: Array<string>
@@ -567,12 +536,13 @@ export type Geopoint = {
 
 export type AllSanitySchemaTypes =
   | ToolProjectPage
-  | SanityImageAssetReference
   | Seo
+  | SanityImageAssetReference
   | BlockContent
   | SiteSettings
   | SanityImageCrop
   | SanityImageHotspot
+  | CreditedImage
   | Resource
   | AuthorReference
   | CategoryReference
