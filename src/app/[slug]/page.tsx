@@ -10,7 +10,6 @@ import {
   pageBanner,
   pageBodyTypography,
   pageContent,
-  pageExcerpt,
   pageInner,
   pageShellBg,
   pageTitleH1,
@@ -112,11 +111,6 @@ export default async function PageComponent({ params }: PageProps) {
             >
               {page.title}
             </h1>
-            {page.excerpt && (
-              <p className={pageExcerpt}>
-                {page.excerpt}
-              </p>
-            )}
           </div>
         </div>
       </header>

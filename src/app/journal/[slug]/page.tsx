@@ -131,13 +131,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             {post.title}
           </h1>
 
-          {/* Excerpt */}
-          {post.excerpt && (
-            <p className={styles.excerpt}>
-              {post.excerpt}
-            </p>
-          )}
-
           {/* Author and Date */}
           <div className={styles.metaRow}>
             {post.author && (
