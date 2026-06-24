@@ -607,3 +607,58 @@ export const PUBLISHED_RESOURCES_QUERY = groq`
     tags
   }
 `
+
+// ── Sitemap ───────────────────────────────────────────────────────────────────
+// Lightweight projections for /sitemap.xml. Exclude documents missing a slug or
+// flagged noIndex so the sitemap only advertises indexable URLs.
+
+/** Canonical site URL from site settings (drives sitemap + robots base URL). */
+export const SITE_URL_QUERY = groq`
+  *[_type == "siteSettings"][0].url
+`
+
+/** Indexable posts → /journal/[slug]. */
+export const SITEMAP_POSTS_QUERY = groq`
+  *[
+    _type == "post"
+    && defined(slug.current)
+    && seo.noIndex != true
+  ]{
+    "slug": slug.current,
+    _updatedAt
+  }
+`
+
+/** Indexable pages → /[slug]. */
+export const SITEMAP_PAGES_QUERY = groq`
+  *[
+    _type == "page"
+    && defined(slug.current)
+    && seo.noIndex != true
+  ]{
+    "slug": slug.current,
+    _updatedAt
+  }
+`
+
+/** Categories → /category/[slug]. */
+export const SITEMAP_CATEGORIES_QUERY = groq`
+  *[
+    _type == "category"
+    && defined(slug.current)
+  ]{
+    "slug": slug.current,
+    _updatedAt
+  }
+`
+
+/** Authors → /author/[slug]. */
+export const SITEMAP_AUTHORS_QUERY = groq`
+  *[
+    _type == "author"
+    && defined(slug.current)
+  ]{
+    "slug": slug.current,
+    _updatedAt
+  }
+`
