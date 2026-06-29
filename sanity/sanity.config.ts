@@ -2,7 +2,6 @@ import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
 import {unsplashImageAsset} from 'sanity-plugin-asset-source-unsplash'
-import {googleAnalyticsPlugin} from 'sanity-plugin-ga-dashboard'
 import {
   author,
   birdSighting,
@@ -28,25 +27,6 @@ const projectId =
   process.env.SANITY_STUDIO_PROJECT_ID || process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'ojv692hs'
 const dataset =
   process.env.SANITY_STUDIO_DATASET || process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
-
-/**
- * GA dashboard proxy for `sanity-plugin-ga-dashboard`.
- * Relative `/api/analytics` on hosted `*.sanity.studio` resolves against Sanity’s origin and redirects to
- * sanity.io — CORS fails. Use your live Next origin when building Studio via `sanity deploy` (no VERCEL).
- *
- * Note: `/api/analytics` is protected server-side. For hosted Studio builds, include the shared secret
- * in `NEXT_PUBLIC_SANITY_GA_API_URL` as `?secret=...` (or send `x-analytics-proxy-secret`).
- */
-const PRODUCTION_SITE_ORIGIN = 'https://www.stuartwainstock.com'
-
-const gaAnalyticsApiUrl = (() => {
-  const explicit =
-    process.env.SANITY_STUDIO_GA_API_URL?.trim() ?? process.env.NEXT_PUBLIC_SANITY_GA_API_URL?.trim()
-  if (explicit) return explicit
-  if (process.env.VERCEL) return '/api/analytics'
-  if (process.env.NODE_ENV !== 'production') return '/api/analytics'
-  return `${PRODUCTION_SITE_ORIGIN}/api/analytics`
-})()
 
 export default defineConfig({
   name: 'default',
@@ -202,10 +182,6 @@ export default defineConfig({
     }),
     visionTool(),
     unsplashImageAsset(),
-    googleAnalyticsPlugin({
-      apiUrl: gaAnalyticsApiUrl,
-      disabled: process.env.SANITY_DISABLE_GA_DASHBOARD === '1',
-    }),
   ],
   schema: {
     types: [

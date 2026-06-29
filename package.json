@@ -53,7 +53,6 @@
     "react-map-gl": "8.1.1",
     "sanity": "6.1.0",
     "sanity-plugin-asset-source-unsplash": "^7.0.10",
-    "sanity-plugin-ga-dashboard": "^1.0.6",
     "server-only": "^0.0.1",
     "styled-components": "6.4.2"
   },
