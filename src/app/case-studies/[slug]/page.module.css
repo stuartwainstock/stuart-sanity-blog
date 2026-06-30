@@ -53,6 +53,12 @@
   transition: background 0.15s ease;
 }
 
+.liveLink:hover,
+.liveLink:focus,
+.liveLink:visited {
+  color: var(--color-card-bg);
+}
+
 .liveLink:hover {
   background: var(--color-custom-800);
 }
