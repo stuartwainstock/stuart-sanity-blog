@@ -357,6 +357,49 @@ export type Category = {
   color?: 'blue' | 'green' | 'red' | 'yellow' | 'purple' | 'pink' | 'gray'
 }
 
+export type CaseStudyAccess = {
+  _type: 'caseStudyAccess'
+  salt?: string
+  hash?: string
+}
+
+export type SanityFileAssetReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'sanity.fileAsset'
+}
+
+export type CaseStudy = {
+  _id: string
+  _type: 'caseStudy'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title?: string
+  slug?: Slug
+  client?: string
+  year?: string
+  role?: string
+  summary?: string
+  overview?: BlockContent
+  coverImage?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+  pdfFile?: {
+    asset?: SanityFileAssetReference
+    media?: unknown
+    _type: 'file'
+  }
+  access?: CaseStudyAccess
+  seo?: Seo
+}
+
 export type BirdSighting = {
   _id: string
   _type: 'birdSighting'
@@ -554,6 +597,9 @@ export type AllSanitySchemaTypes =
   | EbirdBirding
   | Homepage
   | Category
+  | CaseStudyAccess
+  | SanityFileAssetReference
+  | CaseStudy
   | BirdSighting
   | Author
   | SanityImagePaletteSwatch

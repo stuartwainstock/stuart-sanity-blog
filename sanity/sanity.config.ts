@@ -6,6 +6,8 @@ import {
   author,
   birdSighting,
   blockContent,
+  caseStudy,
+  caseStudyAccess,
   category,
   creditedImage,
   homepage,
@@ -171,6 +173,11 @@ export default defineConfig({
               ),
             S.divider(),
             S.listItem()
+              .title('Case Studies (password-protected)')
+              .schemaType('caseStudy')
+              .child(S.documentTypeList('caseStudy').title('Case Studies')),
+            S.divider(),
+            S.listItem()
               .title('Authors')
               .schemaType('author')
               .child(S.documentTypeList('author').title('Authors')),
@@ -188,6 +195,8 @@ export default defineConfig({
       author,
       birdSighting,
       blockContent,
+      caseStudy,
+      caseStudyAccess,
       category,
       creditedImage,
       homepage,

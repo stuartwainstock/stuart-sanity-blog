@@ -211,6 +211,36 @@ export interface EbirdDashboard {
   maxObservationsToFetch: number
 }
 
+/** Password-protected case study — listing card (no secrets, no PDF). */
+export interface CaseStudyListItem {
+  _id: string
+  title: string
+  slug: {
+    current: string
+  }
+  summary?: string
+  client?: string
+  role?: string
+  year?: string
+  coverImage?: SanityImage
+}
+
+/** Password-protected case study — gate page render (public copy only). */
+export interface CaseStudyMeta {
+  _id: string
+  title: string
+  slug: {
+    current: string
+  }
+  summary?: string
+  client?: string
+  role?: string
+  year?: string
+  overview?: TypedObject[]
+  coverImage?: SanityImage
+  seo?: SEO
+}
+
 /** Singletons `toolProjectPage-runs`, `toolProjectPage-flights`, etc. */
 export interface ToolProjectPage {
   _id: string

@@ -608,6 +608,99 @@ export const PUBLISHED_RESOURCES_QUERY = groq`
   }
 `
 
+// ── Case studies (password-protected PDFs) ─────────────────────────────────────
+// Secrets (access.salt/hash) and the PDF URL are fetched only in server route
+// handlers — never in queries used by client-facing renders.
+
+/** Listing cards → /case-studies. No secrets, no PDF. */
+export const CASE_STUDIES_QUERY = groq`
+  *[
+    _type == "caseStudy"
+    && defined(slug.current)
+  ] | order(coalesce(year, "") desc, title asc) {
+    _id,
+    title,
+    slug,
+    summary,
+    client,
+    role,
+    year,
+    coverImage {
+      asset->{
+        _id,
+        url
+      },
+      alt,
+      hotspot,
+      crop
+    }
+  }
+`
+
+/** Gate page render → /case-studies/[slug]. Public copy only (no hash, no PDF URL). */
+export const CASE_STUDY_META_QUERY = groq`
+  *[
+    _type == "caseStudy"
+    && slug.current == $slug
+  ][0]{
+    _id,
+    title,
+    slug,
+    summary,
+    client,
+    role,
+    year,
+    overview,
+    coverImage {
+      asset->{
+        _id,
+        url
+      },
+      alt,
+      hotspot,
+      crop
+    },
+    seo {
+      metaTitle,
+      metaDescription,
+      openGraphImage {
+        ${creditedImageValueProjection}
+      },
+      keywords,
+      noIndex
+    }
+  }
+`
+
+/** Unlock route ONLY — salted hash for server-side password verification. */
+export const CASE_STUDY_ACCESS_QUERY = groq`
+  *[
+    _type == "caseStudy"
+    && slug.current == $slug
+  ][0]{
+    "salt": access.salt,
+    "hash": access.hash
+  }
+`
+
+/** File proxy route ONLY — resolves the PDF asset for server-side streaming. */
+export const CASE_STUDY_FILE_QUERY = groq`
+  *[
+    _type == "caseStudy"
+    && slug.current == $slug
+  ][0]{
+    title,
+    "slug": slug.current,
+    pdfFile {
+      asset->{
+        url,
+        mimeType,
+        originalFilename
+      }
+    }
+  }
+`
+
 // ── Sitemap ───────────────────────────────────────────────────────────────────
 // Lightweight projections for /sitemap.xml. Exclude documents missing a slug or
 // flagged noIndex so the sitemap only advertises indexable URLs.

@@ -1,0 +1,264 @@
+.wrap {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 4rem;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-custom-600);
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.1;
+  color: var(--color-heading);
+}
+
+.summary {
+  margin: 1rem 0 0;
+  max-width: 60ch;
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--color-documented-prose-body);
+}
+
+/* ── Unlocked viewer ─────────────────────────────────────────────────────── */
+
+.viewerSection {
+  border: 1px solid var(--color-custom-300);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--color-card-bg);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.viewerToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--color-section-bg);
+  border-bottom: 1px solid var(--color-custom-300);
+}
+
+.unlockedBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-custom-700);
+}
+
+.unlockedBadge::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #1a7f37;
+}
+
+.viewerActions {
+  display: flex;
+  gap: 1rem;
+}
+
+.viewerAction {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-link);
+}
+
+.viewerAction:hover {
+  color: var(--color-link-hover);
+}
+
+.viewerFrame {
+  display: block;
+  width: 100%;
+  height: min(82vh, 1100px);
+  border: 0;
+  background: var(--color-custom-100);
+}
+
+/* ── Locked gate ─────────────────────────────────────────────────────────── */
+
+.gateGrid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 820px) {
+  .gateGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.gateIntro {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.coverWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--color-custom-300);
+  background: var(--color-custom-100);
+}
+
+.cover {
+  object-fit: cover;
+}
+
+.overview {
+  color: var(--color-documented-prose-body);
+  line-height: 1.7;
+}
+
+.gateCard {
+  position: sticky;
+  top: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1.75rem;
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-custom-300);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.lockIcon {
+  width: 40px;
+  height: 40px;
+  color: var(--color-custom-700);
+}
+
+.lockIcon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.gateHeading {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.3;
+  color: var(--color-heading);
+}
+
+.gateText {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--color-custom-700);
+}
+
+.gateNotice {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-custom-700);
+}
+
+.gateNotice code {
+  font-size: 0.85em;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: var(--color-custom-100);
+}
+
+/* ── Unlock form ─────────────────────────────────────────────────────────── */
+
+.unlockForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.unlockLabel {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-heading);
+}
+
+.unlockInput {
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  font-size: 1rem;
+  border: 1px solid var(--color-custom-400);
+  border-radius: 8px;
+  background: var(--color-card-bg);
+  color: var(--color-documented-body);
+}
+
+.unlockInput:focus-visible {
+  outline: 2px solid var(--color-link);
+  outline-offset: 1px;
+  border-color: var(--color-link);
+}
+
+.unlockError {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #b42318;
+}
+
+.unlockButton {
+  margin-top: 0.25rem;
+  padding: 0.7rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-card-bg);
+  background: var(--color-custom-900);
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.unlockButton:hover:not(:disabled) {
+  background: var(--color-custom-800);
+}
+
+.unlockButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ── Footer nav ──────────────────────────────────────────────────────────── */
+
+.backNav {
+  margin-top: 2.5rem;
+}
+
+.backLink {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-link);
+}
+
+.backLink:hover {
+  color: var(--color-link-hover);
+}

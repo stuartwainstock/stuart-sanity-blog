@@ -2,12 +2,20 @@ import { cache } from 'react'
 import { createClient } from 'next-sanity'
 import { createImageUrlBuilder } from '@sanity/image-url'
 import {
+  CASE_STUDIES_QUERY,
+  CASE_STUDY_META_QUERY,
   EBIRD_BIRDING_QUERY,
   TOOL_PROJECT_PAGE_BIRDING_QUERY,
   TOOL_PROJECT_PAGE_FLIGHTS_QUERY,
   TOOL_PROJECT_PAGE_RUNS_QUERY,
 } from './queries'
-import type { EbirdBirding, SanityImage, ToolProjectPage } from './types'
+import type {
+  CaseStudyListItem,
+  CaseStudyMeta,
+  EbirdBirding,
+  SanityImage,
+  ToolProjectPage,
+} from './types'
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET
@@ -95,6 +103,40 @@ export const fetchToolProjectPageFlights = cache(async (): Promise<ToolProjectPa
     )
   } catch (e) {
     console.error('tool project page (flights) fetch failed:', e)
+    return null
+  }
+})
+
+/** All case studies for the /case-studies listing. */
+export async function fetchCaseStudies(): Promise<CaseStudyListItem[]> {
+  try {
+    return await sanityClient.fetch<CaseStudyListItem[]>(
+      CASE_STUDIES_QUERY,
+      {},
+      {
+        useCdn: false,
+        next: {revalidate: 60},
+      }
+    )
+  } catch (e) {
+    console.error('case studies fetch failed:', e)
+    return []
+  }
+}
+
+/** Public gate-page copy for a single case study. Dedupes generateMetadata + render. */
+export const fetchCaseStudyMeta = cache(async (slug: string): Promise<CaseStudyMeta | null> => {
+  try {
+    return await sanityClient.fetch<CaseStudyMeta | null>(
+      CASE_STUDY_META_QUERY,
+      {slug},
+      {
+        useCdn: false,
+        next: {revalidate: 60},
+      }
+    )
+  } catch (e) {
+    console.error('case study meta fetch failed:', e)
     return null
   }
 })

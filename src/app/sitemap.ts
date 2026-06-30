@@ -13,6 +13,9 @@ export const revalidate = 3600
 
 const FALLBACK_BASE_URL = 'https://www.stuartwainstock.com'
 
+// Case studies (`caseStudy`) are intentionally excluded: they are password-gated
+// and rendered with `robots: noindex`, so they must not be advertised here.
+//
 // Routes not backed by a Sanity slug document (hardcoded app routes).
 const STATIC_PATHS = [
   '',
