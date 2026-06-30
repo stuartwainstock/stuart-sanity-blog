@@ -35,6 +35,38 @@
   color: var(--color-documented-prose-body);
 }
 
+.headerActions {
+  margin: 1.5rem 0 0;
+}
+
+.liveLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--color-card-bg);
+  background: var(--color-custom-900);
+  border-radius: 8px;
+  transition: background 0.15s ease;
+}
+
+.liveLink:hover {
+  background: var(--color-custom-800);
+}
+
+.liveLink:focus-visible {
+  outline: 2px solid var(--color-link);
+  outline-offset: 2px;
+}
+
+.liveLinkIcon {
+  width: 16px;
+  height: 16px;
+}
+
 /* ── Unlocked viewer ─────────────────────────────────────────────────────── */
 
 .viewerSection {

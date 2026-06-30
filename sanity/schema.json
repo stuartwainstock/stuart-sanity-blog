@@ -2336,6 +2336,13 @@
         },
         "optional": true
       },
+      "liveUrl": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
       "summary": {
         "type": "objectAttribute",
         "value": {

@@ -54,6 +54,28 @@ export default async function CaseStudyPage({params}: Props) {
           </p>
           <h1 className={styles.title}>{caseStudy.title}</h1>
           {caseStudy.summary ? <p className={styles.summary}>{caseStudy.summary}</p> : null}
+          {caseStudy.liveUrl ? (
+            <p className={styles.headerActions}>
+              <a
+                className={styles.liveLink}
+                href={caseStudy.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Visit live project
+                <svg
+                  className={styles.liveLinkIcon}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  aria-hidden="true"
+                >
+                  <path d="M7 17 17 7M9 7h8v8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </a>
+            </p>
+          ) : null}
         </header>
 
         {unlocked ? (

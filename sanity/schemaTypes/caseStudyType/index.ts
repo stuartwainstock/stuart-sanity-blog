@@ -65,6 +65,15 @@ export const caseStudy = defineType({
       description: 'Optional. Your role on the project.',
     }),
     defineField({
+      name: 'liveUrl',
+      title: 'Live project URL',
+      type: 'url',
+      group: 'content',
+      description:
+        'Optional. Link to the live project or site. Shown as a “Visit live project” button on the case study page.',
+      validation: (Rule) => Rule.uri({scheme: ['http', 'https']}),
+    }),
+    defineField({
       name: 'summary',
       type: 'text',
       rows: 3,

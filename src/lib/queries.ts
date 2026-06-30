@@ -650,6 +650,7 @@ export const CASE_STUDY_META_QUERY = groq`
     client,
     role,
     year,
+    liveUrl,
     overview,
     coverImage {
       asset->{

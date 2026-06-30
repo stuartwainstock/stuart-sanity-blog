@@ -236,6 +236,7 @@ export interface CaseStudyMeta {
   client?: string
   role?: string
   year?: string
+  liveUrl?: string
   overview?: TypedObject[]
   coverImage?: SanityImage
   seo?: SEO

@@ -381,6 +381,7 @@ export type CaseStudy = {
   client?: string
   year?: string
   role?: string
+  liveUrl?: string
   summary?: string
   overview?: BlockContent
   coverImage?: {
