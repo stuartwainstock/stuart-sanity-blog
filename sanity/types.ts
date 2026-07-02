@@ -369,6 +369,8 @@ export type HubLink = {
   _type: 'hubLink'
   title?: string
   href?: string
+  summary?: string
+  coverImage?: CreditedImage
 }
 
 export type Category = {

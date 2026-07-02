@@ -10,14 +10,6 @@ export type ContentHubConfig = {
   navigationOrder?: number
 }
 
-export type LabHubConfig = ContentHubConfig & {
-  items?: Array<{
-    _key: string
-    title: string
-    href: string
-  }>
-}
-
 export interface SanityImageHotspot {
   x?: number
   y?: number
@@ -51,6 +43,16 @@ export interface SanityImage {
   alt?: string
   caption?: string
   credit?: string
+}
+
+export type LabHubConfig = ContentHubConfig & {
+  items?: Array<{
+    _key: string
+    title: string
+    href: string
+    summary?: string
+    coverImage?: SanityImage
+  }>
 }
 
 export interface SEO {

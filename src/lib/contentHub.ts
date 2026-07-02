@@ -1,4 +1,4 @@
-import type {ContentHubConfig} from '@/lib/types'
+import type {ContentHubConfig, SanityImage} from '@/lib/types'
 import {isExternalProjectsHref, isValidProjectsHref} from '@/lib/projectsMenuLink'
 
 export type {ContentHubConfig} from '@/lib/types'
@@ -8,6 +8,8 @@ export type HubLinkItem = {
   title: string
   href: string
   external: boolean
+  summary?: string
+  coverImage?: SanityImage
 }
 
 export type HubNavLink = {
@@ -54,7 +56,15 @@ export function isHubLinkActive(
 }
 
 export function normalizeHubLinkItems(
-  items: Array<{_key: string; title?: string; href?: string}> | undefined,
+  items:
+    | Array<{
+        _key: string
+        title?: string
+        href?: string
+        summary?: string
+        coverImage?: SanityImage
+      }>
+    | undefined,
 ): HubLinkItem[] {
   if (!items?.length) return []
   const out: HubLinkItem[] = []
@@ -62,11 +72,14 @@ export function normalizeHubLinkItems(
     const title = item.title?.trim()
     const href = item.href?.trim()
     if (!title || !href || !isValidProjectsHref(href)) continue
+    const summary = item.summary?.trim()
     out.push({
       _key: item._key,
       title,
       href,
       external: isExternalProjectsHref(href),
+      summary: summary || undefined,
+      coverImage: item.coverImage,
     })
   }
   return out

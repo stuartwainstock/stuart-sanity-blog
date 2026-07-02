@@ -1,4 +1,5 @@
 import type {Metadata} from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import {HubPageHeader} from '@/components/molecules/HubPageHeader'
 import {fetchLabHub, getImageUrl} from '@/lib/sanity'
@@ -29,6 +30,30 @@ function ExternalLinkIcon({className}: {className?: string}) {
       <path strokeLinecap="round" strokeLinejoin="round" d="M10 14 21 3" />
     </svg>
   )
+}
+
+function LabHubCardMedia({
+  title,
+  coverImage,
+}: {
+  title: string
+  coverImage?: {asset?: {url?: string}; alt?: string}
+}) {
+  if (coverImage?.asset?.url) {
+    return (
+      <div className={styles.cardMedia}>
+        <Image
+          src={getImageUrl(coverImage, 800, 533)}
+          alt={coverImage.alt || title}
+          fill
+          sizes="(max-width: 720px) 100vw, 380px"
+          className={styles.cardImage}
+        />
+      </div>
+    )
+  }
+
+  return <div className={styles.cardMediaEmpty} aria-hidden="true" />
 }
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -76,32 +101,40 @@ export default async function LabPage() {
           <p className={styles.empty}>No lab projects published yet.</p>
         ) : (
           <ul className={styles.grid}>
-            {items.map((item) => (
-              <li key={item._key} className={styles.cardItem}>
-                {item.external ? (
-                  <a
-                    href={item.href}
-                    className={styles.card}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`${item.title} (opens in new tab)`}
-                  >
-                    <div className={styles.cardMedia} aria-hidden="true" />
-                    <div className={styles.cardBody}>
+            {items.map((item) => {
+              const cardBody = (
+                <>
+                  <LabHubCardMedia title={item.title} coverImage={item.coverImage} />
+                  <div className={styles.cardBody}>
+                    <div className={styles.cardText}>
                       <h2 className={styles.cardTitle}>{item.title}</h2>
-                      <ExternalLinkIcon className={styles.externalIcon} />
+                      {item.summary ? <p className={styles.cardSummary}>{item.summary}</p> : null}
                     </div>
-                  </a>
-                ) : (
-                  <Link href={item.href} className={styles.card}>
-                    <div className={styles.cardMedia} aria-hidden="true" />
-                    <div className={styles.cardBody}>
-                      <h2 className={styles.cardTitle}>{item.title}</h2>
-                    </div>
-                  </Link>
-                )}
-              </li>
-            ))}
+                    {item.external ? <ExternalLinkIcon className={styles.externalIcon} /> : null}
+                  </div>
+                </>
+              )
+
+              return (
+                <li key={item._key} className={styles.cardItem}>
+                  {item.external ? (
+                    <a
+                      href={item.href}
+                      className={styles.card}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${item.title} (opens in new tab)`}
+                    >
+                      {cardBody}
+                    </a>
+                  ) : (
+                    <Link href={item.href} className={styles.card}>
+                      {cardBody}
+                    </Link>
+                  )}
+                </li>
+              )
+            })}
           </ul>
         )}
       </div>

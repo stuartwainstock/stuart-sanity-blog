@@ -2267,6 +2267,21 @@
             "type": "string"
           },
           "optional": true
+        },
+        "summary": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string"
+          },
+          "optional": true
+        },
+        "coverImage": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "inline",
+            "name": "creditedImage"
+          },
+          "optional": true
         }
       }
     }

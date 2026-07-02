@@ -236,6 +236,16 @@ const contentHubProjection = `
   }
 `
 
+const hubLinkItemProjection = `
+  _key,
+  title,
+  href,
+  summary,
+  coverImage {
+    ${creditedImageValueProjection}
+  }
+`
+
 // Get site settings
 export const SITE_SETTINGS_QUERY = groq`
   *[_type == "siteSettings"][0] {
@@ -256,9 +266,7 @@ export const SITE_SETTINGS_QUERY = groq`
     projectsMenu {
       ${contentHubProjection},
       items[] {
-        _key,
-        title,
-        href
+        ${hubLinkItemProjection}
       }
     },
     caseStudiesHub {
@@ -284,9 +292,7 @@ export const LAB_HUB_QUERY = groq`
   *[_type == "siteSettings"][0].projectsMenu {
     ${contentHubProjection},
     items[] {
-      _key,
-      title,
-      href
+      ${hubLinkItemProjection}
     }
   }
 `

@@ -42,9 +42,23 @@ export const hubLink = defineType({
           return true
         }),
     }),
+    defineField({
+      name: 'summary',
+      title: 'Card excerpt',
+      type: 'text',
+      rows: 3,
+      description: 'Optional short teaser shown on the hub listing card.',
+      validation: (Rule) => Rule.max(300).warning('Keep the excerpt under ~300 characters.'),
+    }),
+    defineField({
+      name: 'coverImage',
+      title: 'Card image',
+      type: 'creditedImage',
+      description: 'Optional image for the hub listing card (3:2 crop recommended).',
+    }),
   ],
   preview: {
-    select: {title: 'title', href: 'href'},
+    select: {title: 'title', href: 'href', media: 'coverImage'},
     prepare({title, href}) {
       return {
         title: title || 'Untitled',
