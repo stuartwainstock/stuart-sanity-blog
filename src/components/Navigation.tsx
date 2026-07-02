@@ -6,10 +6,7 @@ import {usePathname} from 'next/navigation'
 import {useState, useRef, useEffect} from 'react'
 import {SiteSettings, Page} from '@/lib/types'
 import {getImageUrl} from '@/lib/sanity'
-import {
-  normalizeProjectsMenuItems,
-  type ProjectsMenuNavItem,
-} from '@/lib/projectsMenuLink'
+import {buildHubNavLinks, isHubLinkActive, normalizeHubLinkItems} from '@/lib/contentHub'
 import styles from './Navigation.module.css'
 
 interface NavigationProps {
@@ -17,105 +14,23 @@ interface NavigationProps {
   navigationPages?: Page[]
 }
 
-function useProjectsMenu(siteSettings?: SiteSettings) {
-  const items = normalizeProjectsMenuItems(siteSettings?.projectsMenu?.items)
-  const label = siteSettings?.projectsMenu?.label?.trim() || 'Projects'
-  const parentHref = siteSettings?.projectsMenu?.href?.trim() || undefined
-  return {items, label, parentHref}
-}
-
-function isProjectsMenuActive(
-  pathname: string,
-  parentHref: string | undefined,
-  items: ProjectsMenuNavItem[],
-): boolean {
-  if (parentHref && pathname === parentHref) return true
-  return items.some(
-    (item) =>
-      !item.external &&
-      (pathname === item.href || pathname.startsWith(`${item.href}/`)),
-  )
-}
-
-function ProjectsExternalLinkIcon({className}: {className?: string}) {
-  return (
-    <svg
-      className={className}
-      width={14}
-      height={14}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
-      />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M15 3h6v6" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M10 14 21 3" />
-    </svg>
-  )
-}
-
-function ProjectsMenuItemLink({
-  item,
-  className,
-  onNavigate,
-}: {
-  item: ProjectsMenuNavItem
-  className: string
-  onNavigate?: () => void
-}) {
-  const rowClass = `${className} ${styles.projectsItemRow}`
-  const label = (
-    <>
-      <span className={styles.projectsItemTitle}>{item.title}</span>
-      {item.external ? (
-        <ProjectsExternalLinkIcon className={styles.projectsExternalIcon} />
-      ) : null}
-    </>
-  )
-
-  if (item.external) {
-    return (
-      <a
-        href={item.href}
-        className={rowClass}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={onNavigate}
-        aria-label={`${item.title} (opens in new tab)`}
-      >
-        {label}
-      </a>
-    )
-  }
-
-  return (
-    <Link href={item.href} className={rowClass} onClick={onNavigate}>
-      {label}
-    </Link>
-  )
-}
-
 export default function Navigation({siteSettings, navigationPages = []}: NavigationProps) {
   const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [projectsOpen, setProjectsOpen] = useState(false)
-  const [mobileProjectsOpen, setMobileProjectsOpen] = useState(false)
 
   const menuRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const firstLinkRef = useRef<HTMLAnchorElement>(null)
   const wasMenuOpenRef = useRef(false)
-  const projectsDropdownRef = useRef<HTMLDivElement>(null)
 
-  const {items: projectItems, label: projectsLabel, parentHref: projectsParentHref} =
-    useProjectsMenu(siteSettings)
-  const projectsActive = isProjectsMenuActive(pathname, projectsParentHref, projectItems)
+  const labChildPaths = normalizeHubLinkItems(siteSettings?.projectsMenu?.items)
+    .filter((item) => !item.external)
+    .map((item) => item.href)
+
+  const hubNavLinks = buildHubNavLinks([
+    {key: 'lab', hub: siteSettings?.projectsMenu},
+    {key: 'case-studies', hub: siteSettings?.caseStudiesHub},
+  ])
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
@@ -126,13 +41,6 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
   }
 
   useEffect(() => {
-    queueMicrotask(() => {
-      setProjectsOpen(false)
-      setMobileProjectsOpen(false)
-    })
-  }, [pathname])
-
-  useEffect(() => {
     if (isMenuOpen && firstLinkRef.current) {
       firstLinkRef.current.focus()
     } else if (wasMenuOpenRef.current && !isMenuOpen && buttonRef.current) {
@@ -140,27 +48,6 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
     }
     wasMenuOpenRef.current = isMenuOpen
   }, [isMenuOpen])
-
-  useEffect(() => {
-    if (!projectsOpen) return
-    const onPointerDown = (e: MouseEvent) => {
-      const el = projectsDropdownRef.current
-      if (el && !el.contains(e.target as Node)) {
-        setProjectsOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', onPointerDown)
-    return () => document.removeEventListener('mousedown', onPointerDown)
-  }, [projectsOpen])
-
-  useEffect(() => {
-    if (!projectsOpen) return
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setProjectsOpen(false)
-    }
-    document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
-  }, [projectsOpen])
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -174,6 +61,16 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
       return () => document.removeEventListener('keydown', handleEscape)
     }
   }, [isMenuOpen])
+
+  function hubChildPathsFor(href: string): string[] {
+    if (href === siteSettings?.projectsMenu?.href?.trim()) {
+      return labChildPaths
+    }
+    if (href === siteSettings?.caseStudiesHub?.href?.trim()) {
+      return ['/case-studies']
+    }
+    return []
+  }
 
   return (
     <nav
@@ -204,99 +101,23 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
           <div className={styles.desktopNav}>
             <Link href="/journal" className={styles.link}>
               Journal
             </Link>
-            {projectItems.length > 0 ? (
-              <div className={styles.projectsWrap} ref={projectsDropdownRef}>
-                {projectsParentHref ? (
-                  <div
-                    className={`${styles.projectsSplit} ${projectsActive ? styles.projectsActive : ''}`}
-                  >
-                    <Link
-                      href={projectsParentHref}
-                      className={`${styles.link} ${styles.projectsParentLink}`}
-                      aria-current={pathname === projectsParentHref ? 'page' : undefined}
-                    >
-                      {projectsLabel}
-                    </Link>
-                    <button
-                      type="button"
-                      className={`${styles.link} ${styles.projectsToggle}`}
-                      aria-expanded={projectsOpen}
-                      aria-haspopup="true"
-                      aria-controls="nav-projects-panel"
-                      id="nav-projects-button"
-                      onClick={() => setProjectsOpen((o) => !o)}
-                    >
-                      <span className={styles.srOnly}>Show {projectsLabel} links</span>
-                      <svg
-                        className={`${styles.projectsChevron} ${projectsOpen ? styles.projectsChevronOpen : ''}`}
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        aria-hidden="true"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    className={`${styles.link} ${styles.projectsButton}`}
-                    aria-expanded={projectsOpen}
-                    aria-haspopup="true"
-                    aria-controls="nav-projects-panel"
-                    id="nav-projects-button"
-                    onClick={() => setProjectsOpen((o) => !o)}
-                  >
-                    {projectsLabel}
-                    <svg
-                      className={`${styles.projectsChevron} ${projectsOpen ? styles.projectsChevronOpen : ''}`}
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </button>
-                )}
-                {projectsOpen ? (
-                  <div
-                    id="nav-projects-panel"
-                    className={styles.projectsPanel}
-                    role="region"
-                    aria-label={`${projectsLabel} links`}
-                  >
-                    <ul className={styles.projectsList} role="list">
-                      {projectItems.map((item) => (
-                        <li key={item._key}>
-                          <ProjectsMenuItemLink
-                            item={item}
-                            className={styles.projectsItemLink}
-                            onNavigate={() => setProjectsOpen(false)}
-                          />
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-              </div>
-            ) : null}
+            {hubNavLinks.map((hub) => {
+              const active = isHubLinkActive(pathname, hub.href, hubChildPathsFor(hub.href))
+              return (
+                <Link
+                  key={hub.key}
+                  href={hub.href}
+                  className={`${styles.link} ${active ? styles.linkActive : ''}`}
+                  aria-current={active ? 'page' : undefined}
+                >
+                  {hub.label}
+                </Link>
+              )
+            })}
             {navigationPages.map((page) => (
               <Link
                 key={page._id}
@@ -308,7 +129,6 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
             ))}
           </div>
 
-          {/* Mobile menu button */}
           <div className={styles.mobileButtonWrap}>
             <button
               ref={buttonRef}
@@ -335,7 +155,6 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
           </div>
         </div>
 
-        {/* Mobile Navigation */}
         {isMenuOpen ? (
           <div
             ref={menuRef}
@@ -354,93 +173,21 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
                   Journal
                 </Link>
               </li>
-              {projectItems.length > 0 ? (
-                <li>
-                  {projectsParentHref ? (
-                    <div
-                      className={`${styles.mobileProjectsSplit} ${projectsActive ? styles.projectsActive : ''}`}
+              {hubNavLinks.map((hub) => {
+                const active = isHubLinkActive(pathname, hub.href, hubChildPathsFor(hub.href))
+                return (
+                  <li key={hub.key}>
+                    <Link
+                      href={hub.href}
+                      className={`${styles.mobileLink} ${active ? styles.linkActive : ''}`}
+                      onClick={closeMenu}
+                      aria-current={active ? 'page' : undefined}
                     >
-                      <Link
-                        href={projectsParentHref}
-                        className={styles.mobileLink}
-                        onClick={closeMenu}
-                        aria-current={pathname === projectsParentHref ? 'page' : undefined}
-                      >
-                        {projectsLabel}
-                      </Link>
-                      <button
-                        type="button"
-                        className={`${styles.mobileLink} ${styles.mobileProjectsToggle}`}
-                        aria-expanded={mobileProjectsOpen}
-                        aria-controls="mobile-projects-sublist"
-                        id="mobile-projects-trigger"
-                        onClick={() => setMobileProjectsOpen((o) => !o)}
-                      >
-                        <span className={styles.srOnly}>Show {projectsLabel} links</span>
-                        <svg
-                          className={`${styles.projectsChevron} ${mobileProjectsOpen ? styles.projectsChevronOpen : ''}`}
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          aria-hidden="true"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 9l-7 7-7-7"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      className={`${styles.mobileLink} ${styles.mobileProjectsButton}`}
-                      aria-expanded={mobileProjectsOpen}
-                      aria-controls="mobile-projects-sublist"
-                      id="mobile-projects-trigger"
-                      onClick={() => setMobileProjectsOpen((o) => !o)}
-                    >
-                      <span className={styles.projectsTriggerRow}>
-                        {projectsLabel}
-                        <svg
-                          className={`${styles.projectsChevron} ${mobileProjectsOpen ? styles.projectsChevronOpen : ''}`}
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          aria-hidden="true"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 9l-7 7-7-7"
-                          />
-                        </svg>
-                      </span>
-                    </button>
-                  )}
-                  {mobileProjectsOpen ? (
-                    <ul
-                      id="mobile-projects-sublist"
-                      role="list"
-                      className={styles.mobileProjectsSublist}
-                      aria-labelledby="mobile-projects-trigger"
-                    >
-                      {projectItems.map((item) => (
-                        <li key={item._key}>
-                          <ProjectsMenuItemLink
-                            item={item}
-                            className={styles.mobileLink}
-                            onNavigate={closeMenu}
-                          />
-                        </li>
-                      ))}
-                    </ul>
-                  ) : null}
-                </li>
-              ) : null}
+                      {hub.label}
+                    </Link>
+                  </li>
+                )
+              })}
               {navigationPages.map((page) => (
                 <li key={page._id}>
                   <Link

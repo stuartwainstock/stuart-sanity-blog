@@ -71,6 +71,10 @@
   color: var(--color-link-hover);
 }
 
+.linkActive {
+  color: var(--color-link-hover);
+}
+
 .link:focus-visible {
   box-shadow:
     0 0 0 2px #d1d5db,

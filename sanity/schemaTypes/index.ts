@@ -1,6 +1,7 @@
 export { author } from './author'
 export { birdSighting } from './birdSighting'
 export { blockContent } from './blockContent'
+export { contentHub, hubLink, labHub } from './contentHub'
 export { caseStudy, caseStudyAccess } from './caseStudyType'
 export { creditedImage } from './creditedImage'
 export { category } from './category'

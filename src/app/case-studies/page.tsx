@@ -1,30 +1,53 @@
 import type {Metadata} from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
-import {fetchCaseStudies, getImageUrl} from '@/lib/sanity'
+import {HubPageHeader} from '@/components/molecules/HubPageHeader'
+import {fetchCaseStudies, fetchCaseStudiesHub, getImageUrl} from '@/lib/sanity'
+import {resolveHubTitle} from '@/lib/contentHub'
 import {pageShellBg} from '@/lib/pageTypography'
 import styles from './page.module.css'
 
 export const revalidate = 60
 
-export const metadata: Metadata = {
-  title: 'Case studies',
-  description: 'Password-protected case studies and portfolio work.',
+export async function generateMetadata(): Promise<Metadata> {
+  const hub = await fetchCaseStudiesHub()
+  const seo = hub?.seo
+  const title = seo?.metaTitle || resolveHubTitle(hub, 'Case studies')
+  const description =
+    seo?.metaDescription ||
+    'Password-protected case studies and portfolio work.'
+  return {
+    title,
+    description,
+    keywords: seo?.keywords,
+    openGraph: {
+      title,
+      description,
+      images: seo?.openGraphImage?.asset ? [getImageUrl(seo.openGraphImage, 1200, 630)] : [],
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: seo?.openGraphImage?.asset ? [getImageUrl(seo.openGraphImage, 1200, 630)] : [],
+    },
+    robots: seo?.noIndex ? 'noindex, nofollow' : 'index, follow',
+  }
 }
 
 export default async function CaseStudiesPage() {
-  const caseStudies = await fetchCaseStudies()
+  const [hub, caseStudies] = await Promise.all([fetchCaseStudiesHub(), fetchCaseStudies()])
+  const title = resolveHubTitle(hub, 'Case studies')
 
   return (
     <div className={pageShellBg}>
       <div className={styles.wrap}>
-        <header className={styles.header}>
-          <h1 className={styles.title}>Case studies</h1>
-          <p className={styles.intro}>
-            Selected portfolio work. These case studies are password protected — reach out if you
-            need access.
-          </p>
-        </header>
+        <HubPageHeader
+          title={title}
+          introduction={hub?.hubIntroduction}
+          fallbackIntro="Selected portfolio work. These case studies are password protected — reach out if you need access."
+        />
 
         {caseStudies.length === 0 ? (
           <p className={styles.empty}>No case studies published yet.</p>

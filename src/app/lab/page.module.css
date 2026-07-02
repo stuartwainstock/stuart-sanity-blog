@@ -4,25 +4,6 @@
   padding: 3rem 1.5rem 4rem;
 }
 
-.header {
-  margin-bottom: 2.5rem;
-}
-
-.title {
-  margin: 0;
-  font-size: clamp(2rem, 5vw, 3rem);
-  line-height: 1.1;
-  color: var(--color-heading);
-}
-
-.intro {
-  margin: 1rem 0 0;
-  max-width: 60ch;
-  font-size: 1.075rem;
-  line-height: 1.6;
-  color: var(--color-documented-prose-body);
-}
-
 .empty {
   color: var(--color-custom-700);
 }

@@ -6,6 +6,7 @@ import {
   CASE_STUDY_META_QUERY,
   EBIRD_BIRDING_QUERY,
   LAB_HUB_QUERY,
+  CASE_STUDIES_HUB_QUERY,
   TOOL_PROJECT_PAGE_BIRDING_QUERY,
   TOOL_PROJECT_PAGE_FLIGHTS_QUERY,
   TOOL_PROJECT_PAGE_RUNS_QUERY,
@@ -13,9 +14,10 @@ import {
 import type {
   CaseStudyListItem,
   CaseStudyMeta,
+  ContentHubConfig,
   EbirdBirding,
+  LabHubConfig,
   SanityImage,
-  SiteSettings,
   ToolProjectPage,
 } from './types'
 
@@ -110,9 +112,9 @@ export const fetchToolProjectPageFlights = cache(async (): Promise<ToolProjectPa
 })
 
 /** Lab hub page copy + project links. Dedupes generateMetadata + render. */
-export const fetchLabHub = cache(async (): Promise<SiteSettings['projectsMenu'] | null> => {
+export const fetchLabHub = cache(async (): Promise<LabHubConfig | null> => {
   try {
-    return await sanityClient.fetch<SiteSettings['projectsMenu'] | null>(
+    return await sanityClient.fetch<LabHubConfig | null>(
       LAB_HUB_QUERY,
       {},
       {
@@ -122,6 +124,23 @@ export const fetchLabHub = cache(async (): Promise<SiteSettings['projectsMenu'] 
     )
   } catch (e) {
     console.error('lab hub fetch failed:', e)
+    return null
+  }
+})
+
+/** Case studies hub page copy. Dedupes generateMetadata + render. */
+export const fetchCaseStudiesHub = cache(async (): Promise<ContentHubConfig | null> => {
+  try {
+    return await sanityClient.fetch<ContentHubConfig | null>(
+      CASE_STUDIES_HUB_QUERY,
+      {},
+      {
+        useCdn: false,
+        next: {revalidate: 60},
+      }
+    )
+  } catch (e) {
+    console.error('case studies hub fetch failed:', e)
     return null
   }
 })

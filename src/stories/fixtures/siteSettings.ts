@@ -17,11 +17,20 @@ export const fullSiteSettings: SiteSettings = {
     label: 'Projects',
     href: '/lab',
     hubTitle: 'Lab',
+    showInNavigation: 'true',
+    navigationOrder: 10,
     items: [
       {_key: 'runs', title: 'Runs', href: '/runs'},
       {_key: 'pileated', title: 'Pileated Watch', href: '/pileated-watch'},
       {_key: 'external', title: 'Other project', href: 'https://example.com/project'},
     ],
+  },
+  caseStudiesHub: {
+    label: 'Case studies',
+    href: '/case-studies',
+    hubTitle: 'Case studies',
+    showInNavigation: 'true',
+    navigationOrder: 20,
   },
   footer: {
     copyright: '© 2026 Stuart Wainstock',

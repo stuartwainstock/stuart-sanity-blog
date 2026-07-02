@@ -218,6 +218,24 @@ export const NAVIGATION_QUERY = groq`
   }
 `
 
+const contentHubProjection = `
+  label,
+  href,
+  hubTitle,
+  hubIntroduction,
+  showInNavigation,
+  navigationOrder,
+  seo {
+    metaTitle,
+    metaDescription,
+    openGraphImage {
+      ${creditedImageValueProjection}
+    },
+    keywords,
+    noIndex
+  }
+`
+
 // Get site settings
 export const SITE_SETTINGS_QUERY = groq`
   *[_type == "siteSettings"][0] {
@@ -236,24 +254,15 @@ export const SITE_SETTINGS_QUERY = groq`
     url,
     social,
     projectsMenu {
-      label,
-      href,
-      hubTitle,
-      hubIntroduction,
-      seo {
-        metaTitle,
-        metaDescription,
-        openGraphImage {
-          ${creditedImageValueProjection}
-        },
-        keywords,
-        noIndex
-      },
+      ${contentHubProjection},
       items[] {
         _key,
         title,
         href
       }
+    },
+    caseStudiesHub {
+      ${contentHubProjection}
     },
     footer {
       copyright,
@@ -270,27 +279,22 @@ export const SITE_SETTINGS_QUERY = groq`
   }
 `
 
-/** Lab hub page — projectsMenu hub fields + dropdown items. */
+/** Lab hub page — projectsMenu hub fields + curated child links. */
 export const LAB_HUB_QUERY = groq`
   *[_type == "siteSettings"][0].projectsMenu {
-    label,
-    href,
-    hubTitle,
-    hubIntroduction,
-    seo {
-      metaTitle,
-      metaDescription,
-      openGraphImage {
-        ${creditedImageValueProjection}
-      },
-      keywords,
-      noIndex
-    },
+    ${contentHubProjection},
     items[] {
       _key,
       title,
       href
     }
+  }
+`
+
+/** Case studies hub page — hub copy from site settings. */
+export const CASE_STUDIES_HUB_QUERY = groq`
+  *[_type == "siteSettings"][0].caseStudiesHub {
+    ${contentHubProjection}
   }
 `
 

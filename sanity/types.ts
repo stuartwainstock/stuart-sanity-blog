@@ -135,20 +135,36 @@ export type SiteSettings = {
       _key: string
     }>
   }
-  projectsMenu?: {
-    label?: string
-    href?: string
-    hubTitle?: string
-    hubIntroduction?: BlockContent
-    seo?: Seo
-    items?: Array<{
-      title?: string
-      href?: string
-      _type: 'projectsMenuItem'
-      _key: string
-    }>
-  }
+  projectsMenu?: LabHub
+  caseStudiesHub?: ContentHub
   seo?: Seo
+}
+
+export type ContentHub = {
+  _type: 'contentHub'
+  label?: string
+  href?: string
+  hubTitle?: string
+  hubIntroduction?: BlockContent
+  seo?: Seo
+  showInNavigation?: 'true' | 'false'
+  navigationOrder?: number
+}
+
+export type LabHub = {
+  _type: 'labHub'
+  label?: string
+  href?: string
+  hubTitle?: string
+  hubIntroduction?: BlockContent
+  seo?: Seo
+  showInNavigation?: 'true' | 'false'
+  navigationOrder?: number
+  items?: Array<
+    {
+      _key: string
+    } & HubLink
+  >
 }
 
 export type SanityImageCrop = {
@@ -347,6 +363,12 @@ export type Homepage = {
     }
   }
   seo?: Seo
+}
+
+export type HubLink = {
+  _type: 'hubLink'
+  title?: string
+  href?: string
 }
 
 export type Category = {
@@ -588,6 +610,8 @@ export type AllSanitySchemaTypes =
   | SanityImageAssetReference
   | BlockContent
   | SiteSettings
+  | ContentHub
+  | LabHub
   | SanityImageCrop
   | SanityImageHotspot
   | CreditedImage
@@ -601,6 +625,7 @@ export type AllSanitySchemaTypes =
   | EbirdDashboard
   | EbirdBirding
   | Homepage
+  | HubLink
   | Category
   | CaseStudyAccess
   | SanityFileAssetReference

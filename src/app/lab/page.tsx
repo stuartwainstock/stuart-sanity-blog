@@ -1,8 +1,8 @@
 import type {Metadata} from 'next'
 import Link from 'next/link'
-import PortableText from '@/components/molecules/PortableText'
+import {HubPageHeader} from '@/components/molecules/HubPageHeader'
 import {fetchLabHub, getImageUrl} from '@/lib/sanity'
-import {normalizeProjectsMenuItems} from '@/lib/projectsMenuLink'
+import {normalizeHubLinkItems, resolveHubTitle} from '@/lib/contentHub'
 import {pageShellBg} from '@/lib/pageTypography'
 import styles from './page.module.css'
 
@@ -34,7 +34,7 @@ function ExternalLinkIcon({className}: {className?: string}) {
 export async function generateMetadata(): Promise<Metadata> {
   const hub = await fetchLabHub()
   const seo = hub?.seo
-  const title = seo?.metaTitle || hub?.hubTitle?.trim() || hub?.label?.trim() || 'Lab'
+  const title = seo?.metaTitle || resolveHubTitle(hub, 'Lab')
   const description =
     seo?.metaDescription ||
     'Experiments, maps, and side projects from the lab.'
@@ -60,24 +60,17 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function LabPage() {
   const hub = await fetchLabHub()
-  const items = normalizeProjectsMenuItems(hub?.items)
-  const title = hub?.hubTitle?.trim() || hub?.label?.trim() || 'Lab'
+  const items = normalizeHubLinkItems(hub?.items)
+  const title = resolveHubTitle(hub, 'Lab')
 
   return (
     <div className={pageShellBg}>
       <div className={styles.wrap}>
-        <header className={styles.header}>
-          <h1 className={styles.title}>{title}</h1>
-          {hub?.hubIntroduction?.length ? (
-            <div className={styles.intro}>
-              <PortableText value={hub.hubIntroduction} />
-            </div>
-          ) : (
-            <p className={styles.intro}>
-              Experiments, maps, and side projects — tools built to explore data and ideas.
-            </p>
-          )}
-        </header>
+        <HubPageHeader
+          title={title}
+          introduction={hub?.hubIntroduction}
+          fallbackIntro="Experiments, maps, and side projects — tools built to explore data and ideas."
+        />
 
         {items.length === 0 ? (
           <p className={styles.empty}>No lab projects published yet.</p>

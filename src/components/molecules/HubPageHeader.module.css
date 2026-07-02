@@ -1,0 +1,18 @@
+.header {
+  margin-bottom: 2.5rem;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.1;
+  color: var(--color-heading);
+}
+
+.intro {
+  margin: 1.25rem 0 0;
+  max-width: none;
+  font-size: 1.125rem;
+  line-height: 1.75;
+  color: var(--color-documented-prose-body);
+}

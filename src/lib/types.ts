@@ -1,5 +1,23 @@
 import type {TypedObject} from '@portabletext/types'
 
+export type ContentHubConfig = {
+  label?: string
+  href?: string
+  hubTitle?: string
+  hubIntroduction?: TypedObject[]
+  seo?: SEO
+  showInNavigation?: string
+  navigationOrder?: number
+}
+
+export type LabHubConfig = ContentHubConfig & {
+  items?: Array<{
+    _key: string
+    title: string
+    href: string
+  }>
+}
+
 export interface SanityImageHotspot {
   x?: number
   y?: number
@@ -141,19 +159,10 @@ export interface SiteSettings {
     linkedin?: string
     github?: string
   }
-  /** Header “Projects” dropdown; href is /path (this site) or https:// (external). */
-  projectsMenu?: {
-    label?: string
-    href?: string
-    hubTitle?: string
-    hubIntroduction?: TypedObject[]
-    seo?: SEO
-    items?: Array<{
-      _key: string
-      title: string
-      href: string
-    }>
-  }
+  /** Lab hub page + nav link; child links appear on /lab only. */
+  projectsMenu?: LabHubConfig
+  /** Case studies hub page + nav link; children are caseStudy documents. */
+  caseStudiesHub?: ContentHubConfig
   footer?: {
     copyright?: string
     sections?: Array<{
