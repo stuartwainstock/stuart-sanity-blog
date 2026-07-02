@@ -853,6 +853,36 @@
               },
               "optional": true
             },
+            "href": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "string"
+              },
+              "optional": true
+            },
+            "hubTitle": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "string"
+              },
+              "optional": true
+            },
+            "hubIntroduction": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "inline",
+                "name": "blockContent"
+              },
+              "optional": true
+            },
+            "seo": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "inline",
+                "name": "seo"
+              },
+              "optional": true
+            },
             "items": {
               "type": "objectAttribute",
               "value": {

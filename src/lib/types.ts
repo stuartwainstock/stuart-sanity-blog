@@ -144,6 +144,10 @@ export interface SiteSettings {
   /** Header “Projects” dropdown; href is /path (this site) or https:// (external). */
   projectsMenu?: {
     label?: string
+    href?: string
+    hubTitle?: string
+    hubIntroduction?: TypedObject[]
+    seo?: SEO
     items?: Array<{
       _key: string
       title: string

@@ -237,6 +237,18 @@ export const SITE_SETTINGS_QUERY = groq`
     social,
     projectsMenu {
       label,
+      href,
+      hubTitle,
+      hubIntroduction,
+      seo {
+        metaTitle,
+        metaDescription,
+        openGraphImage {
+          ${creditedImageValueProjection}
+        },
+        keywords,
+        noIndex
+      },
       items[] {
         _key,
         title,
@@ -255,6 +267,30 @@ export const SITE_SETTINGS_QUERY = groq`
       }
     },
     seo
+  }
+`
+
+/** Lab hub page — projectsMenu hub fields + dropdown items. */
+export const LAB_HUB_QUERY = groq`
+  *[_type == "siteSettings"][0].projectsMenu {
+    label,
+    href,
+    hubTitle,
+    hubIntroduction,
+    seo {
+      metaTitle,
+      metaDescription,
+      openGraphImage {
+        ${creditedImageValueProjection}
+      },
+      keywords,
+      noIndex
+    },
+    items[] {
+      _key,
+      title,
+      href
+    }
   }
 `
 

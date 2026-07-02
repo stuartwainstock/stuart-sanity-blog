@@ -15,6 +15,8 @@ export const fullSiteSettings: SiteSettings = {
   },
   projectsMenu: {
     label: 'Projects',
+    href: '/lab',
+    hubTitle: 'Lab',
     items: [
       {_key: 'runs', title: 'Runs', href: '/runs'},
       {_key: 'pileated', title: 'Pileated Watch', href: '/pileated-watch'},

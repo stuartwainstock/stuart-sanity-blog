@@ -162,7 +162,42 @@ export const siteSettings = defineType({
           title: 'Top-level label',
           type: 'string',
           initialValue: 'Projects',
-          description: 'Shown in the nav bar (e.g. Projects)',
+          description: 'Shown in the nav bar (e.g. Lab)',
+        }),
+        defineField({
+          name: 'href',
+          title: 'Hub page path',
+          type: 'string',
+          description:
+            'Site path for the parent nav link and hub page (e.g. /lab). Leave empty to show a dropdown trigger only.',
+          validation: (Rule) =>
+            Rule.custom((val) => {
+              if (val == null || val === '') return true
+              if (typeof val !== 'string') return 'Enter a site path starting with /'
+              const t = val.trim()
+              if (!t.startsWith('/') || t.startsWith('//')) {
+                return 'Use a site path like /lab'
+              }
+              return true
+            }),
+        }),
+        defineField({
+          name: 'hubTitle',
+          title: 'Hub page title',
+          type: 'string',
+          description: 'H1 on the hub page. Falls back to the top-level label when empty.',
+        }),
+        defineField({
+          name: 'hubIntroduction',
+          title: 'Hub page introduction',
+          type: 'blockContent',
+          description: 'Intro copy shown under the hub page title.',
+        }),
+        defineField({
+          name: 'seo',
+          title: 'Hub page SEO',
+          type: 'seo',
+          description: 'SEO for the hub page (e.g. /lab).',
         }),
         defineField({
           name: 'items',

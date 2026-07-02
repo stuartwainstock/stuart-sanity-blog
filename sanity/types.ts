@@ -137,6 +137,10 @@ export type SiteSettings = {
   }
   projectsMenu?: {
     label?: string
+    href?: string
+    hubTitle?: string
+    hubIntroduction?: BlockContent
+    seo?: Seo
     items?: Array<{
       title?: string
       href?: string

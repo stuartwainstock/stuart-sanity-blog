@@ -81,6 +81,54 @@
   position: relative;
 }
 
+.projectsSplit {
+  display: inline-flex;
+  align-items: stretch;
+  border-radius: 0.375rem;
+}
+
+.projectsSplit.projectsActive .projectsParentLink,
+.projectsSplit.projectsActive .projectsToggle {
+  color: var(--color-link-hover);
+}
+
+.projectsParentLink {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  padding-right: 0.35rem;
+}
+
+.projectsToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  padding-left: 0.15rem;
+  padding-right: 0.5rem;
+}
+
+.mobileProjectsSplit {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.mobileProjectsSplit .mobileLink {
+  flex: 1 1 auto;
+}
+
+.mobileProjectsToggle {
+  flex: 0 0 auto;
+  width: auto;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
 .projectsButton {
   display: inline-flex;
   align-items: center;

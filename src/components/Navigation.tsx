@@ -20,7 +20,21 @@ interface NavigationProps {
 function useProjectsMenu(siteSettings?: SiteSettings) {
   const items = normalizeProjectsMenuItems(siteSettings?.projectsMenu?.items)
   const label = siteSettings?.projectsMenu?.label?.trim() || 'Projects'
-  return {items, label}
+  const parentHref = siteSettings?.projectsMenu?.href?.trim() || undefined
+  return {items, label, parentHref}
+}
+
+function isProjectsMenuActive(
+  pathname: string,
+  parentHref: string | undefined,
+  items: ProjectsMenuNavItem[],
+): boolean {
+  if (parentHref && pathname === parentHref) return true
+  return items.some(
+    (item) =>
+      !item.external &&
+      (pathname === item.href || pathname.startsWith(`${item.href}/`)),
+  )
 }
 
 function ProjectsExternalLinkIcon({className}: {className?: string}) {
@@ -99,7 +113,9 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
   const wasMenuOpenRef = useRef(false)
   const projectsDropdownRef = useRef<HTMLDivElement>(null)
 
-  const {items: projectItems, label: projectsLabel} = useProjectsMenu(siteSettings)
+  const {items: projectItems, label: projectsLabel, parentHref: projectsParentHref} =
+    useProjectsMenu(siteSettings)
+  const projectsActive = isProjectsMenuActive(pathname, projectsParentHref, projectItems)
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
@@ -190,39 +206,75 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
 
           {/* Desktop Navigation */}
           <div className={styles.desktopNav}>
-            <Link href="/" className={styles.link}>
-              Home
-            </Link>
             <Link href="/journal" className={styles.link}>
               Journal
             </Link>
             {projectItems.length > 0 ? (
               <div className={styles.projectsWrap} ref={projectsDropdownRef}>
-                <button
-                  type="button"
-                  className={`${styles.link} ${styles.projectsButton}`}
-                  aria-expanded={projectsOpen}
-                  aria-haspopup="true"
-                  aria-controls="nav-projects-panel"
-                  id="nav-projects-button"
-                  onClick={() => setProjectsOpen((o) => !o)}
-                >
-                  {projectsLabel}
-                  <svg
-                    className={`${styles.projectsChevron} ${projectsOpen ? styles.projectsChevronOpen : ''}`}
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    aria-hidden="true"
+                {projectsParentHref ? (
+                  <div
+                    className={`${styles.projectsSplit} ${projectsActive ? styles.projectsActive : ''}`}
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </button>
+                    <Link
+                      href={projectsParentHref}
+                      className={`${styles.link} ${styles.projectsParentLink}`}
+                      aria-current={pathname === projectsParentHref ? 'page' : undefined}
+                    >
+                      {projectsLabel}
+                    </Link>
+                    <button
+                      type="button"
+                      className={`${styles.link} ${styles.projectsToggle}`}
+                      aria-expanded={projectsOpen}
+                      aria-haspopup="true"
+                      aria-controls="nav-projects-panel"
+                      id="nav-projects-button"
+                      onClick={() => setProjectsOpen((o) => !o)}
+                    >
+                      <span className={styles.srOnly}>Show {projectsLabel} links</span>
+                      <svg
+                        className={`${styles.projectsChevron} ${projectsOpen ? styles.projectsChevronOpen : ''}`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        aria-hidden="true"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    className={`${styles.link} ${styles.projectsButton}`}
+                    aria-expanded={projectsOpen}
+                    aria-haspopup="true"
+                    aria-controls="nav-projects-panel"
+                    id="nav-projects-button"
+                    onClick={() => setProjectsOpen((o) => !o)}
+                  >
+                    {projectsLabel}
+                    <svg
+                      className={`${styles.projectsChevron} ${projectsOpen ? styles.projectsChevronOpen : ''}`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+                )}
                 {projectsOpen ? (
                   <div
                     id="nav-projects-panel"
@@ -295,46 +347,80 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
               <li>
                 <Link
                   ref={firstLinkRef}
-                  href="/"
+                  href="/journal"
                   className={styles.mobileLink}
                   onClick={closeMenu}
                 >
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link href="/journal" className={styles.mobileLink} onClick={closeMenu}>
                   Journal
                 </Link>
               </li>
               {projectItems.length > 0 ? (
                 <li>
-                  <button
-                    type="button"
-                    className={`${styles.mobileLink} ${styles.mobileProjectsButton}`}
-                    aria-expanded={mobileProjectsOpen}
-                    aria-controls="mobile-projects-sublist"
-                    id="mobile-projects-trigger"
-                    onClick={() => setMobileProjectsOpen((o) => !o)}
-                  >
-                    <span className={styles.projectsTriggerRow}>
-                      {projectsLabel}
-                      <svg
-                        className={`${styles.projectsChevron} ${mobileProjectsOpen ? styles.projectsChevronOpen : ''}`}
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        aria-hidden="true"
+                  {projectsParentHref ? (
+                    <div
+                      className={`${styles.mobileProjectsSplit} ${projectsActive ? styles.projectsActive : ''}`}
+                    >
+                      <Link
+                        href={projectsParentHref}
+                        className={styles.mobileLink}
+                        onClick={closeMenu}
+                        aria-current={pathname === projectsParentHref ? 'page' : undefined}
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </span>
-                  </button>
+                        {projectsLabel}
+                      </Link>
+                      <button
+                        type="button"
+                        className={`${styles.mobileLink} ${styles.mobileProjectsToggle}`}
+                        aria-expanded={mobileProjectsOpen}
+                        aria-controls="mobile-projects-sublist"
+                        id="mobile-projects-trigger"
+                        onClick={() => setMobileProjectsOpen((o) => !o)}
+                      >
+                        <span className={styles.srOnly}>Show {projectsLabel} links</span>
+                        <svg
+                          className={`${styles.projectsChevron} ${mobileProjectsOpen ? styles.projectsChevronOpen : ''}`}
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          aria-hidden="true"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      className={`${styles.mobileLink} ${styles.mobileProjectsButton}`}
+                      aria-expanded={mobileProjectsOpen}
+                      aria-controls="mobile-projects-sublist"
+                      id="mobile-projects-trigger"
+                      onClick={() => setMobileProjectsOpen((o) => !o)}
+                    >
+                      <span className={styles.projectsTriggerRow}>
+                        {projectsLabel}
+                        <svg
+                          className={`${styles.projectsChevron} ${mobileProjectsOpen ? styles.projectsChevronOpen : ''}`}
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          aria-hidden="true"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      </span>
+                    </button>
+                  )}
                   {mobileProjectsOpen ? (
                     <ul
                       id="mobile-projects-sublist"
