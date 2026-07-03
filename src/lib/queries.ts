@@ -802,3 +802,24 @@ export const SITEMAP_AUTHORS_QUERY = groq`
     _updatedAt
   }
 `
+
+/** Indexable hub listing pages from site settings (Lab, Case studies, etc.). */
+export const SITEMAP_HUBS_QUERY = groq`
+  *[_type == "siteSettings"][0]{
+    _updatedAt,
+    "hubs": [
+      projectsMenu{
+        href,
+        seo {
+          noIndex
+        }
+      },
+      caseStudiesHub{
+        href,
+        seo {
+          noIndex
+        }
+      }
+    ]
+  }
+`

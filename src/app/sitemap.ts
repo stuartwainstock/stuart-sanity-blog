@@ -6,6 +6,7 @@ import {
   SITEMAP_PAGES_QUERY,
   SITEMAP_CATEGORIES_QUERY,
   SITEMAP_AUTHORS_QUERY,
+  SITEMAP_HUBS_QUERY,
 } from '@/lib/queries'
 
 // Keep the sitemap fresh without rebuilding: regenerate at most hourly.
@@ -13,10 +14,11 @@ export const revalidate = 3600
 
 const FALLBACK_BASE_URL = 'https://www.stuartwainstock.com'
 
-// Case studies (`caseStudy`) are intentionally excluded: they are password-gated
-// and rendered with `robots: noindex`, so they must not be advertised here.
+// Individual case study slugs (`/case-studies/[slug]`) are intentionally excluded:
+// gate pages are password-protected and always `noindex`.
 //
-// Routes not backed by a Sanity slug document (hardcoded app routes).
+// Hub listing pages (/lab, /case-studies) come from siteSettings via SITEMAP_HUBS_QUERY.
+// Tool/project routes below are hardcoded app routes not backed by a slug document.
 const STATIC_PATHS = [
   '',
   '/blog',
@@ -25,10 +27,19 @@ const STATIC_PATHS = [
   '/runs',
   '/flights',
   '/birding-dashboard',
-  '/lab',
 ] as const
 
 type SlugDoc = { slug: string; _updatedAt?: string }
+
+type SitemapHubDoc = {
+  href?: string
+  seo?: { noIndex?: boolean }
+}
+
+type SitemapHubsResult = {
+  _updatedAt?: string
+  hubs?: SitemapHubDoc[] | null
+}
 
 function resolveBaseUrl(siteUrl: string | null): string {
   try {
@@ -38,13 +49,46 @@ function resolveBaseUrl(siteUrl: string | null): string {
   }
 }
 
+function normalizeSitePath(href: string | undefined): string | null {
+  const path = href?.trim()
+  if (!path || !path.startsWith('/') || path.startsWith('//')) return null
+  return path
+}
+
+function buildHubEntries(
+  baseUrl: string,
+  hubData: SitemapHubsResult | null,
+  lastModified: (value?: string) => Date,
+): MetadataRoute.Sitemap {
+  const updatedAt = hubData?._updatedAt
+  const hubs = hubData?.hubs ?? []
+
+  const seen = new Set<string>()
+  const entries: MetadataRoute.Sitemap = []
+
+  for (const hub of hubs) {
+    const path = normalizeSitePath(hub?.href)
+    if (!path || hub?.seo?.noIndex === true || seen.has(path)) continue
+    seen.add(path)
+    entries.push({
+      url: `${baseUrl}${path}`,
+      lastModified: lastModified(updatedAt),
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    })
+  }
+
+  return entries
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [siteUrl, posts, pages, categories, authors] = await Promise.all([
+  const [siteUrl, posts, pages, categories, authors, hubData] = await Promise.all([
     sanityClient.fetch<string | null>(SITE_URL_QUERY).catch(() => null),
     sanityClient.fetch<SlugDoc[]>(SITEMAP_POSTS_QUERY).catch(() => []),
     sanityClient.fetch<SlugDoc[]>(SITEMAP_PAGES_QUERY).catch(() => []),
     sanityClient.fetch<SlugDoc[]>(SITEMAP_CATEGORIES_QUERY).catch(() => []),
     sanityClient.fetch<SlugDoc[]>(SITEMAP_AUTHORS_QUERY).catch(() => []),
+    sanityClient.fetch<SitemapHubsResult | null>(SITEMAP_HUBS_QUERY).catch(() => null),
   ])
 
   const baseUrl = resolveBaseUrl(siteUrl)
@@ -58,6 +102,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: path === '' ? 'daily' : 'weekly',
     priority: path === '' ? 1 : 0.7,
   }))
+
+  const hubEntries = buildHubEntries(baseUrl, hubData, lastModified)
 
   const postEntries: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `${baseUrl}/journal/${post.slug}`,
@@ -89,6 +135,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     ...staticEntries,
+    ...hubEntries,
     ...postEntries,
     ...pageEntries,
     ...categoryEntries,
