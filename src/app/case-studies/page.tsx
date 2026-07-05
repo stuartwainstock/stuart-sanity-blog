@@ -4,7 +4,7 @@ import Link from 'next/link'
 import {HubPageHeader} from '@/components/molecules/HubPageHeader'
 import {fetchCaseStudies, fetchCaseStudiesHub, getImageUrl} from '@/lib/sanity'
 import {resolveHubTitle} from '@/lib/contentHub'
-import {pageShellBg} from '@/lib/pageTypography'
+import {hubPageWrap, pageShellBg} from '@/lib/pageTypography'
 import styles from './page.module.css'
 
 export const revalidate = 60
@@ -42,7 +42,7 @@ export default async function CaseStudiesPage() {
 
   return (
     <div className={pageShellBg}>
-      <div className={styles.wrap}>
+      <div className={hubPageWrap}>
         <HubPageHeader
           title={title}
           introduction={hub?.hubIntroduction}

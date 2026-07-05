@@ -1,9 +1,9 @@
 .section {
-  margin-top: 4rem;
+  margin-top: 2.5rem;
 }
 
 .content {
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  gap: 2rem;
 }

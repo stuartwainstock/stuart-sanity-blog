@@ -1,17 +1,19 @@
-.bannerInner {
-  text-align: left;
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
+.featuredFigure {
+  margin: 0 0 2rem;
 }
 
 .featuredWrap {
   position: relative;
-  height: 24rem;
-  background: #f3f4f6;
-}
-
-@media (min-width: 768px) {
-  .featuredWrap {
-    height: 400px;
-  }
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  background: var(--color-custom-100);
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .featuredImage {
@@ -23,19 +25,16 @@
   bottom: 1rem;
   right: 1rem;
   background: rgba(0, 0, 0, 0.5);
-  color: #fff;
+  color: var(--color-card-bg);
   font-size: 0.875rem;
   padding: 0.25rem 0.75rem;
   border-radius: 0.25rem;
 }
 
-.captionBlock {
-  padding: 1rem 2rem;
-}
-
 .caption {
+  margin-top: 0.75rem;
   font-size: 0.875rem;
-  color: #4b5563;
+  color: var(--color-custom-700);
   text-align: center;
   font-style: italic;
 }

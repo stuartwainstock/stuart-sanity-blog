@@ -4,14 +4,15 @@ import styles from './HubPageHeader.module.css'
 
 type HubPageHeaderProps = {
   title: string
+  titleId?: string
   introduction?: TypedObject[]
   fallbackIntro?: string
 }
 
-export function HubPageHeader({title, introduction, fallbackIntro}: HubPageHeaderProps) {
+export function HubPageHeader({title, titleId, introduction, fallbackIntro}: HubPageHeaderProps) {
   return (
     <header className={styles.header}>
-      <h1 className={styles.title}>{title}</h1>
+      <h1 id={titleId} className={styles.title}>{title}</h1>
       {introduction?.length ? (
         <div className={styles.intro}>
           <PortableText value={introduction} />

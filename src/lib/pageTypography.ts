@@ -3,6 +3,9 @@ import styles from '@/styles/pageTypography.module.css'
 /** Shared layout + type scale for CMS pages (e.g. About) and matching static pages. */
 export const pageShellBg = styles.pageShellBg
 
+/** Max-width shell shared by /lab, /case-studies, and CMS hub-style pages. */
+export const hubPageWrap = styles.hubPageWrap
+
 export const pageBanner = styles.pageBanner
 
 export const pageInner = styles.pageInner
@@ -34,6 +37,9 @@ export const pageContent = styles.pageContent
 /** Wrapper around Portable Text body (inherits into blocks when using pageBodyTypography). */
 export const pageBodyTypography =
   styles.pageBodyTypography
+
+/** CMS page body at hub intro scale (/about, /reading-list, etc.). */
+export const pageProse = styles.pageProse
 
 /** Long-form helper copy (map blurb, table intro) at body scale with readable measure. */
 export const pageBodyParagraph = styles.pageBodyParagraph

@@ -3,6 +3,13 @@
   background-color: var(--color-background);
 }
 
+/** Shared shell for hub-style pages (/lab, /case-studies, CMS pages). */
+.hubPageWrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 4rem;
+}
+
 .pageBanner {
   padding-top: 6rem; /* pt-24 */
   padding-bottom: 1rem; /* pb-4 */
@@ -74,6 +81,13 @@
   letter-spacing: 2px;
   line-height: 1.6;
   color: #4b5563;
+}
+
+/** Readable prose for CMS pages (matches HubPageHeader intro scale). */
+.pageProse {
+  font-size: 1.125rem;
+  line-height: 1.75;
+  color: var(--color-documented-prose-body);
 }
 
 .pageBodyParagraph {

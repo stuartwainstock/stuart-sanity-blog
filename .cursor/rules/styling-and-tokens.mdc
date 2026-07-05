@@ -56,9 +56,26 @@ This project does **not** use Tailwind. Use **design tokens**, **CSS Modules**, 
 ## Components and pages
 
 - Colocate **`ComponentName.module.css`** with the component or route; import as `styles` and use `className={styles.foo}`.
-- **`src/lib/pageTypography.ts`** re-exports classes from **`src/styles/pageTypography.module.css`** for shared shell/banner/body copy on CMS pages. Use these for tool/project pages and long-form layouts when appropriate.
+- **`src/lib/pageTypography.ts`** re-exports classes from **`src/styles/pageTypography.module.css`** for shared shells and body copy. Pick the right stack per page type (see **Hub page layout** below).
 - Storybook stories may use small **`*.stories.module.css`** files for layout-only wrappers.
 - **Design system first**: Before creating new UI, look for an existing component/pattern (atoms/molecules/organisms, existing tool pages, table/map shells, etc.) and reuse it. Prefer extracting a shared component/style when a pattern repeats across routes.
+
+## Hub page layout (CMS + static hubs)
+
+**Default for new content pages** (`/lab`, `/case-studies`, CMS `[slug]` routes like `/about`, `/reading-list`):
+
+| Piece | Export / component |
+|-------|-------------------|
+| Shell | `pageShellBg` + `hubPageWrap` |
+| Header | `HubPageHeader` |
+| Body | `pageProse` + `PortableText` |
+| Sections below body | `ReadingList`, `SpeakingEngagements`, etc. (`margin-top: 2.5rem`) |
+
+**Do not** use `pageBanner` / `pageTitleH1` / `pageBodyTypography` for new hub-style pages — that legacy stack adds excessive top padding and title gaps.
+
+**Data / tool pages** (Strava, eBird, TripIt) keep `PageHeroWithDataSource` + `pageBodyTypography` — see Storybook **Organisms/Examples/ToolPage**.
+
+Canonical reference: Storybook **Organisms/Examples/HubPage** (`HubPageExample.stories.tsx`). Chromatic visual regression runs against these stories.
 
 ## Map components (Dynamic/Static split)
 
@@ -105,5 +122,7 @@ src/components/
 ## Reference
 
 - Storybook → **Foundations → Design Tokens** (`src/stories/DesignTokens.stories.tsx`).
+- Storybook → **Organisms/Examples/HubPage** — hub shell, header, and prose pattern (Chromatic baseline).
+- Storybook → **Organisms/Examples/ToolPage** — data/API project page pattern.
 - **`README.md`** → Customization → Styling for the same workflow in prose.
 - CMS-driven page patterns → `.cursor/rules/cms-driven-tool-pages.mdc`.

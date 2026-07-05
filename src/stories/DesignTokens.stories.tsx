@@ -10,6 +10,7 @@ import {
   tokenPathToCssVar,
 } from '@/stories/designTokens.data'
 import {
+  hubPageWrap,
   pageBanner,
   pageBodyParagraph,
   pageBodyTypography,
@@ -19,6 +20,7 @@ import {
   pageExcerpt,
   pageInner,
   pageKicker,
+  pageProse,
   pageSectionHeading,
   pageShellBg,
   pageTitleH1,
@@ -241,6 +243,17 @@ export const Reference: Story = {
         <div className={s.typographyStack}>
           <div className={s.typographyBlock}>
             <div className={s.typographyLabelRow}>
+              <span className={s.typographyTag}>hubPageWrap (preferred hub shell)</span>
+              <Mono>{hubPageWrap}</Mono>
+            </div>
+            <p className={s.muted}>
+              Max-width 1100px, padding 3rem 1.5rem 4rem. Pair with{' '}
+              <Mono>HubPageHeader</Mono> + <Mono>pageProse</Mono>. See{' '}
+              <Mono>Organisms/Examples/HubPage</Mono>.
+            </p>
+          </div>
+          <div className={s.typographyBlock}>
+            <div className={s.typographyLabelRow}>
               <span className={s.typographyTag}>pageShellBg</span>
               <Mono>{pageShellBg}</Mono>
             </div>
@@ -248,7 +261,7 @@ export const Reference: Story = {
           </div>
           <div className={s.typographyBlock}>
             <div className={s.typographyLabelRow}>
-              <span className={s.typographyTag}>pageBanner / pageContent</span>
+              <span className={s.typographyTag}>pageBanner / pageContent (legacy CMS — avoid for new pages)</span>
             </div>
             <ul className={s.list}>
               <li>
@@ -292,10 +305,18 @@ export const Reference: Story = {
           </div>
           <div className={s.typographyBlock}>
             <div className={s.typographyLabelRow}>
+              <Mono>pageProse</Mono>
+            </div>
+            <div className={pageProse}>
+              Hub / CMS body — 1.125rem, line-height 1.75 (matches HubPageHeader intro).
+            </div>
+          </div>
+          <div className={s.typographyBlock}>
+            <div className={s.typographyLabelRow}>
               <Mono>pageBodyTypography</Mono>
             </div>
             <div className={pageBodyTypography}>
-              Body block — same scale as long-form CMS pages (30px, light, tracking).
+              Tool / data page body — 30px, light, tracking (Strava, eBird, TripIt heroes).
             </div>
           </div>
           <div className={s.typographyBlock}>

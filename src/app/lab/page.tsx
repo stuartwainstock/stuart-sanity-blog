@@ -4,7 +4,7 @@ import Link from 'next/link'
 import {HubPageHeader} from '@/components/molecules/HubPageHeader'
 import {fetchLabHub, getImageUrl} from '@/lib/sanity'
 import {normalizeHubLinkItems, resolveHubTitle} from '@/lib/contentHub'
-import {pageShellBg} from '@/lib/pageTypography'
+import {hubPageWrap, pageShellBg} from '@/lib/pageTypography'
 import type {SanityImage} from '@/lib/types'
 import styles from './page.module.css'
 
@@ -91,7 +91,7 @@ export default async function LabPage() {
 
   return (
     <div className={pageShellBg}>
-      <div className={styles.wrap}>
+      <div className={hubPageWrap}>
         <HubPageHeader
           title={title}
           introduction={hub?.hubIntroduction}

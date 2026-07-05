@@ -1,0 +1,27 @@
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
+.lead {
+  margin: 0;
+}
+
+.cardGrid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+
+.cardPlaceholder {
+  padding: 2rem 1.25rem;
+  border: 1px solid var(--color-custom-300);
+  border-radius: 12px;
+  background: var(--color-card-bg);
+  color: var(--color-heading);
+  font-weight: 600;
+  text-align: center;
+}

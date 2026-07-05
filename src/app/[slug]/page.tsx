@@ -6,14 +6,8 @@ import { Page, Resource } from '@/lib/types'
 import { getImageUrl } from '@/lib/sanity'
 import { resolveImageCredit } from '@/lib/unsplashCredit'
 import PortableText from '@/components/molecules/PortableText'
-import {
-  pageBanner,
-  pageBodyTypography,
-  pageContent,
-  pageInner,
-  pageShellBg,
-  pageTitleH1,
-} from '@/lib/pageTypography'
+import { HubPageHeader } from '@/components/molecules/HubPageHeader'
+import { hubPageWrap, pageProse, pageShellBg } from '@/lib/pageTypography'
 import SpeakingEngagements from '@/components/organisms/SpeakingEngagements'
 import ReadingList from '@/components/organisms/ReadingList'
 import styles from './page.module.css'
@@ -97,64 +91,44 @@ export default async function PageComponent({ params }: PageProps) {
 
   return (
     <div className={pageShellBg}>
-      {/* Hero Section */}
-      <header 
-        className={pageBanner} 
-        role="banner"
-        aria-labelledby="page-title"
-      >
-        <div className={pageInner}>
-          <div className={styles.bannerInner}>
-            <h1 
-              id="page-title"
-              className={pageTitleH1}
-            >
-              {page.title}
-            </h1>
-          </div>
-        </div>
-      </header>
+      <div className={hubPageWrap}>
+        <HubPageHeader title={page.title} titleId="page-title" />
 
-      {/* Featured Image */}
-      {page.mainImage && page.mainImage.asset && (
-        <div className={styles.featuredWrap}>
-          <Image
-            src={getImageUrl(page.mainImage, 1200, 600)}
-            alt={page.mainImage.alt || page.title}
-            fill
-            className={styles.featuredImage}
-            priority
-          />
-          {mainImageCredit && (
-            <div className={styles.credit}>Photo by {mainImageCredit}</div>
+        {page.mainImage && page.mainImage.asset && (
+          <figure className={styles.featuredFigure}>
+            <div className={styles.featuredWrap}>
+              <Image
+                src={getImageUrl(page.mainImage, 1200, 600)}
+                alt={page.mainImage.alt || page.title}
+                fill
+                className={styles.featuredImage}
+                priority
+              />
+              {mainImageCredit && (
+                <div className={styles.credit}>Photo by {mainImageCredit}</div>
+              )}
+            </div>
+            {page.mainImage.caption && (
+              <p className={styles.caption}>{page.mainImage.caption}</p>
+            )}
+          </figure>
+        )}
+
+        <div className={styles.content} aria-labelledby="page-title">
+          {page.body && (
+            <div className={pageProse}>
+              <PortableText value={page.body} pageBodyTypography />
+            </div>
+          )}
+
+          {page.speakingEngagements && page.speakingEngagements.length > 0 && (
+            <SpeakingEngagements engagements={page.speakingEngagements} />
+          )}
+
+          {readingListResources.length > 0 && (
+            <ReadingList resources={readingListResources} />
           )}
         </div>
-      )}
-
-      {/* Image Caption */}
-      {page.mainImage && page.mainImage.asset && page.mainImage.caption && (
-        <div className={`${pageInner} ${styles.captionBlock}`}>
-          <p className={styles.caption}>{page.mainImage.caption}</p>
-        </div>
-      )}
-
-      {/* Content */}
-      <div className={pageContent} aria-labelledby="page-title">
-        {page.body && (
-          <div className={pageBodyTypography}>
-            <PortableText value={page.body} pageBodyTypography />
-          </div>
-        )}
-        
-        {/* Speaking Engagements */}
-        {page.speakingEngagements && page.speakingEngagements.length > 0 && (
-          <SpeakingEngagements engagements={page.speakingEngagements} />
-        )}
-        
-        {/* Reading List */}
-        {readingListResources.length > 0 && (
-          <ReadingList resources={readingListResources} />
-        )}
       </div>
     </div>
   )
