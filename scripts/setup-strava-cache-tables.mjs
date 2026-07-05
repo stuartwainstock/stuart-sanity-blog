@@ -38,8 +38,16 @@ if (missing.length === 0) {
   process.exit(0)
 }
 
+const projectRef = url.match(/https:\/\/([^.]+)\.supabase\.co/)?.[1]
+const sqlEditorUrl = projectRef
+  ? `https://supabase.com/dashboard/project/${projectRef}/sql/new`
+  : null
+
 console.log(`Missing table(s): ${missing.join(', ')}`)
-console.log('Run the following SQL in the Supabase SQL editor:\n')
+if (sqlEditorUrl) {
+  console.log(`\nOpen the Supabase SQL editor:\n  ${sqlEditorUrl}\n`)
+}
+console.log('Paste and run the following SQL, then re-check with: npm run strava:setup-caches\n')
 if (missing.includes('strava_reverse_geocode_cache')) console.log(reverseGeocodeSql)
 if (missing.includes('strava_gear_cache')) console.log(gearSql)
 process.exit(1)
