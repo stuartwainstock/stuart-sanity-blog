@@ -1,4 +1,5 @@
 import {cookies} from 'next/headers'
+import {revalidatePath} from 'next/cache'
 import {type NextRequest, NextResponse} from 'next/server'
 import {
   allowInsecureStravaConnect,
@@ -53,6 +54,14 @@ export async function GET(request: NextRequest) {
     const tokens = await exchangeAuthorizationCode(code)
     await saveStravaTokensFromExchange(tokens)
     cookieStore.delete('strava_oauth_state')
+    try {
+      revalidatePath('/runs')
+    } catch (err) {
+      console.warn(
+        'Strava OAuth callback: revalidatePath(/runs) failed:',
+        err instanceof Error ? err.message : err,
+      )
+    }
     base.searchParams.set('strava', 'connected')
     return NextResponse.redirect(base)
   } catch (e) {

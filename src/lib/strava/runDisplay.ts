@@ -1,10 +1,3 @@
-import {
-  MAX_UNIQUE_REVERSE_GEOCODE,
-  NOMINATIM_REQUEST_GAP_MS,
-  coordBucketKey,
-  reverseGeocodePlaceLabel,
-  sleep,
-} from '@/lib/geocoding/nominatim'
 import type {StravaRunRow, StravaRunTableRow} from '@/lib/strava/types'
 import {fetchActivityDetail} from '@/lib/strava/activityDetail'
 import {gearIdFromRaw} from '@/lib/strava/gear'
@@ -122,61 +115,5 @@ export function enrichRunsForTable(
       shoeLabel,
       relativeEffort: parseRelativeEffortFromRaw(r.raw),
     }
-  })
-}
-
-/**
- * Replace coordinate-only location labels with city / metro names via OpenStreetMap Nominatim.
- * Respects public API limits: dedupes by ~1 km grid, sequential requests, max unique buckets per request.
- * Set STRAVA_REVERSE_GEOCODE=0 to skip.
- */
-export async function enrichTableRowsWithReverseGeocodePlaceLabels(
-  rows: StravaRunTableRow[],
-  runsById: Map<number, StravaRunRow>,
-): Promise<StravaRunTableRow[]> {
-  if (process.env.STRAVA_REVERSE_GEOCODE === '0') return rows
-
-  const byBucket = new Map<string, {lat: number; lng: number}>()
-  const runIdsByBucket = new Map<string, number[]>()
-  const bucketOrder: string[] = []
-
-  for (const row of rows) {
-    const run = runsById.get(row.id)
-    if (!run || !needsReverseGeocodeForRaw(run.raw)) continue
-    const ll = parseStartLatLngFromRaw(run.raw)
-    if (!ll) continue
-    const key = coordBucketKey(ll.lat, ll.lng)
-    if (!byBucket.has(key)) {
-      byBucket.set(key, ll)
-      runIdsByBucket.set(key, [])
-      bucketOrder.push(key)
-    }
-    runIdsByBucket.get(key)!.push(row.id)
-  }
-
-  if (bucketOrder.length === 0) return rows
-
-  const toFetch = bucketOrder.slice(0, MAX_UNIQUE_REVERSE_GEOCODE)
-  const labelByBucket = new Map<string, string | null>()
-
-  for (let i = 0; i < toFetch.length; i++) {
-    const key = toFetch[i]!
-    const ll = byBucket.get(key)!
-    if (i > 0) await sleep(NOMINATIM_REQUEST_GAP_MS)
-    const label = await reverseGeocodePlaceLabel(ll.lat, ll.lng)
-    labelByBucket.set(key, label)
-  }
-
-  const idToLabel = new Map<number, string>()
-  for (const key of toFetch) {
-    const label = labelByBucket.get(key)
-    if (!label) continue
-    for (const id of runIdsByBucket.get(key) ?? []) idToLabel.set(id, label)
-  }
-
-  return rows.map((row) => {
-    const resolved = idToLabel.get(row.id)
-    if (!resolved) return row
-    return {...row, locationLabel: resolved}
   })
 }

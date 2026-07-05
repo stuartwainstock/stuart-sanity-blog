@@ -10,7 +10,9 @@ import {
   pageShellBg,
 } from '@/lib/pageTypography'
 
-export const dynamic = 'force-dynamic'
+// Data is Sanity copy + a committed local JSON export (see src/lib/tripit/flights.ts) —
+// nothing here needs per-request freshness, so ISR avoids re-fetching Sanity on every view.
+export const revalidate = 3600
 
 export async function generateMetadata(): Promise<Metadata> {
   const pageCopy = await fetchToolProjectPageFlights()

@@ -20,7 +20,10 @@ import {RUNS_MAP_WINDOW_DAYS} from '@/lib/strava/constants'
 import RunsMapSection from './RunsMapSection'
 import RunsTableSection from './RunsTableSection'
 
-export const dynamic = 'force-dynamic'
+// Render path is Supabase + cache-table reads only (no live Strava calls — see
+// src/lib/strava/activityEnrichment.ts and gearCache.ts). syncStravaRuns() calls
+// revalidatePath('/runs') so a manual or cron sync shows up immediately.
+export const revalidate = 300
 
 export async function generateMetadata(): Promise<Metadata> {
   const pageCopy = await fetchToolProjectPageRuns()

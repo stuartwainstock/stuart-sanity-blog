@@ -49,21 +49,49 @@ The sync runs automatically at **06:00 UTC daily** via `vercel.json`:
 - The manual admin button at `/admin/strava` still works via `POST /api/strava/sync` (guarded by `STRAVA_SYNC_SECRET`).
 - Both handlers call the same `syncStravaRuns()` — full backfill on first run, incremental thereafter.
 
+### Render-path caching (no live Strava calls on page view)
+
+`/runs` uses ISR (`revalidate = 300` in `src/app/runs/page.tsx`), not `force-dynamic`. That only
+works because the render path never calls Strava directly — everything it needs is pre-computed
+during sync and read back from Supabase:
+
+- **Activity-detail location fields** (city/state/country, `start_latlng`, `suffer_score`) are
+  fetched via `GET /activities/:id` for the newest runs still missing a label, then merged into
+  `strava_activities.raw` — during sync only, via `refreshActivityDetailsAndGearCache()` in
+  `src/lib/strava/activityEnrichment.ts`.
+- **Gear (shoe) names** are resolved via `GET /athlete` + `GET /gear/:id` and cached in
+  `strava_gear_cache` (see `scripts/supabase-strava-gear-cache.sql`) by the same sync step —
+  `src/lib/strava/gearCache.ts` has the cache-read (render-path) and cache-populate (sync-path)
+  halves, mirroring the reverse-geocode cache pattern above.
+- **Reverse-geocode place labels** (Nominatim) run in `syncStravaRuns()` **after**
+  `refreshActivityDetailsAndGearCache()` so `raw.start_latlng` from activity-detail fetches is
+  available; inputs come from `fetchRunsInWindow()` (persisted Supabase rows), not the Strava list
+  payload.
+- `syncStravaRuns()` calls `revalidatePath('/runs')` after a successful sync so manual/cron syncs
+  show up immediately instead of waiting for the next ISR window.
+
+**Do not add a live Strava fetch back into `RunsTableSection.tsx` or `RunsMapSection.tsx`.** If a
+render path needs new Strava-derived data, add a cache table + sync-time populate function instead
+(same shape as `gearCache.ts` / `reverseGeocodeCache.ts`).
+
 ### Key files
 
 ```
 src/lib/strava/
-  oauth.ts          ← token exchange and refresh (Strava API calls only here)
-  tokens.ts         ← getValidStravaAccessToken(), persistTokens()
-  activities.ts     ← listActivityPage() (paginated Strava API)
-  sync.ts           ← syncStravaRuns() (full + incremental)
-  runsQuery.ts      ← read from Supabase for rendering
-  types.ts          ← StravaActivitySummary, StravaTokenResponse, etc.
+  oauth.ts               ← token exchange and refresh (Strava API calls only here)
+  tokens.ts               ← getValidStravaAccessToken(), persistTokens()
+  activities.ts           ← listActivityPage() (paginated Strava API)
+  sync.ts                 ← syncStravaRuns() (full + incremental + cache refresh + revalidatePath)
+  activityEnrichment.ts   ← refreshActivityDetailsAndGearCache() (sync-path only)
+  gearCache.ts            ← strava_gear_cache read (render) / populate (sync)
+  reverseGeocodeCache.ts  ← strava_reverse_geocode_cache read (render) / populate (sync)
+  runsQuery.ts            ← read from Supabase for rendering
+  types.ts                ← StravaActivitySummary, StravaTokenResponse, etc.
 src/app/api/strava/
   connect/route.ts
   callback/route.ts
-  sync/route.ts     ← GET (Vercel Cron, CRON_SECRET) + POST (manual, STRAVA_SYNC_SECRET)
-vercel.json         ← cron schedule
+  sync/route.ts           ← GET (Vercel Cron, CRON_SECRET) + POST (manual, STRAVA_SYNC_SECRET)
+vercel.json               ← cron schedule
 ```
 
 Do not modify `src/lib/strava/` without also updating the Supabase schema.
