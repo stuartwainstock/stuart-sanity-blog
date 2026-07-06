@@ -56,6 +56,57 @@
       "prose-heading": { "$type": "color", "$value": "#111827" },
       "selection-bg": { "$type": "color", "$value": "#ff9e9e" },
       "selection-fg": { "$type": "color", "$value": "#111827" }
+    },
+    "button": {
+      "$description": "Semantic button surfaces (atoms/Button tone × variant)",
+      "on-primary": {
+        "$type": "color",
+        "$value": "{color.card-bg}",
+        "$description": "Label text on filled primary buttons (neutral and brand)"
+      },
+      "focus-inner": {
+        "$type": "color",
+        "$value": "{color.card-bg}",
+        "$description": "Inner ring on focus-visible box-shadow"
+      },
+      "neutral": {
+        "primary": {
+          "bg": { "$type": "color", "$value": "{color.documented.prose-heading}" },
+          "bg-hover": { "$type": "color", "$value": "#1f2937" },
+          "focus-ring": { "$type": "color", "$value": "#9ca3af" }
+        },
+        "secondary": {
+          "border": { "$type": "color", "$value": "#d1d5db" },
+          "bg": { "$type": "color", "$value": "{color.card-bg}" },
+          "bg-hover": { "$type": "color", "$value": "#f9fafb" },
+          "text": { "$type": "color", "$value": "{color.documented.prose-body}" },
+          "focus-ring": { "$type": "color", "$value": "#d1d5db" }
+        },
+        "ghost": {
+          "text": { "$type": "color", "$value": "{color.documented.prose-heading}" },
+          "bg-hover": { "$type": "color", "$value": "#f3f4f6" },
+          "focus-ring": { "$type": "color", "$value": "#d1d5db" }
+        }
+      },
+      "brand": {
+        "primary": {
+          "bg": { "$type": "color", "$value": "#c2410c" },
+          "bg-hover": { "$type": "color", "$value": "#9a3412" },
+          "focus-ring": { "$type": "color", "$value": "#f97316" }
+        },
+        "secondary": {
+          "border": { "$type": "color", "$value": "#fdba74" },
+          "bg": { "$type": "color", "$value": "{color.card-bg}" },
+          "bg-hover": { "$type": "color", "$value": "#fff7ed" },
+          "text": { "$type": "color", "$value": "#7c2d12" },
+          "focus-ring": { "$type": "color", "$value": "#f97316" }
+        },
+        "ghost": {
+          "text": { "$type": "color", "$value": "#7c2d12" },
+          "bg-hover": { "$type": "color", "$value": "#fff7ed" },
+          "focus-ring": { "$type": "color", "$value": "#f97316" }
+        }
+      }
     }
   }
 }

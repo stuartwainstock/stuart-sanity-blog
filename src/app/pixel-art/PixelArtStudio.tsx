@@ -206,7 +206,7 @@ export function PixelArtStudio() {
           <Button variant="secondary" onClick={() => fileInputRef.current?.click()}>
             Upload image
           </Button>
-          <Button variant="primary" onClick={handleDownload} disabled={!workingCanvas}>
+          <Button variant="primary" tone="brand" onClick={handleDownload} disabled={!workingCanvas}>
             Download PNG
           </Button>
           {workingCanvas ? (

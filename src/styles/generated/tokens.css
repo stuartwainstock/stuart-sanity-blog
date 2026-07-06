@@ -25,5 +25,29 @@
   --color-documented-prose-heading: #111827;
   --color-documented-selection-bg: #ff9e9e;
   --color-documented-selection-fg: #111827;
+  --color-button-on-primary: #ffffff; /** Label text on filled primary buttons (neutral and brand) */
+  --color-button-focus-inner: #ffffff; /** Inner ring on focus-visible box-shadow */
+  --color-button-neutral-primary-bg: #111827;
+  --color-button-neutral-primary-bg-hover: #1f2937;
+  --color-button-neutral-primary-focus-ring: #9ca3af;
+  --color-button-neutral-secondary-border: #d1d5db;
+  --color-button-neutral-secondary-bg: #ffffff;
+  --color-button-neutral-secondary-bg-hover: #f9fafb;
+  --color-button-neutral-secondary-text: #374151;
+  --color-button-neutral-secondary-focus-ring: #d1d5db;
+  --color-button-neutral-ghost-text: #111827;
+  --color-button-neutral-ghost-bg-hover: #f3f4f6;
+  --color-button-neutral-ghost-focus-ring: #d1d5db;
+  --color-button-brand-primary-bg: #c2410c;
+  --color-button-brand-primary-bg-hover: #9a3412;
+  --color-button-brand-primary-focus-ring: #f97316;
+  --color-button-brand-secondary-border: #fdba74;
+  --color-button-brand-secondary-bg: #ffffff;
+  --color-button-brand-secondary-bg-hover: #fff7ed;
+  --color-button-brand-secondary-text: #7c2d12;
+  --color-button-brand-secondary-focus-ring: #f97316;
+  --color-button-brand-ghost-text: #7c2d12;
+  --color-button-brand-ghost-bg-hover: #fff7ed;
+  --color-button-brand-ghost-focus-ring: #f97316;
   --font-work-sans: 'Work Sans', sans-serif; /** Primary UI font (matches Google Fonts / layout) */
 }

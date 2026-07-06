@@ -36,81 +36,93 @@
 }
 
 .brandPrimary {
-  background: #c2410c;
-  color: #fff;
+  background: var(--color-button-brand-primary-bg);
+  color: var(--color-button-on-primary);
 }
 
 .brandPrimary:hover:not(:disabled) {
-  background: #9a3412;
+  background: var(--color-button-brand-primary-bg-hover);
 }
 
 .brandPrimary:focus-visible {
-  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #f97316;
+  box-shadow:
+    0 0 0 2px var(--color-button-focus-inner),
+    0 0 0 4px var(--color-button-brand-primary-focus-ring);
 }
 
 .brandSecondary {
-  border: 1px solid #fdba74;
-  background: #fff;
-  color: #7c2d12;
+  border: 1px solid var(--color-button-brand-secondary-border);
+  background: var(--color-button-brand-secondary-bg);
+  color: var(--color-button-brand-secondary-text);
 }
 
 .brandSecondary:hover:not(:disabled) {
-  background: #fff7ed;
+  background: var(--color-button-brand-secondary-bg-hover);
 }
 
 .brandSecondary:focus-visible {
-  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #f97316;
+  box-shadow:
+    0 0 0 2px var(--color-button-focus-inner),
+    0 0 0 4px var(--color-button-brand-secondary-focus-ring);
 }
 
 .brandGhost {
   background: transparent;
-  color: #7c2d12;
+  color: var(--color-button-brand-ghost-text);
 }
 
 .brandGhost:hover:not(:disabled) {
-  background: #fff7ed;
+  background: var(--color-button-brand-ghost-bg-hover);
 }
 
 .brandGhost:focus-visible {
-  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #f97316;
+  box-shadow:
+    0 0 0 2px var(--color-button-focus-inner),
+    0 0 0 4px var(--color-button-brand-ghost-focus-ring);
 }
 
 .neutralPrimary {
-  background: #111827;
-  color: #fff;
+  background: var(--color-button-neutral-primary-bg);
+  color: var(--color-button-on-primary);
 }
 
 .neutralPrimary:hover:not(:disabled) {
-  background: #1f2937;
+  background: var(--color-button-neutral-primary-bg-hover);
 }
 
 .neutralPrimary:focus-visible {
-  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #9ca3af;
+  box-shadow:
+    0 0 0 2px var(--color-button-focus-inner),
+    0 0 0 4px var(--color-button-neutral-primary-focus-ring);
 }
 
 .neutralSecondary {
-  border: 1px solid #d1d5db;
-  background: #fff;
-  color: #374151;
+  border: 1px solid var(--color-button-neutral-secondary-border);
+  background: var(--color-button-neutral-secondary-bg);
+  color: var(--color-button-neutral-secondary-text);
 }
 
 .neutralSecondary:hover:not(:disabled) {
-  background: #f9fafb;
+  background: var(--color-button-neutral-secondary-bg-hover);
 }
 
 .neutralSecondary:focus-visible {
-  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #d1d5db;
+  box-shadow:
+    0 0 0 2px var(--color-button-focus-inner),
+    0 0 0 4px var(--color-button-neutral-secondary-focus-ring);
 }
 
 .neutralGhost {
   background: transparent;
-  color: #111827;
+  color: var(--color-button-neutral-ghost-text);
 }
 
 .neutralGhost:hover:not(:disabled) {
-  background: #f3f4f6;
+  background: var(--color-button-neutral-ghost-bg-hover);
 }
 
 .neutralGhost:focus-visible {
-  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #d1d5db;
+  box-shadow:
+    0 0 0 2px var(--color-button-focus-inner),
+    0 0 0 4px var(--color-button-neutral-ghost-focus-ring);
 }
