@@ -14,7 +14,7 @@ export default function ResourceListItem({resource}: ResourceListItemProps) {
   const inner = (
     <div className={styles.row}>
       <div className={styles.content}>
-        <h4 className={styles.title}>{resource.title}</h4>
+        <h3 className={styles.title}>{resource.title}</h3>
         <ResourceMetaChips resource={resource} />
         {resource.summary ? (
           <p className={styles.summary}>{resource.summary}</p>

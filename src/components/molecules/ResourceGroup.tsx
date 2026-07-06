@@ -14,7 +14,9 @@ export default function ResourceGroup({mediaType, groupLabel, resources}: Resour
 
   return (
     <div className={styles.root}>
-      <ListGroupHeading id={headingId}>{groupLabel}</ListGroupHeading>
+      <ListGroupHeading id={headingId} as="h2">
+        {groupLabel}
+      </ListGroupHeading>
       <div
         className={styles.list}
         aria-labelledby={headingId}
