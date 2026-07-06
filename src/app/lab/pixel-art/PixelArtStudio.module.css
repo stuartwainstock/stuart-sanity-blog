@@ -1,0 +1,277 @@
+.studio {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 800px) {
+  .studio {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Canvas column ───────────────────────────────────────────────────────── */
+
+.canvasColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.dropZone {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  border: 2px dashed var(--color-custom-400, #b8b8b8);
+  border-radius: 0.5rem;
+  background: var(--color-section-bg, #f5f5f5);
+  overflow: hidden;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.dropZoneActive {
+  border-color: var(--color-link, #0000ff);
+  background: var(--color-custom-100, #f0f0f0);
+}
+
+.dropZoneHasImage {
+  border-style: solid;
+  border-color: var(--color-custom-300, #d1d1d1);
+  background: var(--color-custom-900, #3b3b3b);
+}
+
+.dropZoneEmpty {
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  color: var(--color-documented-prose-body, #374151);
+  max-width: 28rem;
+}
+
+.outputCanvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+}
+
+.loadingOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+  color: var(--color-heading, #4f4f4f);
+}
+
+.errorMessage {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 0.375rem;
+  background: #fef2f2;
+  color: #991b1b;
+  font-size: 0.9rem;
+}
+
+.attribution {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-documented-prose-body, #374151);
+}
+
+.attribution a {
+  color: var(--color-link, #0000ff);
+}
+
+.attribution a:hover {
+  color: var(--color-link-hover, #0000cc);
+}
+
+.actionRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.hiddenFileInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+/* ── Controls column ─────────────────────────────────────────────────────── */
+
+.controlsColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.controlsFieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 1.25rem;
+  border: 1px solid var(--color-custom-300, #d1d1d1);
+  border-radius: 0.5rem;
+  background: var(--color-card-bg, #ffffff);
+}
+
+.controlsFieldset:disabled {
+  opacity: 0.55;
+}
+
+.controlsLegend {
+  padding: 0 0.25rem;
+  font-weight: 600;
+  color: var(--color-heading, #4f4f4f);
+}
+
+.controlGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.controlLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-documented-prose-body, #374151);
+}
+
+.rangeInput {
+  width: 100%;
+  accent-color: var(--color-link, #0000ff);
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-documented-prose-body, #374151);
+}
+
+.paletteRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.paletteButton {
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--color-custom-300, #d1d1d1);
+  background: var(--color-card-bg, #ffffff);
+  color: var(--color-documented-prose-body, #374151);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.paletteButton:hover {
+  background: var(--color-custom-100, #f0f0f0);
+}
+
+.paletteButtonActive {
+  border-color: var(--color-link, #0000ff);
+  background: var(--color-link, #0000ff);
+  color: #fff;
+}
+
+/* ── Unsplash picker ─────────────────────────────────────────────────────── */
+
+.unsplashPicker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  border: 1px solid var(--color-custom-300, #d1d1d1);
+  border-radius: 0.5rem;
+  background: var(--color-card-bg, #ffffff);
+}
+
+.unsplashForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.unsplashLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-documented-prose-body, #374151);
+}
+
+.unsplashRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.unsplashInput {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-custom-300, #d1d1d1);
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+}
+
+.unsplashError {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #991b1b;
+}
+
+.unsplashResults {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.unsplashThumbButton {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 0.375rem;
+  overflow: hidden;
+  cursor: pointer;
+  background: none;
+  line-height: 0;
+}
+
+.unsplashThumbButton:hover,
+.unsplashThumbButton:focus-visible {
+  border-color: var(--color-link, #0000ff);
+}
+
+.unsplashThumbImage {
+  display: block;
+  width: 100%;
+  height: 5rem;
+  object-fit: cover;
+}
+
+.unsplashCredit {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--color-custom-600, #868686);
+}
+
+.unsplashCredit a {
+  color: var(--color-link, #0000ff);
+}

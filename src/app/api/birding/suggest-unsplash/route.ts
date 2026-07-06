@@ -5,6 +5,7 @@ import {
 } from '@/lib/birding/fetchBirdSightingByEditorId'
 import {getSanityWriteClient} from '@/lib/sanity.server'
 import {hasValidAdminSession} from '@/lib/admin/session'
+import {searchUnsplashPhotos} from '@/lib/unsplash/client'
 
 export const dynamic = 'force-dynamic'
 
@@ -131,73 +132,25 @@ function buildAltDraft(speciesName: string, locationLabel: string | null, altDes
     .slice(0, 400)
 }
 
+/**
+ * Thin wrapper over the shared src/lib/unsplash/client.ts search — keeps this route's
+ * existing single-best-hit shape (birding only ever wants the top match per query) so
+ * the fallback-query loop below didn't need to change.
+ */
 async function searchUnsplash(query: string, page: number) {
-  const unsplashKey = process.env.UNSPLASH_ACCESS_KEY?.trim()
-  if (!unsplashKey) return {ok: false as const, reason: 'missing_key' as const}
+  const result = await searchUnsplashPhotos({query, page, perPage: 1, orientation: 'landscape'})
+  if (!result.ok) return {ok: false as const, reason: result.reason}
 
-  const apiPage = Math.max(1, Math.min(10, page))
-  const u = new URL('https://api.unsplash.com/search/photos')
-  u.searchParams.set('query', query)
-  u.searchParams.set('per_page', '1')
-  u.searchParams.set('orientation', 'landscape')
-  u.searchParams.set('page', String(apiPage))
-
-  const res = await fetch(u.toString(), {
-    headers: {
-      Authorization: `Client-ID ${unsplashKey}`,
-      'Accept-Version': 'v1',
-    },
-  })
-  if (!res.ok) return {ok: false as const, reason: 'http_error' as const}
-
-  const json: unknown = await res.json().catch(() => null)
-  const hit =
-    typeof json === 'object' &&
-    json != null &&
-    'results' in json &&
-    Array.isArray((json as {results?: unknown}).results)
-      ? (json as {results: unknown[]}).results[0]
-      : null
+  const hit = result.results[0]
   if (!hit) return {ok: false as const, reason: 'no_results' as const}
-
-  const hitRecord = hit as Record<string, unknown>
-  const urls = (hitRecord.urls as Record<string, unknown> | undefined) ?? {}
-  const user = (hitRecord.user as Record<string, unknown> | undefined) ?? {}
-  const links = (hitRecord.links as Record<string, unknown> | undefined) ?? {}
-  const userLinks = (user.links as Record<string, unknown> | undefined) ?? {}
-  const altDescription =
-    (typeof hitRecord.alt_description === 'string' && hitRecord.alt_description.trim()) ||
-    (typeof hitRecord.description === 'string' && hitRecord.description.trim()) ||
-    null
-
-  const imageUrl =
-    (typeof urls.regular === 'string' && urls.regular) ||
-    (typeof urls.small === 'string' && urls.small) ||
-    null
-  if (!imageUrl) return {ok: false as const, reason: 'no_results' as const}
-
-  function withAttributionParams(raw: string | null): string | null {
-    if (!raw) return null
-    try {
-      const u = new URL(raw)
-      // Unsplash API guidelines: include attribution params on links.
-      if (!u.searchParams.get('utm_source')) u.searchParams.set('utm_source', 'stuartwainstock')
-      if (!u.searchParams.get('utm_medium')) u.searchParams.set('utm_medium', 'referral')
-      return u.toString()
-    } catch {
-      return raw
-    }
-  }
 
   return {
     ok: true as const,
-    imageUrl,
-    photoPageUrl: withAttributionParams(typeof links.html === 'string' ? links.html : null),
-    photographerName: typeof user.name === 'string' ? user.name : null,
-    photographerPageUrl: withAttributionParams(
-      typeof userLinks.html === 'string' ? userLinks.html : null
-    ),
-    altDescription,
+    imageUrl: hit.regularUrl,
+    photoPageUrl: hit.photoPageUrl,
+    photographerName: hit.photographerName,
+    photographerPageUrl: hit.photographerPageUrl,
+    altDescription: hit.altDescription,
   }
 }
 
