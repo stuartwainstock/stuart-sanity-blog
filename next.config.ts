@@ -89,7 +89,7 @@ const nextConfig: NextConfig = {
                 : "script-src 'self' 'unsafe-inline' https://cdn.sanity.io https://vercel.live https://www.googletagmanager.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com data:",
-              "img-src 'self' data: blob: https://cdn.sanity.io https://www.google-analytics.com https://*.basemaps.cartocdn.com",
+              "img-src 'self' data: blob: https://cdn.sanity.io https://www.google-analytics.com https://*.basemaps.cartocdn.com https://images.unsplash.com https://*.images.unsplash.com",
               "media-src 'self' https://xeno-canto.org https://*.xeno-canto.org",
               "connect-src 'self' https://*.sanity.io https://*.sanity.run https://vercel.live https://www.google-analytics.com https://region1.google-analytics.com https://www.googletagmanager.com https://api.ebird.org https://*.basemaps.cartocdn.com https://xeno-canto.org https://*.xeno-canto.org",
               "worker-src 'self' blob:",
