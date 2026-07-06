@@ -1,8 +1,10 @@
 import { sanityClient } from '@/lib/sanity'
 import { POSTS_QUERY, CATEGORIES_QUERY, SITE_SETTINGS_QUERY } from '@/lib/queries'
 import { Post, Category, SiteSettings } from '@/lib/types'
+import { HubPageHeader } from '@/components/molecules/HubPageHeader'
 import PostCard from '@/components/molecules/PostCard'
 import Link from 'next/link'
+import { hubPageWrap, pageProse, pageShellBg } from '@/lib/pageTypography'
 import styles from './page.module.css'
 
 // Revalidate every hour
@@ -29,6 +31,9 @@ export const metadata = {
 
 export default async function JournalPage() {
   const { posts, categories, siteSettings } = await getJournalData()
+  const intro =
+    siteSettings?.journalDescription ||
+    'Explore our collection of articles, tutorials, and insights from our team and community.'
 
   const categoryChipClass = (color?: string) => {
     switch (color) {
@@ -51,19 +56,18 @@ export default async function JournalPage() {
   }
 
   return (
-    <div className={styles.page}>
-      <div className={styles.container}>
-        <div className={styles.header}>
-          <h1 className={styles.title}>Journal</h1>
-          <p className={styles.subtitle}>
-            {siteSettings?.journalDescription ||
-              'Explore our collection of articles, tutorials, and insights from our team and community.'}
-          </p>
+    <div className={pageShellBg}>
+      <div className={hubPageWrap}>
+        <HubPageHeader title="Journal" titleId="journal-title" />
+        <div className={pageProse}>
+          <p className={styles.intro}>{intro}</p>
         </div>
 
         {categories.length > 0 && (
-          <div className={styles.categories}>
-            <h2 className={styles.categoriesHeading}>Browse by Category</h2>
+          <section className={styles.categories} aria-labelledby="journal-categories-heading">
+            <h2 id="journal-categories-heading" className={styles.categoriesHeading}>
+              Browse by Category
+            </h2>
             <div className={styles.chipRow}>
               <Link href="/journal" className={`${styles.chip} ${styles.chipAll}`}>
                 All Posts
@@ -78,11 +82,11 @@ export default async function JournalPage() {
                 </Link>
               ))}
             </div>
-          </div>
+          </section>
         )}
 
         {posts.length > 0 ? (
-          <div className={styles.grid}>
+          <div className={styles.grid} aria-labelledby="journal-title">
             {posts.map((post) => (
               <PostCard key={post._id} post={post} />
             ))}

@@ -1,59 +1,16 @@
-.page {
-  min-height: 100vh;
-  padding: 3rem 0;
-}
-
-.container {
-  max-width: 80rem;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-@media (min-width: 640px) {
-  .container {
-    padding: 0 1.5rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .container {
-    padding: 0 2rem;
-  }
-}
-
-.header {
-  text-align: center;
-  margin-bottom: 3rem;
-}
-
-.title {
-  font-size: 2.25rem;
-  font-weight: 700;
-  color: #111827;
-  margin-bottom: 1rem;
-}
-
-@media (min-width: 768px) {
-  .title {
-    font-size: 3rem;
-  }
-}
-
-.subtitle {
-  font-size: 1.25rem;
-  color: #4b5563;
-  max-width: 48rem;
-  margin: 0 auto;
+.intro {
+  margin: 0;
 }
 
 .categories {
-  margin-bottom: 3rem;
+  margin-top: 2.5rem;
+  margin-bottom: 2.5rem;
 }
 
 .categoriesHeading {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #111827;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-heading);
   margin-bottom: 1.5rem;
 }
 
@@ -71,84 +28,85 @@
   font-weight: 500;
   transition: background-color 0.2s ease, color 0.2s ease;
   outline: none;
+  text-decoration: none;
 }
 
 .chipAll {
-  background: #f3f4f6;
-  color: #1f2937;
+  background: var(--color-custom-100);
+  color: var(--color-heading);
 }
 
 .chipAll:hover,
 .chipAll:focus-visible {
-  background: #e5e7eb;
+  background: var(--color-custom-200);
 }
 
 .chipBlue {
-  background: #dbeafe;
-  color: #1e40af;
+  background: var(--color-custom-100);
+  color: var(--color-heading);
 }
 .chipBlue:hover,
 .chipBlue:focus-visible {
-  background: #bfdbfe;
+  background: var(--color-custom-200);
 }
 
 .chipGreen {
-  background: #dcfce7;
-  color: #166534;
+  background: var(--color-custom-100);
+  color: var(--color-heading);
 }
 .chipGreen:hover,
 .chipGreen:focus-visible {
-  background: #bbf7d0;
+  background: var(--color-custom-200);
 }
 
 .chipRed {
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--color-custom-100);
+  color: var(--color-heading);
 }
 .chipRed:hover,
 .chipRed:focus-visible {
-  background: #fecaca;
+  background: var(--color-custom-200);
 }
 
 .chipYellow {
-  background: #fef9c3;
-  color: #854d0e;
+  background: var(--color-custom-100);
+  color: var(--color-heading);
 }
 .chipYellow:hover,
 .chipYellow:focus-visible {
-  background: #fef08a;
+  background: var(--color-custom-200);
 }
 
 .chipPurple {
-  background: #ede9fe;
-  color: #5b21b6;
+  background: var(--color-custom-100);
+  color: var(--color-heading);
 }
 .chipPurple:hover,
 .chipPurple:focus-visible {
-  background: #ddd6fe;
+  background: var(--color-custom-200);
 }
 
 .chipPink {
-  background: #fce7f3;
-  color: #9d174d;
+  background: var(--color-custom-100);
+  color: var(--color-heading);
 }
 .chipPink:hover,
 .chipPink:focus-visible {
-  background: #fbcfe8;
+  background: var(--color-custom-200);
 }
 
 .chipGray {
-  background: #f3f4f6;
-  color: #1f2937;
+  background: var(--color-custom-100);
+  color: var(--color-heading);
 }
 .chipGray:hover,
 .chipGray:focus-visible {
-  background: #e5e7eb;
+  background: var(--color-custom-200);
 }
 
 .chip:focus-visible {
   box-shadow:
-    0 0 0 2px #d1d5db,
+    0 0 0 2px var(--color-custom-300),
     0 0 0 4px var(--color-background);
 }
 
@@ -170,12 +128,12 @@
 }
 
 .empty {
-  text-align: center;
+  text-align: left;
   padding: 3rem 0;
 }
 
 .emptyIcon {
-  color: #4b5563;
+  color: var(--color-custom-700);
   margin-bottom: 1rem;
 }
 
@@ -189,10 +147,10 @@
 .emptyTitle {
   font-size: 1.125rem;
   font-weight: 500;
-  color: #111827;
+  color: var(--color-heading);
   margin-bottom: 0.5rem;
 }
 
 .emptyText {
-  color: #4b5563;
+  color: var(--color-custom-700);
 }
