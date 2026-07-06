@@ -58,16 +58,22 @@ export async function generateMetadata({ params }: PageProps) {
     openGraph: {
       title: page.seo?.metaTitle || page.title,
       description: page.seo?.metaDescription || page.excerpt,
-      images: page.seo?.openGraphImage ? [getImageUrl(page.seo.openGraphImage, 1200, 630)] : 
-              (page.mainImage && page.mainImage.asset) ? [getImageUrl(page.mainImage, 1200, 630)] : [],
+      images: page.seo?.openGraphImage?.asset
+        ? [getImageUrl(page.seo.openGraphImage, 1200, 630)]
+        : page.mainImage?.asset
+          ? [getImageUrl(page.mainImage, 1200, 630)]
+          : [],
       type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
       title: page.seo?.metaTitle || page.title,
       description: page.seo?.metaDescription || page.excerpt,
-      images: page.seo?.openGraphImage ? [getImageUrl(page.seo.openGraphImage, 1200, 630)] : 
-              (page.mainImage && page.mainImage.asset) ? [getImageUrl(page.mainImage, 1200, 630)] : [],
+      images: page.seo?.openGraphImage?.asset
+        ? [getImageUrl(page.seo.openGraphImage, 1200, 630)]
+        : page.mainImage?.asset
+          ? [getImageUrl(page.mainImage, 1200, 630)]
+          : [],
     },
     robots: page.seo?.noIndex ? 'noindex, nofollow' : 'index, follow',
   }

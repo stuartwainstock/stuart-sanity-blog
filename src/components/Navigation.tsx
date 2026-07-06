@@ -86,7 +86,7 @@ export default function Navigation({siteSettings, navigationPages = []}: Navigat
               className={styles.brandLink}
               aria-label={`${siteSettings?.title || 'Blog'} - Go to homepage`}
             >
-              {siteSettings?.logo && (
+              {siteSettings?.logo?.asset && (
                 <Image
                   src={getImageUrl(siteSettings.logo, 32, 32)}
                   alt={siteSettings.logo.alt || `${siteSettings?.title || 'Blog'} logo`}

@@ -55,8 +55,11 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
     openGraph: {
       title: post.seo?.metaTitle || post.title,
       description: post.seo?.metaDescription || post.excerpt,
-      images: post.seo?.openGraphImage ? [getImageUrl(post.seo.openGraphImage, 1200, 630)] : 
-              (post.mainImage && post.mainImage.asset) ? [getImageUrl(post.mainImage, 1200, 630)] : [],
+      images: post.seo?.openGraphImage?.asset
+        ? [getImageUrl(post.seo.openGraphImage, 1200, 630)]
+        : post.mainImage?.asset
+          ? [getImageUrl(post.mainImage, 1200, 630)]
+          : [],
       type: 'article',
       publishedTime: post.publishedAt,
       authors: post.author ? [post.author.name] : [],
@@ -65,8 +68,11 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
       card: 'summary_large_image',
       title: post.seo?.metaTitle || post.title,
       description: post.seo?.metaDescription || post.excerpt,
-      images: post.seo?.openGraphImage ? [getImageUrl(post.seo.openGraphImage, 1200, 630)] : 
-              (post.mainImage && post.mainImage.asset) ? [getImageUrl(post.mainImage, 1200, 630)] : [],
+      images: post.seo?.openGraphImage?.asset
+        ? [getImageUrl(post.seo.openGraphImage, 1200, 630)]
+        : post.mainImage?.asset
+          ? [getImageUrl(post.mainImage, 1200, 630)]
+          : [],
     },
   }
 }
