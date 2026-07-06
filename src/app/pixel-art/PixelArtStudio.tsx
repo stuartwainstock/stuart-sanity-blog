@@ -243,17 +243,16 @@ export function PixelArtStudio() {
             <span className={styles.controlLabel}>Style</span>
             <div className={styles.paletteRow} role="group" aria-label="Palette style">
               {PALETTE_OPTIONS.map((option) => (
-                <button
+                <Button
                   key={option.id}
                   type="button"
-                  className={`${styles.paletteButton} ${
-                    option.id === paletteId ? styles.paletteButtonActive : ''
-                  }`}
+                  variant={option.id === paletteId ? 'primary' : 'secondary'}
+                  size="sm"
                   onClick={() => setPaletteId(option.id)}
                   aria-pressed={option.id === paletteId}
                 >
                   {option.label}
-                </button>
+                </Button>
               ))}
             </div>
           </div>

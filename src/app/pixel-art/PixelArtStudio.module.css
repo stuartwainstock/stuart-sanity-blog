@@ -33,7 +33,7 @@
 }
 
 .dropZoneActive {
-  border-color: var(--color-link, #0000ff);
+  border-color: var(--color-custom-700, #6d6d6d);
   background: var(--color-custom-100, #f0f0f0);
 }
 
@@ -150,7 +150,11 @@
 
 .rangeInput {
   width: 100%;
-  accent-color: var(--color-link, #0000ff);
+  accent-color: var(--color-custom-900, #3b3b3b);
+}
+
+.checkboxLabel input[type='checkbox'] {
+  accent-color: var(--color-custom-900, #3b3b3b);
 }
 
 .checkboxLabel {
@@ -166,27 +170,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-}
-
-.paletteButton {
-  padding: 0.375rem 0.75rem;
-  border-radius: 0.375rem;
-  border: 1px solid var(--color-custom-300, #d1d1d1);
-  background: var(--color-card-bg, #ffffff);
-  color: var(--color-documented-prose-body, #374151);
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
-}
-
-.paletteButton:hover {
-  background: var(--color-custom-100, #f0f0f0);
-}
-
-.paletteButtonActive {
-  border-color: var(--color-link, #0000ff);
-  background: var(--color-link, #0000ff);
-  color: #fff;
 }
 
 /* ── Unsplash picker ─────────────────────────────────────────────────────── */
@@ -256,7 +239,7 @@
 
 .unsplashThumbButton:hover,
 .unsplashThumbButton:focus-visible {
-  border-color: var(--color-link, #0000ff);
+  border-color: var(--color-custom-700, #6d6d6d);
 }
 
 .unsplashThumbImage {
