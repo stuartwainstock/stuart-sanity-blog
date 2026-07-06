@@ -25,7 +25,7 @@ export function UnsplashPicker({onPick, disabled}: Props) {
     setStatus('loading')
     setErrorMessage(null)
     try {
-      const res = await fetch(`/api/lab/pixel-art/unsplash-search?query=${encodeURIComponent(trimmed)}`)
+      const res = await fetch(`/api/pixel-art/unsplash-search?query=${encodeURIComponent(trimmed)}`)
       const json = (await res.json().catch(() => null)) as
         | {ok: true; results: UnsplashPhoto[]}
         | {message?: string}

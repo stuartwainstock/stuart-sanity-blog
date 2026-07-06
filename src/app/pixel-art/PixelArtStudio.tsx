@@ -80,7 +80,7 @@ export function PixelArtStudio() {
 
       // Best-effort, required-by-guidelines ping — never blocks the UI.
       if (result.downloadLocation) {
-        fetch('/api/lab/pixel-art/unsplash-download', {
+        fetch('/api/pixel-art/unsplash-download', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({downloadLocation: result.downloadLocation}),

@@ -24,6 +24,11 @@ const nextConfig: NextConfig = {
         destination: '/flights',
         permanent: true,
       },
+      {
+        source: '/lab/pixel-art',
+        destination: '/pixel-art',
+        permanent: true,
+      },
     ]
   },
   images: {

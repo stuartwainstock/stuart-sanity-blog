@@ -4,7 +4,7 @@ import {searchUnsplashPhotos} from '@/lib/unsplash/client'
 export const dynamic = 'force-dynamic'
 
 /**
- * Public, unauthenticated Unsplash search proxy for the /lab/pixel-art playground.
+ * Public, unauthenticated Unsplash search proxy for the /pixel-art playground.
  * Shares UNSPLASH_ACCESS_KEY (and the same src/lib/unsplash/client.ts request logic)
  * with src/app/api/birding/suggest-unsplash — this route is intentionally public
  * (it's a kids'-playground feature), so it stays conservative about request shape
