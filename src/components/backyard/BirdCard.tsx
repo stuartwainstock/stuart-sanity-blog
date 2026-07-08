@@ -47,6 +47,8 @@ interface BirdCardProps {
    * with low vision or forced-colors preferences.
    */
   highContrast?: boolean
+  /** Species title heading level; default h3 under a section h2. */
+  titleAs?: 'h2' | 'h3' | 'h4'
 }
 
 // ── Audio button ──────────────────────────────────────────────────────────────
@@ -129,7 +131,7 @@ function PlumageSwatches({colors}: {colors: string[]}) {
 
 // ── BirdCard ──────────────────────────────────────────────────────────────────
 
-export function BirdCard({sighting, highContrast = false}: BirdCardProps) {
+export function BirdCard({sighting, highContrast = false, titleAs: TitleTag = 'h3'}: BirdCardProps) {
   const {
     speciesName,
     observedOn,
@@ -263,7 +265,7 @@ export function BirdCard({sighting, highContrast = false}: BirdCardProps) {
       ) : null}
 
       <header className={styles.cardHeader}>
-        <h3 className={styles.speciesName}>{speciesName}</h3>
+        <TitleTag className={styles.speciesName}>{speciesName}</TitleTag>
 
         {(formattedDate || locationLabel) && (
           <p className={styles.meta}>

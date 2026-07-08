@@ -51,7 +51,7 @@ export default async function FlightsPage() {
   const heroIntroduction =
     pageCopy?.heroIntroduction && pageCopy.heroIntroduction.length > 0 ? (
       <div className={pageBodyTypography}>
-        <PortableText value={pageCopy.heroIntroduction} pageBodyTypography />
+        <PortableText value={pageCopy.heroIntroduction} pageBodyTypography baseHeadingLevel={2} />
       </div>
     ) : null
 

@@ -190,7 +190,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           </aside>
           <div className={styles.body}>
             {post.body && (
-              <PortableText value={post.body} />
+              <PortableText value={post.body} baseHeadingLevel={2} />
             )}
           </div>
         </div>
@@ -212,10 +212,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   />
                 )}
                 <div className={styles.authorBioGrow}>
-                  <h3 className={styles.authorBioTitle}>
+                  <h2 className={styles.authorBioTitle}>
                     About {post.author.name}
-                  </h3>
-                  <PortableText value={post.author.bio} />
+                  </h2>
+                  <PortableText value={post.author.bio} baseHeadingLevel={3} />
                   {post.author.social && (
                     <div className={styles.authorSocialRow}>
                       {post.author.social.twitter && (

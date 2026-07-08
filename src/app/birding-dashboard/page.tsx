@@ -173,7 +173,7 @@ export default async function BirdingDashboardPage({searchParams}: BirdingDashbo
   const heroIntro =
     pageCopy?.heroIntroduction && pageCopy.heroIntroduction.length > 0 ? (
       <div className={pageBodyTypography}>
-        <PortableText value={pageCopy.heroIntroduction} pageBodyTypography />
+        <PortableText value={pageCopy.heroIntroduction} pageBodyTypography baseHeadingLevel={2} />
       </div>
     ) : (
       <p style={{fontSize: '1rem', color: 'var(--color-documented-prose-body)', lineHeight: 1.6, margin: 0}}>

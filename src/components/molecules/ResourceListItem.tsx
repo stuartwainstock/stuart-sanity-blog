@@ -6,15 +6,17 @@ import styles from './ResourceListItem.module.css'
 
 export type ResourceListItemProps = {
   resource: Resource
+  /** Item title heading level; default h3 under a section h2. */
+  titleAs?: 'h2' | 'h3' | 'h4'
 }
 
-export default function ResourceListItem({resource}: ResourceListItemProps) {
+export default function ResourceListItem({resource, titleAs: TitleTag = 'h3'}: ResourceListItemProps) {
   const mediaLabel = getMediaTypeLabel(resource.mediaType)
 
   const inner = (
     <div className={styles.row}>
       <div className={styles.content}>
-        <h3 className={styles.title}>{resource.title}</h3>
+        <TitleTag className={styles.title}>{resource.title}</TitleTag>
         <ResourceMetaChips resource={resource} />
         {resource.summary ? (
           <p className={styles.summary}>{resource.summary}</p>

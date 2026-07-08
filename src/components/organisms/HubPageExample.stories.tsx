@@ -93,7 +93,7 @@ export const CmsPageWithPortableText: Story = {
         <HubPageHeader title="About" />
 
         <div className={pageProse}>
-          <PortableText value={portableTextBasic as never[]} pageBodyTypography />
+          <PortableText value={portableTextBasic as never[]} pageBodyTypography baseHeadingLevel={2} />
         </div>
       </div>
     </div>

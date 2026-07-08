@@ -15,7 +15,7 @@ export function HubPageHeader({title, titleId, introduction, fallbackIntro}: Hub
       <h1 id={titleId} className={styles.title}>{title}</h1>
       {introduction?.length ? (
         <div className={styles.intro}>
-          <PortableText value={introduction} />
+          <PortableText value={introduction} baseHeadingLevel={2} />
         </div>
       ) : fallbackIntro ? (
         <p className={styles.intro}>{fallbackIntro}</p>

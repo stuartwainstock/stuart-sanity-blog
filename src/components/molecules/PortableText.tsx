@@ -1,7 +1,13 @@
-import type {ReactNode} from 'react'
+import {createElement, type ReactNode} from 'react'
 import {PortableText as BasePortableText, type PortableTextComponents} from '@portabletext/react'
 import type {TypedObject} from '@portabletext/types'
 import Image from 'next/image'
+import {
+  type AuthoredHeadingLevel,
+  type HeadingLevel,
+  headingTag,
+  remapHeadingLevel,
+} from '@/lib/headingLevels'
 import {
   getSanityImageDisplay,
   PORTABLE_TEXT_IMAGE_MAX_WIDTH,
@@ -24,6 +30,11 @@ interface PortableTextProps {
    * `pageBodyTypography` (see `@/lib/pageTypography`) controls size/weight.
    */
   pageBodyTypography?: boolean
+  /**
+   * Lowest semantic heading level for CMS-authored headings. Use `2` beneath a page-level h1 so
+   * authored h1→h2, h2→h3, etc. Visual styles stay tied to the authored level.
+   */
+  baseHeadingLevel?: HeadingLevel
 }
 
 function PortableTextImageBlock({value}: {value: PortableTextImageValue}) {
@@ -45,7 +56,20 @@ function PortableTextImageBlock({value}: {value: PortableTextImageValue}) {
   )
 }
 
-function buildComponents(pageBody: boolean): PortableTextComponents {
+function renderHeading(
+  authoredLevel: AuthoredHeadingLevel,
+  baseHeadingLevel: HeadingLevel,
+  children?: ReactNode,
+) {
+  const semanticLevel = remapHeadingLevel(authoredLevel, baseHeadingLevel)
+  const styleClass = styles[`h${authoredLevel}`]
+  return createElement(headingTag(semanticLevel), {className: styleClass}, children)
+}
+
+function buildComponents(
+  pageBody: boolean,
+  baseHeadingLevel: HeadingLevel,
+): PortableTextComponents {
   const normalClass = pageBody ? styles.normalPageBody : styles.normalDefault
   const ulClass = `${pageBody ? styles.listPageBody : styles.listDefault} ${styles.ulDisc}`
   const olClass = `${pageBody ? styles.listPageBody : styles.listDefault} ${styles.olDecimal}`
@@ -119,26 +143,14 @@ function buildComponents(pageBody: boolean): PortableTextComponents {
     },
   },
   block: {
-    h1: ({children}: {children?: ReactNode}) => (
-      <h1 className={styles.h1}>
-        {children}
-      </h1>
-    ),
-    h2: ({children}: {children?: ReactNode}) => (
-      <h2 className={styles.h2}>
-        {children}
-      </h2>
-    ),
-    h3: ({children}: {children?: ReactNode}) => (
-      <h3 className={styles.h3}>
-        {children}
-      </h3>
-    ),
-    h4: ({children}: {children?: ReactNode}) => (
-      <h4 className={styles.h4}>
-        {children}
-      </h4>
-    ),
+    h1: ({children}: {children?: ReactNode}) =>
+      renderHeading(1, baseHeadingLevel, children),
+    h2: ({children}: {children?: ReactNode}) =>
+      renderHeading(2, baseHeadingLevel, children),
+    h3: ({children}: {children?: ReactNode}) =>
+      renderHeading(3, baseHeadingLevel, children),
+    h4: ({children}: {children?: ReactNode}) =>
+      renderHeading(4, baseHeadingLevel, children),
     normal: ({children}: {children?: ReactNode}) => (
       <p className={normalClass}>
         {children}
@@ -197,15 +209,13 @@ function buildComponents(pageBody: boolean): PortableTextComponents {
 }
 }
 
-const defaultComponents = buildComponents(false)
-const pageBodyComponents = buildComponents(true)
-
 export default function PortableText({
   value,
   className = '',
   pageBodyTypography: pageBody = false,
+  baseHeadingLevel = 1,
 }: PortableTextProps) {
-  const components = pageBody ? pageBodyComponents : defaultComponents
+  const components = buildComponents(pageBody, baseHeadingLevel)
   const wrapper = `${styles.wrapper} ${className}`.trim()
   return (
     <div className={wrapper}>

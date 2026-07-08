@@ -62,7 +62,7 @@ export const FlightsToolPage: Story = {
         <section className={storyStyles.section}>
           <h2 className={pageSectionHeading}>Body</h2>
           <div className={pageBodyTypography}>
-            <PortableText value={portableTextBasic as never[]} pageBodyTypography />
+            <PortableText value={portableTextBasic as never[]} pageBodyTypography baseHeadingLevel={2} />
           </div>
         </section>
       </main>

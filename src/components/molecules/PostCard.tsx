@@ -8,9 +8,11 @@ import styles from './PostCard.module.css'
 interface PostCardProps {
   post: Post
   featured?: boolean
+  /** Card title heading level; default h2 under a page h1. */
+  titleAs?: 'h2' | 'h3' | 'h4'
 }
 
-export default function PostCard({ post, featured = false }: PostCardProps) {
+export default function PostCard({ post, featured = false, titleAs: TitleTag = 'h2' }: PostCardProps) {
   const formattedDate = new Date(post.publishedAt).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
@@ -77,13 +79,13 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
           </div>
         )}
         
-        <h2
+        <TitleTag
           className={`${styles.title} ${featured ? styles.titleFeatured : styles.titleStandard}`}
         >
           <Link href={`/journal/${post.slug.current}`} className={styles.titleLink}>
             {post.title}
           </Link>
-        </h2>
+        </TitleTag>
         
         {post.excerpt && (
           <p className={`${styles.excerpt} line-clamp-3`}>

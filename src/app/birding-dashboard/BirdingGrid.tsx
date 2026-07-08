@@ -72,7 +72,7 @@ export function BirdingGrid({sightings, sectionTitle, sectionIntroduction, pagin
 
       {sectionIntroduction && sectionIntroduction.length > 0 && (
         <div className={pageBodyTypography} style={{marginBottom: '1.25rem'}}>
-          <PortableText value={sectionIntroduction} pageBodyTypography />
+          <PortableText value={sectionIntroduction} pageBodyTypography baseHeadingLevel={3} />
         </div>
       )}
 

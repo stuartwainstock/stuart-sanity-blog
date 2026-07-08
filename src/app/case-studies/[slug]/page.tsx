@@ -121,7 +121,7 @@ export default async function CaseStudyPage({params}: Props) {
               ) : null}
               {caseStudy.overview ? (
                 <div className={styles.overview}>
-                  <PortableText value={caseStudy.overview} />
+                  <PortableText value={caseStudy.overview} baseHeadingLevel={2} />
                 </div>
               ) : null}
             </div>

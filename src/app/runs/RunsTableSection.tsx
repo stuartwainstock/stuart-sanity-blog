@@ -34,7 +34,7 @@ export default async function RunsTableSection({
   const tableIntro =
     tableSectionIntroduction && tableSectionIntroduction.length > 0 ? (
       <div className={`${pageBodyTypography} mb-6`}>
-        <PortableText value={tableSectionIntroduction} pageBodyTypography />
+        <PortableText value={tableSectionIntroduction} pageBodyTypography baseHeadingLevel={3} />
       </div>
     ) : undefined
 

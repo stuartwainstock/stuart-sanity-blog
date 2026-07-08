@@ -103,7 +103,7 @@ export default async function JournalPage() {
                 />
               </svg>
             </div>
-            <h3 className={styles.emptyTitle}>No posts yet</h3>
+            <h2 className={styles.emptyTitle}>No posts yet</h2>
             <p className={styles.emptyText}>
               Check back soon for new content, or visit our Sanity Studio to create your first post.
             </p>

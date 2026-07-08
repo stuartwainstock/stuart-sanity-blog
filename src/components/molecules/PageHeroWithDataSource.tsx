@@ -21,7 +21,7 @@ type Props = {
  */
 export default function PageHeroWithDataSource({titleId, title, dataSource, children}: Props) {
   return (
-    <header className={pageBanner} role="banner" aria-labelledby={titleId}>
+    <header className={pageBanner} aria-labelledby={titleId}>
       <div className={pageInner}>
         <h1 id={titleId} className={pageTitleH1DataPage}>
           {title}

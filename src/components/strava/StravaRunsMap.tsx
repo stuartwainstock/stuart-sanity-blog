@@ -135,7 +135,7 @@ export default function StravaRunsMap({runs, mapIntroduction}: Props) {
     <div className={mapStyles.root}>
       <div id={descriptionId} className={hasCmsIntro ? pageBodyTypography : pageBodyParagraph}>
         {hasCmsIntro ? (
-          <PortableText value={mapIntroduction as never[]} pageBodyTypography />
+          <PortableText value={mapIntroduction as never[]} pageBodyTypography baseHeadingLevel={3} />
         ) : (
           <p className={pageBodyPlain}>{defaultMapIntroDescription()}</p>
         )}

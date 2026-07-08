@@ -123,7 +123,7 @@ export default async function PageComponent({ params }: PageProps) {
         <div className={styles.content} aria-labelledby="page-title">
           {page.body && (
             <div className={pageProse}>
-              <PortableText value={page.body} pageBodyTypography />
+              <PortableText value={page.body} pageBodyTypography baseHeadingLevel={2} />
             </div>
           )}
 

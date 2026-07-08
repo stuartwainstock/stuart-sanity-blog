@@ -164,7 +164,7 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
             </div>
             <div className={styles.grid}>
               {posts.map((post) => (
-                <PostCard key={post._id} post={post} />
+                <PostCard key={post._id} post={post} titleAs="h3" />
               ))}
             </div>
           </div>

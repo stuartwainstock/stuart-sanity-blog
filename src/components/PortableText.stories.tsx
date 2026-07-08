@@ -11,6 +11,7 @@ const meta = {
   },
   argTypes: {
     pageBodyTypography: {control: 'boolean'},
+    baseHeadingLevel: {control: {type: 'number', min: 1, max: 6}},
   },
 } satisfies Meta<typeof PortableText>
 
@@ -22,6 +23,13 @@ export const Default: Story = {}
 export const PageBodyTypography: Story = {
   args: {
     pageBodyTypography: true,
+  },
+}
+
+export const UnderPageH1: Story = {
+  args: {
+    pageBodyTypography: true,
+    baseHeadingLevel: 2,
   },
 }
 

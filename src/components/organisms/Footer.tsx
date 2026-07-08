@@ -19,9 +19,9 @@ export default function Footer({ siteSettings }: FooterProps) {
         <div className={styles.grid}>
           {/* Site Info - Always first column */}
           <div>
-            <h3 className={styles.heading}>
+            <p className={styles.heading}>
               {siteSettings?.title || 'Blog'}
-            </h3>
+            </p>
             <p className={styles.description}>
               {siteSettings?.description || 'A modern blog built with Next.js and Sanity.'}
             </p>
@@ -76,9 +76,9 @@ export default function Footer({ siteSettings }: FooterProps) {
           {/* Configurable Footer Sections */}
           {siteSettings?.footer?.sections?.map((section, sectionIndex) => (
             <div key={sectionIndex}>
-              <h3 className={styles.heading}>
+              <p className={styles.heading}>
                 {section.title}
-              </h3>
+              </p>
               <nav aria-label={`${section.title} navigation`}>
                 <ul className={styles.linksList}>
                   {section.links?.map((link, linkIndex) => (

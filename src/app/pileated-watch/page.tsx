@@ -72,7 +72,7 @@ export default async function PileatedWatchPage() {
   if (missingCms) {
     return (
       <div className={pageShellBg}>
-        <header className={pageBanner} role="banner" aria-labelledby="pileated-title">
+        <header className={pageBanner} aria-labelledby="pileated-title">
           <div className={pageInner}>
             <h1 id="pileated-title" className={pageTitleH1}>
               Pileated Watch
@@ -102,7 +102,7 @@ export default async function PileatedWatchPage() {
   const sightingsIntro =
     config.sightingsIntroduction && config.sightingsIntroduction.length > 0 ? (
       <div className={pageBodyTypography}>
-        <PortableText value={config.sightingsIntroduction as never[]} pageBodyTypography />
+        <PortableText value={config.sightingsIntroduction as never[]} pageBodyTypography baseHeadingLevel={3} />
       </div>
     ) : undefined
 
@@ -132,7 +132,7 @@ export default async function PileatedWatchPage() {
       >
         {config.mapPageIntroduction?.length ? (
           <div className={pageBodyTypography}>
-            <PortableText value={config.mapPageIntroduction} pageBodyTypography />
+            <PortableText value={config.mapPageIntroduction} pageBodyTypography baseHeadingLevel={2} />
           </div>
         ) : null}
       </PageHeroWithDataSource>

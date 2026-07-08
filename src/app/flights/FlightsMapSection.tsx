@@ -16,7 +16,7 @@ function FlightsMapSectionInner({mapSectionTitle, mapSectionIntroduction}: Props
       <h2 className={pageSectionHeading}>{mapSectionTitle}</h2>
       {Array.isArray(mapSectionIntroduction) && mapSectionIntroduction.length > 0 ? (
         <div className={pageBodyTypography}>
-          <PortableText value={mapSectionIntroduction as never[]} pageBodyTypography />
+          <PortableText value={mapSectionIntroduction as never[]} pageBodyTypography baseHeadingLevel={3} />
         </div>
       ) : null}
       <Suspense
