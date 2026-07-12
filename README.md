@@ -1,515 +1,274 @@
-# Sanity Blog
+# stuartwainstock.com
 
-A modern, full-featured blog built with Next.js 16 and Sanity CMS. This project includes both a frontend and a content management system.
+My personal site — built with Next.js 16 (App Router) and Sanity v6. It's a blog, but also a small dashboard for things I track: runs logged with Strava, bird sightings from eBird, and flights from TripIt. The goal was to own my own data and have a place that grows with whatever I'm interested in, without being locked to a CMS that controls the frontend.
 
-## Features
+**Live:** [stuartwainstock.com](https://stuartwainstock.com)
 
-### Frontend
-- 🎨 Styling with **CSS Modules**, global CSS, and **design tokens** (Style Dictionary → CSS variables)
-- 📱 Mobile-first approach
-- ⚡ Built with Next.js 16 App Router
-- 🖼️ Optimized images with Next.js Image component
-- 📝 Rich text content with Portable Text
-- 🏷️ Category-based organization
-- 👤 Author profiles and bios
-- 🔍 SEO optimized with meta tags and Open Graph
-- 📊 TypeScript for type safety
-- 🗺️ Data-backed “Projects” pages with maps + tables:
-  - **`/runs`** (Strava + Supabase)
-  - **`/pileated-watch`** (eBird map + table)
-  - **`/birding-dashboard`** (eBird → Sanity sightings grid + editorial enrichment)
-  - **`/flights`** (TripIt-derived flight map; prefers committed JSON export)
+---
 
-### Content Management
-- 🎛️ Sanity Studio for content management
-- 📄 Blog posts with rich content
-- 📋 Custom pages (About, Contact, etc.)
-- 👥 Author management
-- 🏷️ Category system with color coding
-- ⚙️ Site settings configuration
-- 🖼️ Image management with alt text
-- 🔧 SEO fields for all content types
-- 🦅 Pileated Watch: map + sightings table on one page via the [eBird API 2.0](https://science.ebird.org/en/use-ebird-data/download-ebird-data-products/ebird-api/) (see below)
-- 🔊 Bird call audio suggestions (Xeno-canto API v3) for `birdSighting` docs (see “Birding Dashboard + audio”)
+## What's on it
 
-## Quick Start
+- **Blog** — writing, organized by category and author
+- **[/runs](https://stuartwainstock.com/runs)** — Strava activities synced to Supabase, rendered as a MapLibre route map + table
+- **[/pileated-watch](https://stuartwainstock.com/pileated-watch)** — recent eBird sightings of one species (usually Pileated Woodpecker) in a configured area, with a map
+- **[/birding-dashboard](https://stuartwainstock.com/birding-dashboard)** — eBird sightings pulled into Sanity as editable documents, enriched with alt text, plumage colors, and Xeno-canto bird call audio
+- **[/flights](https://stuartwainstock.com/flights)** — flight map from TripIt export data
+- **[/reading-list](https://stuartwainstock.com/reading-list)** — articles and books I've marked as published from a bookmarklet-captured inbox
 
-### Prerequisites
-- Node.js 22+ (matches GitHub Actions; required by Chromatic, Style Dictionary 5, and Puppeteer 25 in devDependencies)
-- npm or yarn
-- A Sanity account (free at [sanity.io](https://sanity.io))
+## Stack choices
 
-### Installation
+**Next.js App Router** — Server Components + ISR let the data-heavy pages (eBird, Strava) revalidate on a schedule without client-side fetches.
 
-1. **Clone the repository**
-   ```bash
-   git clone <your-repo-url>
-   cd sanity-blog
-   ```
+**Sanity** — headless CMS for blog posts and also as a place to editorially enrich structured data (birding sightings get alt text, plumage color swatches, and audio suggestions from Studio). The Studio is embedded at `/studio`.
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+**CSS Modules + Style Dictionary** — no Tailwind. Design tokens live in `tokens/*.json`, Style Dictionary builds them to `src/styles/generated/tokens.css` as CSS variables, and components import `.module.css` files. Slower to set up, but the output is exactly what I want.
 
-3. **Set up environment variables**
-   ```bash
-   cp .env.local.example .env.local
-   ```
-   
-   Edit `.env.local` and add your Sanity project details:
-   ```env
-   NEXT_PUBLIC_SANITY_PROJECT_ID=your-project-id
-   NEXT_PUBLIC_SANITY_DATASET=production
-   ```
+**Supabase** — Postgres for Strava activity storage. The render path for `/runs` only reads Supabase; no live Strava or Nominatim calls happen on page load.
 
-4. **Deploy Sanity Studio (hosted)**
-   ```bash
-   cd sanity
-   npm run deploy
-   ```
+**MapLibre GL** — Carto Positron basemap, no Mapbox token required.
 
-5. **Start the development server**
-   ```bash
-   npm run dev
-   ```
+---
 
-6. **Open your browser**
-   - Frontend: [http://localhost:3000](http://localhost:3000)
-   - Sanity Studio: [http://localhost:3000/studio](http://localhost:3000/studio)
-
-## Project Structure
-
-```
-sanity-blog/
-├── tokens/                          # Design tokens (Style Dictionary source JSON)
-├── config.style-dictionary.json     # SD build → src/styles/generated/tokens.css
-├── src/
-│   ├── app/                         # Next.js App Router routes
-│   │   ├── api/add-link/route.ts    # Quick-add ingestion endpoint
-│   │   ├── blog/                     # Blog listing and post pages
-│   │   ├── author/                   # Author pages
-│   │   ├── category/                 # Category pages
-│   │   ├── journal/                  # Journal pages
-│   │   ├── pileated-watch/          # eBird map + sightings table
-│   │   ├── studio/                   # Embedded Sanity Studio route
-│   │   ├── [slug]/                   # Dynamic page route
-│   │   ├── layout.tsx                # Root layout
-│   │   └── page.tsx                  # Homepage
-│   ├── components/                   # React components
-│   │   ├── backyard/                 # Map + sightings table UI
-│   │   ├── GoogleAnalytics.tsx       # GA4 baseline tracking
-│   │   ├── Navigation.tsx            # Site navigation
-│   │   ├── ReadingList.tsx           # Unified resource list UI
-│   │   ├── SpeakingEngagements.tsx   # Speaking list UI
-│   │   └── ...
-│   └── lib/                          # Utilities and configs
-│       ├── sanity.ts                 # Sanity client setup
-│       ├── queries.ts                # GROQ queries
-│       ├── types.ts                  # TypeScript types
-│       └── ebird/                    # eBird API client + normalized types
-├── sanity/                           # Sanity Studio source
-│   ├── schemaTypes/
-│   │   ├── resource.ts               # Unified resource model
-│   │   ├── link.ts                   # Legacy/transition link schema
-│   │   └── ...
-│   ├── scripts/                      # One-off migration scripts
-│   └── sanity.config.ts              # Studio structure/config
-├── extensions/
-│   └── quick-add/                    # Chrome/Arc quick-add extension
-└── public/                           # Static assets
-```
-
-## Content Management
-
-### Getting Started with Content
-
-1. **Access Sanity Studio**
-   - Visit `/studio` on your deployed site or run `npm run studio` locally
-   - Sign in with your Sanity account
-
-2. **Configure Site Settings**
-   - Go to "Site Settings" in the studio
-   - Add your site title, description, logo, and social links
-   - Configure footer content and SEO defaults
-
-3. **Create Authors**
-   - Add author profiles with photos and bios
-   - Include social media links
-
-4. **Add Categories**
-   - Create categories for organizing your posts
-   - Choose colors for visual distinction
-
-5. **Write Your First Post**
-   - Create a new blog post
-   - Add a featured image, categories, and rich content
-   - Mark as "featured" to highlight on homepage
-
-6. **Create Pages**
-   - Add custom pages like About, Contact, etc.
-   - Enable "Show in Navigation" to add to menu
-
-### Content Types
-
-#### Blog Posts
-- Title and slug
-- Author and categories
-- Featured image with alt text
-- Rich text content with images and code blocks
-- SEO metadata
-- Featured post option
-
-#### Pages
-- Title and slug
-- Rich text content
-- Navigation settings
-- SEO metadata
-- Supports rich sections like speaking engagements
-
-#### Authors
-- Name and bio
-- Profile image
-- Social media links
-- Contact information
-
-#### Categories
-- Title and description
-- Color coding
-- URL slug
-
-#### Site Settings
-- Site title and description
-- Logo and favicon
-- Social media links
-- **Projects menu** (optional): top-level label (e.g. “Projects”) and links to **site paths** (`/pileated-watch`, `/runs`) or **external URLs** (`https://…`, opens in a new tab). On-site routes implement their own data layer (eBird, Strava, etc.) in the Next.js app—not in this menu. After changing project-link fields in schema, run **`npm run studio:deploy`** so hosted Studio (`*.sanity.studio`) shows the new form—not `schema deploy` alone.
-- Footer configuration
-- Default SEO settings
-
-#### Resources (Unified Reading List)
-- URL-based resources captured from bookmarklet/extension
-- Workflow status: `inbox`, `reviewed`, `published`, `rejected`
-- Media type support: article, book, video, podcast, tool, other
-- `published` resources render on `/reading-list`
-
-#### Pileated Watch (eBird)
-- Singleton document: **Pileated Watch (eBird)** in Studio (`ebirdBirding`, document id `ebirdBirding`)
-- **One geographic area** (hotspots or region) and **one focus species** (default: Pileated Woodpecker, code `pilwoo`) drive the map and the sightings table on the **same page**
-- Public URL: **`/pileated-watch`**.
-
-## Pileated Watch & eBird
-
-**Pileated Watch** is a single page showing **recent sightings of one species** (default **Pileated Woodpecker**) in **your chosen hotspots or region**, using [eBird](https://ebird.org/home). All observers’ checklists in that area are included.
-
-### How it works
-
-1. Birders submit checklists to eBird as usual; your site does not write to eBird.
-2. Set **`EBIRD_API_KEY`** in the environment (server-only; [ebird.org/api/keygen](https://ebird.org/api/keygen); follow [eBird API terms](https://science.ebird.org/en/use-ebird-data/download-ebird-data-products/ebird-api/)).
-3. Sanity stores **page title**, intro, SEO, **geographic area**, **focus species** (code + display name), **days back** (1–30), **max rows**, and default map center.
-4. Next.js calls **`GET /v2/data/obs/{loc}/recent/{species}`** with `detail=full`, then renders **`/pileated-watch`**: MapLibre map plus an accessible sightings table (skip link, checklist links).
-
-### Important limitations
-
-- **Recent window only:** eBird caps the lookback at **30 days**.
-- **Coordinates required:** Rows without lat/lng are dropped.
-- Change **focus species** in Studio; the code must match [eBird taxonomy](https://ebird.org/science/use-ebird-data/the-ebird-taxonomy/) (e.g. `pilwoo`).
-
-### Configure in Sanity Studio
-
-1. Open **Pileated Watch (eBird)** under Content.
-2. Add **`EBIRD_API_KEY`** to `.env.local` and production — never `NEXT_PUBLIC_`.
-3. Set **Page title** (required), optional intro, and **Geographic area** (hotspots or region).
-4. Set **Focus species** code (default `pilwoo`) and display name.
-5. Tune **days of recent sightings** (1–30), **max sighting rows**, optional default map center.
-6. **Publish**.
-
-If you previously used the retired **Backyard birds (iNaturalist)** singleton, create this document from scratch; old `inaturalistBackyard` documents are no longer in the schema.
-
-### Caching and updates
-
-- **`/pileated-watch`** uses **ISR** (`revalidate` ≈ 5 minutes). Config uses **`fetchEbirdBirdingConfig`** (`useCdn: false`, Next **`revalidate` 60s** on the query).
-- **Redeploy** after schema or code changes so hosted Studio stays aligned.
-
-### Production notes
-
-- **CSP** in `next.config.ts` allows `api.ebird.org` and Carto basemap tiles.
-- Map style: Carto Positron in `BackyardBirdMap.tsx` (no Mapbox token).
-- **Pileated Watch** loads MapLibre through a small client wrapper (`BackyardBirdMapDynamic`) using `next/dynamic` (`ssr: false`) so map code is split into its own chunk. `experimental.optimizePackageImports` trims `@portabletext/react` imports.
-
-### Repository hygiene
-
-- Root `.gitignore` lists `.gitdata/` and `.ssh/` so accidental local copies of git metadata or keys are not committed.
-
-## Strava runs & Supabase
-
-**Strava runs** at **`/runs`** syncs **your** Strava activities (**runs only**) into **Supabase** for a personal archive. Visitors never log in; you connect once with OAuth.
+## Running locally
 
 ### Prerequisites
 
-- **Supabase** project with tables `strava_oauth`, `strava_activities`, and `strava_sync_state` (create them in the SQL Editor using the schema documented when you set up this feature), plus the render-path caches `strava_reverse_geocode_cache` (`scripts/supabase-strava-reverse-geocode-cache.sql`) and `strava_gear_cache` (`scripts/supabase-strava-gear-cache.sql`) — both are populated during sync so `/runs` never calls Strava or Nominatim on page render.
-- **Strava API** application ([strava.com/settings/api](https://www.strava.com/settings/api)): note **Client ID** and **Client Secret**, and set the **Authorization Callback Domain** (or redirect URL) so that `https://<your-domain>/api/strava/callback` is allowed—must match **`STRAVA_REDIRECT_URI`** exactly.
+- Node.js ≥ 22.12
+- A Sanity account ([sanity.io](https://sanity.io) — free tier works)
 
-### How it works
+### Setup
 
-1. **Environment** (server-only — see `.env.local.example`):
-   - **`SUPABASE_URL`** and **`SUPABASE_SERVICE_ROLE_KEY`** — use the **Secret** key from Supabase (Settings → API), not the publishable/anon key.
-   - **`STRAVA_CLIENT_ID`**, **`STRAVA_CLIENT_SECRET`**, **`STRAVA_REDIRECT_URI`** — e.g. `http://localhost:3000/api/strava/callback` locally and `https://yourdomain.com/api/strava/callback` in production.
-2. **OAuth**: In production, set **`ADMIN_PASSWORD`** (and optionally **`ADMIN_SESSION_SECRET`**) in your environment, open **`/admin/login`**, sign in, then on **`/runs`** use **Connect Strava** → approve at Strava. (Without admin auth, anyone could otherwise bind their Strava account to your site’s singleton integration.) For local development only, **`ALLOW_INSECURE_STRAVA_CONNECT=1`** skips the admin gate. Scopes include **`activity:read_all`** and **`profile:read_all`**. Tokens are stored in **`strava_oauth`**. If you connected before `profile:read_all` was added, use **Connect Strava** again so Strava re-authorizes.
-3. **Sync**: **Sync from Strava** on `/runs`, or **`POST /api/strava/sync`**. If **`STRAVA_SYNC_SECRET`** is set, the POST route requires `Authorization: Bearer <secret>` (useful for cron).
-4. **Data**: First successful sync performs a **full backfill** of activity history; later syncs are **incremental** (with a short lookback for edits). Only activities with **`sport_type` Run** are stored.
-5. **Map & table**: **`/runs`** shows a **MapLibre** map of run routes (**last 365 days**, full polylines) and a **recent runs** table with links to Strava—same page layout and typography pattern as Pileated Watch. **Location** uses city/state/country when Strava provides them; otherwise **start coordinates** from the activity, or a **per-activity detail** fetch (`GET /activities/:id`) run during sync for the newest rows still missing a label (Strava's list endpoint often omits place names) and persisted to `strava_activities.raw`. When the only usable data is **lat/lng**, the server resolves a **city / metro–level** label (e.g. "Nürnberg, Germany") via **OpenStreetMap Nominatim** reverse geocoding during sync (deduped, rate-limited, cached in `strava_reverse_geocode_cache`). Set **`STRAVA_REVERSE_GEOCODE=0`** to show coordinates only. The render path (`/runs`, `revalidate = 300`) only ever reads Supabase — no live Strava or Nominatim calls happen on page view; `syncStravaRuns()` calls `revalidatePath('/runs')` so a manual or cron sync shows up immediately.
+```bash
+git clone <repo-url>
+cd stuart-sanity-blog-main
+npm install
+cp .env.local.example .env.local
+```
 
-### Page copy (Sanity)
-
-The **`/runs`** hero, map/table intros, section headings, and SEO are driven by the **`toolProjectPage`** singleton **Runs (Strava)** in Studio (document id **`toolProjectPage-runs`**). If the document is missing or fields are empty, the app falls back to built-in defaults. After adding or changing the schema, run **`sanity schema deploy`** (or deploy Studio) so the dataset has the new type. The pattern is reusable: add another **`projectKey`**, a matching singleton id, a GROQ query, and wire a route (same idea as **Pileated Watch** + `ebirdBirding`).
-
-The map/table block loads in a **React `Suspense`** boundary so the hero and connection panel can render before slow work finishes (Strava detail fetches, gear names, and OpenStreetMap reverse geocoding). That keeps **LCP** on the hero instead of blocking on Nominatim’s rate-limited queue.
-
-### Navigation
-
-Add **`/runs`** under **Site settings → Projects menu** if you want it in the header **Projects** dropdown.
-
-### Production (Vercel)
-
-- Add the same Supabase and Strava variables in **Vercel → Environment Variables** (Production).
-- **`STRAVA_REDIRECT_URI`** must use your real **HTTPS** site URL and match the Strava app settings.
-- Redeploy after changing env vars, then connect Strava once on production if needed.
-
-### Attribution
-
-The `/runs` page includes a **Strava** credit link (API terms) and **OpenStreetMap / Nominatim** credit for inferred place names (ODbL). Optionally set **`NOMINATIM_CONTACT_URL`** so the Nominatim `User-Agent` identifies your site.
-
-## Deployment
-
-### Deploy to Vercel (Recommended)
-
-1. **Push to GitHub**
-   ```bash
-   git add .
-   git commit -m "Initial commit"
-   git push origin main
-   ```
-
-## CMS-driven project pages
-
-For “Projects” routes like `/runs` and `/pileated-watch`, the preferred pattern is **CMS-managed copy + SEO in Sanity**, with code owning behavior and required attribution. See `docs/cms-driven-project-pages.md`.
-
-2. **Deploy to Vercel**
-   - Connect your GitHub repository to Vercel
-   - Add environment variables in Vercel dashboard
-   - Deploy automatically on push
-
-3. **Deploy Sanity Studio**
-   ```bash
-   cd sanity
-   npm run deploy
-   ```
-
-### Environment Variables
-
-For production deployment, set these environment variables:
+Edit `.env.local` — at minimum you need:
 
 ```env
 NEXT_PUBLIC_SANITY_PROJECT_ID=your-project-id
 NEXT_PUBLIC_SANITY_DATASET=production
-SANITY_API_WRITE_TOKEN=your-write-token
-QUICK_ADD_API_KEY=your-bookmarklet-secret
-NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
-EBIRD_API_KEY=your-ebird-api-key
-
-# Strava runs (/runs) — Supabase + Strava (server-only)
-SUPABASE_URL=https://YOUR_PROJECT.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=your-supabase-secret-key
-STRAVA_CLIENT_ID=
-STRAVA_CLIENT_SECRET=
-STRAVA_REDIRECT_URI=https://yourdomain.com/api/strava/callback
-# Optional: protect POST /api/strava/sync (e.g. cron)
-# STRAVA_SYNC_SECRET=
 ```
 
-- `NEXT_PUBLIC_GA_MEASUREMENT_ID` enables baseline GA4 pageview tracking.
-- `EBIRD_API_KEY` powers `/pileated-watch` (server-only; get a key at [ebird.org/api/keygen](https://ebird.org/api/keygen)).
-- `SUPABASE_*` and `STRAVA_*` power **`/runs`** (see [Strava runs & Supabase](#strava-runs--supabase)).
+Then:
 
-## Birding Dashboard + audio (Sanity + eBird + Xeno-canto)
+```bash
+npm run dev          # Next.js at http://localhost:3000
+npm run studio       # Sanity Studio at http://localhost:3000/studio
+```
 
-**`/birding-dashboard`** shows recent eBird sightings synced into Sanity as `birdSighting` documents, then enriched editorially (alt text, plumage colors, optional call audio).
+The data pages (`/runs`, `/pileated-watch`) won't show content until you configure the relevant API keys — see the sections below.
 
-### eBird sync
+---
 
-- Sync scope is configured in Sanity (singleton) and the page triggers a server action to pull recent sightings from eBird.
-- Requires **`EBIRD_API_KEY`** (server-only).
+## Design tokens
 
-### Bird call audio suggestions (Xeno-canto API v3)
+Tokens are the source of truth for colors, type scale, and spacing. After editing any file under `tokens/`:
 
-Editors can suggest and preview a recording inside Sanity Studio, then confirm to publish it to the dashboard card.
+```bash
+npm run tokens:build
+```
 
-- **Server env var (required for audio suggestions):** `XENO_CANTO_API_KEY`
-- **Hosted Studio (`*.sanity.studio`) setup (optional):**
-  - In Studio build env:
-    - `SANITY_STUDIO_BIRDING_SUGGEST_API_URL=https://www.your-domain.com/api/birding/suggest-unsplash`
-    - `SANITY_STUDIO_BIRDING_SUGGEST_SECRET=YOUR_RANDOM_SECRET`
-  - On the site (Vercel server env):
-    - `BIRDING_SUGGEST_PROXY_SECRET=YOUR_RANDOM_SECRET`
-    - `SANITY_BIRDING_CORS_ORIGINS=https://YOUR_PROJECT.sanity.studio` (comma-separated allowed origins)
+This regenerates `src/styles/generated/tokens.css`. Don't hand-edit that file. `npm run build` and `npm run build-storybook` run token generation automatically via `prebuild` hooks — commit `tokens.css` after token changes so other environments don't need to regenerate.
 
-If `XENO_CANTO_API_KEY` is missing, the suggest-audio endpoint returns a 503 with `code: MISSING_XENO_CANTO_API_KEY`.
+Use `var(--color-…)` and other CSS variables in modules and globals. There's no Tailwind layer.
 
-## Flights (TripIt)
+---
 
-**`/flights`** renders a flight path map from TripIt data. Production prefers a committed export at `src/data/tripit/list-air-historical.json`; the live TripIt OAuth client is a development fallback.
+## Pileated Watch & eBird
 
-### Quick-Add Link Bookmarklet
+**`/pileated-watch`** fetches recent sightings of one species in a configured geographic area from the [eBird API v2](https://science.ebird.org/en/use-ebird-data/download-ebird-data-products/ebird-api/) and renders them on a map with a sightings table.
 
-This project includes a secure endpoint at `/api/add-link` that creates `resource` documents in Sanity by scraping Open Graph metadata from a URL.
+### Setup
 
-#### 1) Set required env vars
+1. Get an API key at [ebird.org/api/keygen](https://ebird.org/api/keygen) and add it **server-only**:
+   ```env
+   EBIRD_API_KEY=your-key
+   ```
+2. In Sanity Studio, open **Pileated Watch (eBird)** and fill in:
+   - Page title (required to unlock the page)
+   - Geographic area — hotspot L-codes or a region code (e.g. `US-MN`)
+   - Focus species code — eBird alpha code, default `pilwoo` (Pileated Woodpecker)
+   - Days back (1–30), max rows, default map center
+3. Publish the document.
 
-Add these to your local `.env.local` and your production host:
+### How it works
+
+The eBird endpoint is `GET /v2/data/obs/{loc}/recent/{species}?detail=full`. The page revalidates every 5 minutes (ISR). Rows without coordinates are dropped. The species code must match [eBird taxonomy](https://ebird.org/science/use-ebird-data/the-ebird-taxonomy/).
+
+---
+
+## Birding Dashboard
+
+**`/birding-dashboard`** pulls recent eBird sightings into Sanity as `birdSighting` documents. From Studio, you can add alt text, plumage color swatches, and confirm a bird call audio recording.
+
+### Audio suggestions (Xeno-canto API v3)
+
+The suggestion panel in Studio calls the site's `/api/birding/suggest-audio` endpoint, which queries [Xeno-canto](https://xeno-canto.org/) and writes the suggestion back to Sanity.
+
+**Required:**
+```env
+# Site server env
+XENO_CANTO_API_KEY=your-key
+```
+
+**For hosted Studio (`*.sanity.studio`) to reach the suggestion endpoint:**
+```env
+# Studio build env
+SANITY_STUDIO_BIRDING_SUGGEST_API_URL=https://your-domain.com/api/birding/suggest-audio
+SANITY_STUDIO_BIRDING_SUGGEST_SECRET=your-random-secret
+
+# Site server env
+BIRDING_SUGGEST_PROXY_SECRET=your-random-secret   # must match above
+SANITY_BIRDING_CORS_ORIGINS=https://your-project.sanity.studio
+```
+
+If `XENO_CANTO_API_KEY` is missing, the endpoint returns `503` with `code: MISSING_XENO_CANTO_API_KEY`.
+
+---
+
+## Strava runs
+
+**`/runs`** syncs your Strava activities (runs only) into Supabase and renders them as a route map + table. Visitors read from Supabase; no live Strava API calls happen on page render.
+
+### Prerequisites
+
+- A [Supabase](https://supabase.com) project with tables `strava_oauth`, `strava_activities`, `strava_sync_state`, `strava_reverse_geocode_cache`, and `strava_gear_cache`. SQL for the cache tables is in `scripts/`.
+- A [Strava API app](https://www.strava.com/settings/api) — note Client ID and Secret, and set the callback domain so `https://your-domain.com/api/strava/callback` is allowed.
+
+### Environment variables
+
+```env
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your-secret-key   # use the service role key, not anon
+STRAVA_CLIENT_ID=
+STRAVA_CLIENT_SECRET=
+STRAVA_REDIRECT_URI=https://your-domain.com/api/strava/callback
+ADMIN_PASSWORD=your-admin-password          # gates the OAuth connect flow
+# Optional
+STRAVA_SYNC_SECRET=                         # protects POST /api/strava/sync for cron
+STRAVA_REVERSE_GEOCODE=1                    # set to 0 to skip Nominatim lookups
+```
+
+### Connecting
+
+1. Set `ADMIN_PASSWORD` in production, open `/admin/login`, and sign in.
+2. Go to `/runs` and click **Connect Strava** — Strava redirects back and stores tokens in `strava_oauth`.
+3. Click **Sync** (or POST to `/api/strava/sync`) to pull activities. The first sync does a full backfill; later syncs are incremental.
+
+**Local dev only:** set `ALLOW_INSECURE_STRAVA_CONNECT=1` to skip the admin gate.
+
+### Place names
+
+During sync, the app attempts to resolve a location label for each run: first from Strava's own place name field, then from a per-activity detail fetch, and finally from Nominatim reverse geocoding (city-level, rate-limited, cached in Supabase). The render path never calls Strava or Nominatim directly.
+
+---
+
+## Flights
+
+**`/flights`** renders a MapLibre flight path map from TripIt data. The app prefers a committed export at `src/data/tripit/list-air-historical.json`; the live TripIt OAuth client is a fallback. To update: export from TripIt, run `npm run tripit:transform`, and commit the result.
+
+---
+
+## Reading list + quick-add
+
+**`/reading-list`** renders `resource` documents from Sanity with `status: "published"`. Resources are captured from a bookmarklet or browser extension that calls `/api/add-link` to scrape Open Graph metadata and create a Sanity draft.
+
+### Setup
 
 ```env
 SANITY_API_WRITE_TOKEN=your-write-token
 QUICK_ADD_API_KEY=your-bookmarklet-secret
 ```
 
-- `SANITY_API_WRITE_TOKEN` should be a Sanity token with write access.
-- `QUICK_ADD_API_KEY` is shared between the API route and your bookmarklet.
+### Bookmarklet
 
-#### 2) Create a bookmark in Chrome
-
-- Create a new bookmark.
-- Name it something like `Quick Add Link`.
-- Paste this as the bookmark URL (replace domain + key):
+Create a browser bookmark with this URL (replace domain and key):
 
 ```javascript
-javascript:(function(){var endpoint='https://stuart-sanity-blog.vercel.app/api/add-link';var apiKey='REPLACE_WITH_YOUR_QUICK_ADD_API_KEY';var target=endpoint+'?url='+encodeURIComponent(window.location.href)+'&key='+encodeURIComponent(apiKey);window.open(target,'_blank','noopener,noreferrer');})();
+javascript:(function(){var endpoint='https://your-domain.com/api/add-link';var apiKey='YOUR_KEY';var target=endpoint+'?url='+encodeURIComponent(window.location.href)+'&key='+encodeURIComponent(apiKey);window.open(target,'_blank','noopener,noreferrer');})();
 ```
 
-#### 3) Use it
+### Chrome/Arc extension
 
-Open any page you want to save, click the bookmarklet, and a new `resource` document will be created in Sanity with:
+If bookmarklets are unreliable (Arc tends to block them), use the extension in `extensions/quick-add/`:
 
-- `title`
-- `url`
-- `summary`
-- `image` (OG image URL)
-- `addedDate` (current time)
-- `mediaType: "article"`
-- `status: "inbox"` (publish from Studio when ready)
+1. Open `chrome://extensions` → enable Developer mode → Load unpacked → select `extensions/quick-add/`
+2. Set the endpoint and API key in the extension popup.
 
-The API also performs two quality-of-life behaviors:
+The API deduplicates by normalized URL and auto-populates `sourceDomain`.
 
-- **URL dedupe**: uses a normalized URL (hash removed, trailing slash normalized) and skips creating duplicates.
-- **Domain tagging**: auto-populates `sourceDomain` (for example, `nytimes.com`) from the saved link.
+---
 
-### Reading List Workflow
-
-- Capture from the browser bookmarklet into the `Resources` collection.
-- Review items in Studio and update `status` from `inbox`/`reviewed` to `published`.
-- Only `published` resources render on `/reading-list`.
-
-### Quick-Add Chrome/Arc Extension (Alternative)
-
-If bookmarklets are unreliable in your browser (for example Arc), use the extension in `extensions/quick-add/`.
-
-#### Install (Developer mode)
-
-1. Open `chrome://extensions` (works in Chrome + Arc).
-2. Enable **Developer mode**.
-3. Click **Load unpacked**.
-4. Select `extensions/quick-add` from this repo.
-
-#### Configure + use
-
-1. Open the extension popup.
-2. Set:
-   - Endpoint: `https://stuart-sanity-blog.vercel.app/api/add-link`
-   - API key: your `QUICK_ADD_API_KEY`
-3. Click **Save Settings**.
-4. Navigate to any article and click **Save Current Tab**.
-
-The extension calls your existing `/api/add-link` endpoint and creates `resource` docs with `status: "inbox"`.
-
-## Development
-
-### Available Scripts
+## Useful commands
 
 ```bash
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Start production server
-npm start
-
-# Run Sanity Studio locally
-npm run studio
-
-# Deploy Sanity Studio
-npm run studio:deploy
-
-# Type checking
-npm run type-check
-
-# Linting
-npm run lint
-
-# Regenerate CSS variables from tokens/*.json (also runs automatically before build / build-storybook)
-npm run tokens:build
-
-# After schema changes (recommended workflow)
-cd sanity && npx sanity schema validate
-cd sanity && npx sanity schema deploy   # Content Lake / API — does not update hosted Studio forms
-npm run typegen
-npm run studio:deploy                   # required for production editors on *.sanity.studio
-
-# Storybook + Vitest browser tests (includes @storybook/addon-a11y in error mode; run `npx playwright install chromium` once locally)
-npm run test:storybook
+npm run dev                    # Next.js dev server
+npm run studio                 # Sanity Studio locally
+npm run studio:deploy          # Deploy hosted Studio (required after schema changes for *.sanity.studio editors)
+npm run tokens:build           # Regenerate CSS variables from tokens/*.json
+npm run typegen                # Regenerate Sanity TypeScript types after schema changes
+npm run type-check             # tsc --noEmit
+npm run lint                   # ESLint
+npm run storybook              # Storybook at :6006
+npm run test:storybook         # Vitest + a11y audit via Storybook (run `npx playwright install chromium` once)
+npm run strava:sync            # Manual Strava sync (reads .env.local)
 ```
 
-### Customization
+### After schema changes
 
-#### Styling
-- **Design tokens (source of truth):** edit JSON under `tokens/` (e.g. `tokens/color.json`, `tokens/font.json`), then run **`npm run tokens:build`**. [Style Dictionary](https://amzn.github.io/style-dictionary/) generates **`src/styles/generated/tokens.css`** (`:root` CSS variables). Do not hand-edit the generated file.
-- **`npm run build`** and **`npm run build-storybook`** run token generation first (`prebuild` / `prebuild-storybook`) so CI and local builds stay in sync; still commit **`tokens.css`** after token changes so clones match without running the CLI.
-- **Wiring:** `src/app/globals.css` imports the generated tokens first, then defines base typography, link colors, layout helpers (e.g. skip links, `.prose`), and small global utilities. Use **`var(--color-…)`** and other token variables in CSS modules or globals—there is no Tailwind layer.
-- **Shared page typography:** `src/lib/pageTypography.ts` re-exports classes from `src/styles/pageTypography.module.css` for CMS-driven pages (shell, banners, body copy, Strava/admin accents). Prefer these for consistency with tokens.
-- **Components:** colocate **`*.module.css`** with components or routes; import as `styles` and use `className={styles.foo}`. Storybook stories can use small `*.stories.module.css` files where layout helpers are needed.
-- **Docs:** Storybook → **Foundations → Design Tokens** reflects the same JSON (see `src/stories/designTokens.data.ts` + `src/lib/tokens/walkJsonTokens.ts`).
+```bash
+cd sanity && npx sanity schema validate
+cd sanity && npx sanity schema deploy   # updates Content Lake / API types
+npm run typegen                         # regenerate src/lib/types from schema
+npm run studio:deploy                   # required for production Studio editors
+```
 
-#### Content Schemas
-- Add new fields to existing schemas in `sanity/schemaTypes/`
-- Create new content types by adding schema files
-- Update `sanity/schemaTypes/index.ts` to include new schemas
+---
 
-#### Queries
-- Modify GROQ queries in `src/lib/queries.ts`
-- Add new queries for custom functionality
+## Project structure
 
-## Contributing
+```
+├── tokens/                          # Design token source (Style Dictionary JSON)
+├── config.style-dictionary.json     # Builds → src/styles/generated/tokens.css
+├── src/
+│   ├── app/                         # Next.js App Router
+│   │   ├── api/                     # Route handlers (Strava, eBird, quick-add, etc.)
+│   │   ├── birding-dashboard/
+│   │   ├── flights/
+│   │   ├── pileated-watch/
+│   │   ├── runs/
+│   │   ├── studio/                  # Embedded Sanity Studio
+│   │   └── [slug]/                  # CMS-driven pages
+│   ├── components/
+│   │   ├── atoms/                   # Button, Pagination, etc.
+│   │   ├── backyard/                # Birding map + table + card components
+│   │   ├── molecules/               # PageHero, PortableText, etc.
+│   │   ├── strava/                  # Runs map + table components
+│   │   └── ui/                      # DataTable, shared UI
+│   ├── lib/
+│   │   ├── ebird/                   # eBird API client + sync
+│   │   ├── strava/                  # Strava OAuth + sync
+│   │   ├── birding/                 # Xeno-canto helpers
+│   │   ├── sanity.ts                # Sanity client
+│   │   ├── queries.ts               # GROQ queries
+│   │   └── types.ts                 # Shared TypeScript types
+│   └── styles/
+│       └── generated/tokens.css     # Auto-generated — do not edit
+├── sanity/                          # Studio source (separate npm workspace)
+│   ├── schemaTypes/                 # Content model
+│   ├── components/                  # Custom Studio input panels
+│   └── sanity.config.ts
+├── extensions/quick-add/            # Browser extension
+└── scripts/                         # One-off migration + utility scripts
+```
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+---
 
-## License
+## Deployment
 
-MIT License - see LICENSE file for details
+The site deploys to Vercel from the main branch. Sanity Studio deploys separately via `npm run studio:deploy`. After changing environment variables in Vercel, redeploy for them to take effect.
 
-## Support
-
-For questions and support:
-- Check the [Sanity documentation](https://www.sanity.io/docs)
-- Review [Next.js documentation](https://nextjs.org/docs)
-- Open an issue in this repository
-
-## Acknowledgments
-
-- Built with [Next.js](https://nextjs.org/)
-- Content management by [Sanity](https://sanity.io/)
-- UI styling: plain CSS, **CSS Modules**, and **Style Dictionary** tokens (no Tailwind)
-- Icons from [Heroicons](https://heroicons.com/)
+Set all the relevant env vars in Vercel → Environment Variables (Production). The full reference is in `.env.local.example`.
