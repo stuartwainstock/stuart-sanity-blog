@@ -269,7 +269,7 @@
 .surfaceLight {
   --specimen-bg: #f6f4f0;
   --specimen-fg: #22201c;
-  --specimen-muted: #7a756c;
+  --specimen-muted: #5c5852;
   --specimen-line: #ddd8cf;
   --specimen-accent: #4a4640;
 }
@@ -277,7 +277,7 @@
 .surfaceMist {
   --specimen-bg: #eceef1;
   --specimen-fg: #1c1e22;
-  --specimen-muted: #6b7078;
+  --specimen-muted: #555961;
   --specimen-line: #d0d4da;
   --specimen-accent: #3a4048;
 }
@@ -285,7 +285,7 @@
 .surfaceWarm {
   --specimen-bg: #e6e0d4;
   --specimen-fg: #1f1a14;
-  --specimen-muted: #6f675c;
+  --specimen-muted: #575148;
   --specimen-line: #cfc6b6;
   --specimen-accent: #5a4e3f;
 }
@@ -345,6 +345,12 @@
   }
   to {
     opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grid {
+    animation: none;
   }
 }
 

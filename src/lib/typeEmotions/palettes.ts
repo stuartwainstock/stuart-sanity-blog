@@ -1,6 +1,9 @@
 /**
  * Curated Coolors palettes for specimen chrome.
  * Prefer Coolors URLs (`https://coolors.co/hex-hex-…`) — no live Coolors API.
+ *
+ * Role colors may include WCAG-adjusted tints of Coolors swatches so body/meta
+ * text hits AA (4.5:1) on the specimen ground. Original swatches stay in `swatches`.
  */
 
 export type SpecimenPaletteId =
@@ -29,14 +32,12 @@ export type SpecimenPalette = {
   swatches: readonly string[]
   /** Mapped into specimen CSS custom properties. */
   roles: SpecimenPaletteRoles
-  /** Soften / deepen banana ground at higher intensity. */
   intensityHigh?: Partial<SpecimenPaletteRoles>
   intensityMax?: Partial<SpecimenPaletteRoles>
 }
 
 /**
  * Candy Pop — lush violets, electric pinks, zingy turquoise.
- * Coolors psychology: uplifting, exciting, fun / youth, vibrance, playfulness.
  * @see https://coolors.co/9b5de5-f15bb5-fee440-00bbf9-00f5d4
  */
 export const CANDY_POP: SpecimenPalette = {
@@ -45,31 +46,32 @@ export const CANDY_POP: SpecimenPalette = {
   coolorsUrl: 'https://coolors.co/9b5de5-f15bb5-fee440-00bbf9-00f5d4',
   swatches: ['9B5DE5', 'F15BB5', 'FEE440', '00BBF9', '00F5D4'],
   roles: {
-    // Banana cream ground — bright / fuzzy / warm
     bg: '#FEE440',
-    // Deepened lavender for readable type on yellow
+    // Deepened lavender (from #9B5DE5) for AA on banana cream
     fg: '#5B2A9A',
-    muted: '#9B5DE5',
-    line: '#00F5D4',
-    accent: '#F15BB5',
+    muted: '#4A2080',
+    line: '#00BBF9',
+    // Pink fails on yellow — use deep violet for accent text; pink stays in swatches
+    accent: '#5B2A9A',
     chipBg: '#00BBF9',
-    chipSelectedBg: '#9B5DE5',
+    chipSelectedBg: '#5B2A9A',
     chipSelectedFg: '#FEE440',
   },
   intensityHigh: {
     bg: '#F5D628',
-    line: '#00E0C0',
+    muted: '#3B1568',
+    accent: '#3B1568',
   },
   intensityMax: {
     bg: '#F0C820',
-    fg: '#4A2080',
-    accent: '#E04AA3',
+    fg: '#2E0F52',
+    muted: '#2E0F52',
+    accent: '#2E0F52',
   },
 }
 
 /**
  * Fiery Ocean — molten crimson, flag red, papaya, deep navy, steel blue.
- * Coolors psychology: stimulating, bold, dynamic / passion, energy, depth.
  * @see https://coolors.co/780000-c1121f-fdf0d5-003049-669bbc
  */
 export const FIERY_OCEAN: SpecimenPalette = {
@@ -82,20 +84,22 @@ export const FIERY_OCEAN: SpecimenPalette = {
     fg: '#FDF0D5',
     muted: '#669BBC',
     line: '#669BBC',
-    accent: '#C1121F',
+    // Flag red fails on navy — steel blue is the AA-safe accent on this ground
+    accent: '#669BBC',
     chipBg: '#780000',
     chipSelectedBg: '#C1121F',
     chipSelectedFg: '#FDF0D5',
   },
   intensityHigh: {
     bg: '#00263A',
-    accent: '#D41424',
+    muted: '#7AADCA',
     line: '#7AADCA',
+    accent: '#7AADCA',
   },
   intensityMax: {
     bg: '#780000',
     fg: '#FDF0D5',
-    muted: '#C1121F',
+    muted: '#FDF0D5',
     line: '#C1121F',
     accent: '#FDF0D5',
     chipBg: '#003049',
@@ -106,7 +110,7 @@ export const FIERY_OCEAN: SpecimenPalette = {
 
 /**
  * Magenta Dream — raspberry → plum → dusk → aqua twilight spectrum.
- * Coolors psychology: dramatic, magnetic, passionate / mystery, depth, imagination.
+ * Body/meta use light tints of pacific cyan so type stays AA on grape/dusk grounds.
  * @see https://coolors.co/d7094c-aa1a50-8b2864-723c70-5c4d7d-455e8b-2e6f8e-1780a1-0d91ad
  */
 export const MAGENTA_DREAM: SpecimenPalette = {
@@ -127,34 +131,35 @@ export const MAGENTA_DREAM: SpecimenPalette = {
   ],
   roles: {
     bg: '#5C4D7D',
-    fg: '#0D91AD',
-    muted: '#1780A1',
+    // Tint of #0D91AD — raw cyan-on-grape was ~2:1
+    fg: '#E8F7FA',
+    muted: '#B8DDE6',
     line: '#455E8B',
-    accent: '#D7094C',
+    accent: '#E8F7FA',
     chipBg: '#723C70',
     chipSelectedBg: '#D7094C',
-    chipSelectedFg: '#0D91AD',
+    chipSelectedFg: '#E8F7FA',
   },
   intensityHigh: {
     bg: '#455E8B',
-    fg: '#0D91AD',
-    accent: '#AA1A50',
+    fg: '#E8F7FA',
+    muted: '#C5E4EB',
+    accent: '#E8F7FA',
   },
   intensityMax: {
     bg: '#723C70',
-    fg: '#0D91AD',
-    muted: '#D7094C',
+    fg: '#E8F7FA',
+    muted: '#C5E4EB',
     line: '#8B2864',
-    accent: '#D7094C',
+    accent: '#E8F7FA',
     chipBg: '#AA1A50',
-    chipSelectedBg: '#0D91AD',
-    chipSelectedFg: '#723C70',
+    chipSelectedBg: '#D7094C',
+    chipSelectedFg: '#E8F7FA',
   },
 }
 
 /**
  * Neutral Elegance — taupe, grey olive, silver, parchment, powder blush.
- * Coolors psychology: calming, welcoming, subtle / sophistication, warmth, understatement.
  * @see https://coolors.co/463f3a-8a817c-bcb8b1-f4f3ee-e0afa0
  */
 export const NEUTRAL_ELEGANCE: SpecimenPalette = {
@@ -165,23 +170,26 @@ export const NEUTRAL_ELEGANCE: SpecimenPalette = {
   roles: {
     bg: '#F4F3EE',
     fg: '#463F3A',
-    muted: '#8A817C',
+    // Grey olive #8A817C is ~3.4:1 — deepen for AA meta text
+    muted: '#5C5650',
     line: '#BCB8B1',
-    accent: '#E0AFA0',
+    // Blush fails on parchment — taupe for accent text; blush remains in swatches
+    accent: '#463F3A',
     chipBg: '#BCB8B1',
     chipSelectedBg: '#463F3A',
     chipSelectedFg: '#F4F3EE',
   },
   intensityHigh: {
     bg: '#EFECE5',
+    muted: '#5C5650',
     line: '#B0ABA3',
-    accent: '#D49E8E',
+    accent: '#463F3A',
   },
   intensityMax: {
     bg: '#E8E4DC',
     fg: '#3A342F',
-    muted: '#463F3A',
-    accent: '#C98F7F',
+    muted: '#3A342F',
+    accent: '#3A342F',
   },
 }
 
