@@ -28,6 +28,7 @@ const STATIC_PATHS = [
   '/flights',
   '/birding-dashboard',
   '/pixel-art',
+  '/type-emotions',
 ] as const
 
 type SlugDoc = { slug: string; _updatedAt?: string }

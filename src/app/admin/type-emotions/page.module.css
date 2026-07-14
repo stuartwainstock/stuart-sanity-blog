@@ -1,0 +1,132 @@
+.kicker {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  color: var(--color-custom-700);
+}
+
+.kicker a {
+  color: var(--color-link);
+}
+
+.title {
+  margin: 0 0 1rem;
+  font-family: var(--font-work-sans);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 600;
+  color: var(--color-heading);
+}
+
+.warn {
+  color: var(--color-custom-800);
+  background: var(--color-custom-100);
+  border: 1px solid var(--color-custom-300);
+  padding: 0.65rem 0.85rem;
+}
+
+.empty {
+  color: var(--color-custom-700);
+  margin: 1.5rem 0;
+}
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.75rem;
+  margin: 1.5rem 0;
+  padding: 0;
+}
+
+.stats div {
+  margin: 0;
+}
+
+.stats dt {
+  margin: 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-custom-600);
+}
+
+.stats dd {
+  margin: 0.15rem 0 0;
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--color-heading);
+}
+
+.tableWrap {
+  overflow-x: auto;
+  border: 1px solid var(--color-custom-300);
+  background: var(--color-card-bg);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid var(--color-custom-200);
+  vertical-align: top;
+}
+
+.table th {
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-custom-600);
+  background: var(--color-custom-50);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
+  font-size: 0.75rem;
+  color: var(--color-custom-800);
+}
+
+.query {
+  font-weight: 500;
+  color: var(--color-documented-body);
+  max-width: 16rem;
+  word-break: break-word;
+}
+
+.kind {
+  display: inline-block;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.45rem;
+  border: 1px solid var(--color-custom-300);
+  background: var(--color-custom-100);
+  color: var(--color-custom-800);
+}
+
+.kind[data-kind='fallback'] {
+  background: var(--color-custom-200);
+}
+
+.kind[data-kind='feedback'] {
+  background: var(--color-section-bg);
+  border-color: var(--color-custom-500);
+}
+
+.footnote {
+  margin-top: 1.5rem;
+  font-size: 0.8rem;
+  color: var(--color-custom-600);
+}
+
+.footnote code {
+  font-size: 0.75rem;
+}
