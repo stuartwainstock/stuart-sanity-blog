@@ -1,6 +1,6 @@
 # stuartwainstock.com
 
-My personal site — built with Next.js 16 (App Router) and Sanity v6. It's a blog, but also a small dashboard for things I track: runs logged with Strava, bird sightings from eBird, and flights from TripIt. The goal was to own my own data and have a place that grows with whatever I'm interested in, without being locked to a CMS that controls the frontend.
+My personal site — built with Next.js 16 (App Router) and Sanity v6. It's a blog, a small dashboard for things I track (Strava runs, eBird sightings, TripIt flights), and a lab for design experiments. The goal was to own my own data and have a place that grows with whatever I'm interested in, without being locked to a CMS that controls the frontend.
 
 **Live:** [stuartwainstock.com](https://stuartwainstock.com)
 
@@ -9,6 +9,9 @@ My personal site — built with Next.js 16 (App Router) and Sanity v6. It's a bl
 ## What's on it
 
 - **Blog** — writing, organized by category and author
+- **[/lab](https://stuartwainstock.com/lab)** — hub for side experiments (cards come from Sanity `siteSettings`)
+- **[/type-emotions](https://stuartwainstock.com/type-emotions)** — pick or type an emotion → curated Google Fonts specimen + Coolors mood palette
+- **[/pixel-art](https://stuartwainstock.com/pixel-art)** — turn an image (including Unsplash search) into a pixel palette canvas
 - **[/runs](https://stuartwainstock.com/runs)** — Strava activities synced to Supabase, rendered as a MapLibre route map + table
 - **[/pileated-watch](https://stuartwainstock.com/pileated-watch)** — recent eBird sightings of one species (usually Pileated Woodpecker) in a configured area, with a map
 - **[/birding-dashboard](https://stuartwainstock.com/birding-dashboard)** — eBird sightings pulled into Sanity as editable documents, enriched with alt text, plumage colors, and Xeno-canto bird call audio
@@ -19,11 +22,11 @@ My personal site — built with Next.js 16 (App Router) and Sanity v6. It's a bl
 
 **Next.js App Router** — Server Components + ISR let the data-heavy pages (eBird, Strava) revalidate on a schedule without client-side fetches.
 
-**Sanity** — headless CMS for blog posts and also as a place to editorially enrich structured data (birding sightings get alt text, plumage color swatches, and audio suggestions from Studio). The Studio is embedded at `/studio`.
+**Sanity** — headless CMS for blog posts, lab hub cards, and editorial enrichment of structured data (birding sightings get alt text, plumage color swatches, and audio suggestions from Studio). Studio is embedded at `/studio` and also deployed to hosted `*.sanity.studio`.
 
-**CSS Modules + Style Dictionary** — no Tailwind. Design tokens live in `tokens/*.json`, Style Dictionary builds them to `src/styles/generated/tokens.css` as CSS variables, and components import `.module.css` files. Slower to set up, but the output is exactly what I want.
+**CSS Modules + Style Dictionary** — no Tailwind. Design tokens live in `tokens/*.json`, Style Dictionary builds them to `src/styles/generated/tokens.css` as CSS variables, and components import `.module.css` files. Shared atoms (Button, Chip, etc.) live under `src/components/atoms/`; Storybook under Foundations → Design Tokens.
 
-**Supabase** — Postgres for Strava activity storage. The render path for `/runs` only reads Supabase; no live Strava or Nominatim calls happen on page load.
+**Supabase** — Postgres for Strava activity storage and lab telemetry (Type Emotions miss/feedback events). The render path for `/runs` only reads Supabase; no live Strava or Nominatim calls happen on page load.
 
 **MapLibre GL** — Carto Positron basemap, no Mapbox token required.
 
@@ -59,13 +62,13 @@ npm run dev          # Next.js at http://localhost:3000
 npm run studio       # Sanity Studio at http://localhost:3000/studio
 ```
 
-The data pages (`/runs`, `/pileated-watch`) won't show content until you configure the relevant API keys — see the sections below.
+The data pages (`/runs`, `/pileated-watch`) won't show content until you configure the relevant API keys — see the sections below. Lab tools (`/type-emotions`, `/pixel-art`) work without third-party keys; Type Emotions miss logging needs Supabase when you want the admin queue.
 
 ---
 
 ## Design tokens
 
-Tokens are the source of truth for colors, type scale, and spacing. After editing any file under `tokens/`:
+Tokens are the source of truth for colors and font stacks. After editing any file under `tokens/`:
 
 ```bash
 npm run tokens:build
@@ -73,7 +76,23 @@ npm run tokens:build
 
 This regenerates `src/styles/generated/tokens.css`. Don't hand-edit that file. `npm run build` and `npm run build-storybook` run token generation automatically via `prebuild` hooks — commit `tokens.css` after token changes so other environments don't need to regenerate.
 
-Use `var(--color-…)` and other CSS variables in modules and globals. There's no Tailwind layer.
+Use `var(--color-…)` and font vars such as `--font-work-sans` / `--font-mono` in modules and globals — never hardcode hex or font stacks. There's no Tailwind layer.
+
+---
+
+## Lab experiments
+
+Lab cards on **[/lab](https://stuartwainstock.com/lab)** are CMS-driven (`siteSettings.projectsMenu`). Experiment logic stays in code so font allowlists and matching rules can ship with the route.
+
+### Type Emotions (`/type-emotions`)
+
+Maps a chip or free-text emotion to a curated Google Fonts specimen (primary scale + alternates), intensity dial, and Coolors mood roles scoped to the specimen panel. Fonts load only on this route via `next/font/google` in `src/app/type-emotions/fonts.ts` — they are never added to the root layout. The emotion catalog and synonym matcher live under `src/lib/typeEmotions/`.
+
+Weak matches and “Not quite right?” feedback POST to `/api/type-emotions/search-events` and land in Supabase `type_emotion_search_events` (see `scripts/supabase-type-emotion-search-events.sql`). Review the queue at **`/admin/type-emotions`** after signing in at `/admin/login` (same `ADMIN_PASSWORD` as Strava admin). Needs `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` for logging; the page still works without them.
+
+### Pixel Art (`/pixel-art`)
+
+Client-side pixelation studio with optional Unsplash search. Pattern sibling to Type Emotions: tool chrome on the page, heavy work kept route-local.
 
 ---
 
@@ -135,7 +154,7 @@ If `XENO_CANTO_API_KEY` is missing, the endpoint returns `503` with `code: MISSI
 
 ### Prerequisites
 
-- A [Supabase](https://supabase.com) project with tables `strava_oauth`, `strava_activities`, `strava_sync_state`, `strava_reverse_geocode_cache`, and `strava_gear_cache`. SQL for the cache tables is in `scripts/`.
+- A [Supabase](https://supabase.com) project with tables `strava_oauth`, `strava_activities`, `strava_sync_state`, `strava_reverse_geocode_cache`, and `strava_gear_cache`. SQL for the cache tables (and Type Emotions events) is in `scripts/`.
 - A [Strava API app](https://www.strava.com/settings/api) — note Client ID and Secret, and set the callback domain so `https://your-domain.com/api/strava/callback` is allowed.
 
 ### Environment variables
@@ -235,7 +254,11 @@ npm run studio:deploy                   # required for production Studio editors
 ├── config.style-dictionary.json     # Builds → src/styles/generated/tokens.css
 ├── src/
 │   ├── app/                         # Next.js App Router
-│   │   ├── api/                     # Route handlers (Strava, eBird, quick-add, etc.)
+│   │   ├── admin/                   # Password-gated tools (Strava connect, Type Emotions review)
+│   │   ├── api/                     # Route handlers (Strava, eBird, type-emotions, quick-add, …)
+│   │   ├── lab/                     # Lab hub
+│   │   ├── type-emotions/           # Emotion → font specimen lab
+│   │   ├── pixel-art/               # Pixelation lab
 │   │   ├── birding-dashboard/
 │   │   ├── flights/
 │   │   ├── pileated-watch/
@@ -243,12 +266,14 @@ npm run studio:deploy                   # required for production Studio editors
 │   │   ├── studio/                  # Embedded Sanity Studio
 │   │   └── [slug]/                  # CMS-driven pages
 │   ├── components/
-│   │   ├── atoms/                   # Button, Pagination, etc.
+│   │   ├── atoms/                   # Button, Chip, Pagination, …
 │   │   ├── backyard/                # Birding map + table + card components
-│   │   ├── molecules/               # PageHero, PortableText, etc.
+│   │   ├── molecules/               # PageHero, PortableText, …
 │   │   ├── strava/                  # Runs map + table components
 │   │   └── ui/                      # DataTable, shared UI
 │   ├── lib/
+│   │   ├── typeEmotions/            # Emotion catalog, matcher, palettes
+│   │   ├── pixelArt/                # Pixel-art helpers
 │   │   ├── ebird/                   # eBird API client + sync
 │   │   ├── strava/                  # Strava OAuth + sync
 │   │   ├── birding/                 # Xeno-canto helpers
@@ -257,18 +282,20 @@ npm run studio:deploy                   # required for production Studio editors
 │   │   └── types.ts                 # Shared TypeScript types
 │   └── styles/
 │       └── generated/tokens.css     # Auto-generated — do not edit
-├── sanity/                          # Studio source (separate npm workspace)
+├── sanity/                          # Studio source (separate npm package; keep version aligned with root)
 │   ├── schemaTypes/                 # Content model
 │   ├── components/                  # Custom Studio input panels
 │   └── sanity.config.ts
 ├── extensions/quick-add/            # Browser extension
-└── scripts/                         # One-off migration + utility scripts
+└── scripts/                         # SQL migrations + utility scripts
 ```
 
 ---
 
 ## Deployment
 
-The site deploys to Vercel from the main branch. Sanity Studio deploys separately via `npm run studio:deploy`. After changing environment variables in Vercel, redeploy for them to take effect.
+The site deploys to Vercel from the main branch. Sanity Studio deploys separately via `npm run studio:deploy` (hosted `*.sanity.studio` does **not** pick up Studio UI upgrades from a Next-only deploy). After changing environment variables in Vercel, redeploy for them to take effect.
+
+Keep root and `sanity/` package versions of `sanity` / `@sanity/vision` aligned — the embedded `/studio` route imports the nested Studio config into the Next app.
 
 Set all the relevant env vars in Vercel → Environment Variables (Production). The full reference is in `.env.local.example`.
