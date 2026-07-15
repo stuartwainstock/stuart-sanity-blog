@@ -50,4 +50,5 @@
   --color-button-brand-ghost-bg-hover: #fff7ed;
   --color-button-brand-ghost-focus-ring: #f97316;
   --font-work-sans: 'Work Sans', sans-serif; /** Primary UI font (matches Google Fonts / layout) */
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; /** Monospace for code, tables, and meta labels */
 }

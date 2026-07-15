@@ -6,9 +6,6 @@
   --chrome-muted: var(--color-custom-700);
   --chrome-line: var(--color-custom-300);
   --chrome-accent: var(--color-custom-900);
-  --chrome-chip-bg: var(--color-custom-100);
-  --chrome-chip-selected-bg: var(--color-custom-900);
-  --chrome-chip-selected-fg: var(--color-card-bg);
   --chrome-input-bg: var(--color-card-bg);
 
   margin-top: 1.5rem;
@@ -41,8 +38,7 @@
 .intensityEdge,
 .intensityValue,
 .paletteRowLabel {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
-    'Courier New', monospace;
+  font-family: var(--font-mono);
   font-size: 0.65rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -64,31 +60,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
-}
-
-.chip,
-.chipSelected {
-  appearance: none;
-  border: 1px solid var(--chrome-line);
-  background: var(--chrome-chip-bg);
-  color: var(--chrome-fg);
-  font-family: var(--font-work-sans);
-  font-size: 0.8rem;
-  line-height: 1.2;
-  padding: 0.35rem 0.7rem;
-  cursor: pointer;
-}
-
-.chip:hover,
-.chip:focus-visible {
-  border-color: var(--chrome-accent);
-  outline: none;
-}
-
-.chipSelected {
-  background: var(--chrome-chip-selected-bg);
-  color: var(--chrome-chip-selected-fg);
-  border-color: var(--chrome-chip-selected-bg);
 }
 
 .form {
@@ -252,9 +223,6 @@
   --specimen-muted: #6a6760;
   --specimen-line: #d4d0c8;
   --specimen-accent: #3f3c38;
-  --specimen-chip-bg: #ebe7e0;
-  --specimen-chip-selected-bg: #1a1a1a;
-  --specimen-chip-selected-fg: #f4f2ee;
   --intensity-glyph-scale: 1;
   --intensity-scale-gap: 0.65rem;
 
@@ -495,8 +463,7 @@
 
 .cellMeta,
 .scaleLabel {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
-    'Courier New', monospace;
+  font-family: var(--font-mono);
   font-size: 0.65rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;

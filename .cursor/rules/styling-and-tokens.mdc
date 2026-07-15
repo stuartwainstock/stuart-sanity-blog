@@ -46,6 +46,7 @@ This project does **not** use Tailwind. Use **design tokens**, **CSS Modules**, 
 
 /* Typography */
 --font-work-sans: 'Work Sans', sans-serif
+--font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace
 ```
 
 ## Wiring

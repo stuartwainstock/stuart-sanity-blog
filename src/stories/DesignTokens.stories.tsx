@@ -127,8 +127,8 @@ export const Reference: Story = {
                         title={row.value}
                       />
                     ) : row.name.includes('font') ? (
-                      <span style={{fontFamily: 'var(--font-work-sans)'}} className={s.fontPreview}>
-                        Work Sans preview
+                      <span style={{fontFamily: `var(${row.name})`}} className={s.fontPreview}>
+                        {row.name === '--font-mono' ? 'Mono 0123 preview' : 'Work Sans preview'}
                       </span>
                     ) : (
                       '—'
@@ -175,7 +175,7 @@ export const Reference: Story = {
                         />
                       ) : (
                         <span className={s.fontPreview} style={{fontFamily: row.$value}}>
-                          Aa Work Sans
+                          {row.path.includes('mono') ? 'Aa 0123 mono' : 'Aa Work Sans'}
                         </span>
                       )}
                       {row.$description ? <p className={s.tokenDesc}>{row.$description}</p> : null}

@@ -11,6 +11,7 @@ export type SpecimenPaletteId =
   | 'fiery-ocean'
   | 'magenta-dream'
   | 'neutral-elegance'
+  | 'ocean-blue-serenity'
 
 export type SpecimenPaletteRoles = {
   bg: string
@@ -193,11 +194,59 @@ export const NEUTRAL_ELEGANCE: SpecimenPalette = {
   },
 }
 
+/**
+ * Ocean Blue Serenity — deep indigo → crystal sky-blue.
+ * Coolors: focus, trust, clarity / tech & health branding.
+ * @see https://coolors.co/03045e-023e8a-0077b6-0096c7-00b4d8-48cae4-90e0ef-ade8f4-caf0f8
+ */
+export const OCEAN_BLUE_SERENITY: SpecimenPalette = {
+  id: 'ocean-blue-serenity',
+  name: 'Ocean Blue Serenity',
+  coolorsUrl:
+    'https://coolors.co/03045e-023e8a-0077b6-0096c7-00b4d8-48cae4-90e0ef-ade8f4-caf0f8',
+  swatches: [
+    '03045E',
+    '023E8A',
+    '0077B6',
+    '0096C7',
+    '00B4D8',
+    '48CAE4',
+    '90E0EF',
+    'ADE8F4',
+    'CAF0F8',
+  ],
+  roles: {
+    bg: '#CAF0F8',
+    fg: '#03045E',
+    muted: '#023E8A',
+    line: '#90E0EF',
+    accent: '#023E8A',
+    chipBg: '#90E0EF',
+    chipSelectedBg: '#03045E',
+    chipSelectedFg: '#CAF0F8',
+  },
+  intensityHigh: {
+    bg: '#ADE8F4',
+    line: '#48CAE4',
+  },
+  intensityMax: {
+    bg: '#03045E',
+    fg: '#CAF0F8',
+    muted: '#90E0EF',
+    line: '#0077B6',
+    accent: '#48CAE4',
+    chipBg: '#023E8A',
+    chipSelectedBg: '#CAF0F8',
+    chipSelectedFg: '#03045E',
+  },
+}
+
 export const SPECIMEN_PALETTES: Record<SpecimenPaletteId, SpecimenPalette> = {
   'candy-pop': CANDY_POP,
   'fiery-ocean': FIERY_OCEAN,
   'magenta-dream': MAGENTA_DREAM,
   'neutral-elegance': NEUTRAL_ELEGANCE,
+  'ocean-blue-serenity': OCEAN_BLUE_SERENITY,
 }
 
 export function resolvePaletteRoles(

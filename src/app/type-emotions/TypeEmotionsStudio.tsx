@@ -2,6 +2,7 @@
 
 import {useId, useState, type CSSProperties, type FormEvent} from 'react'
 import Button from '@/components/atoms/Button'
+import Chip from '@/components/atoms/Chip'
 import {
   EMOTION_CATALOG,
   SCALE_SAMPLE,
@@ -145,15 +146,14 @@ export function TypeEmotionsStudio() {
             {EMOTION_CATALOG.map((emotion) => {
               const selected = emotion.id === selectedId
               return (
-                <button
+                <Chip
                   key={emotion.id}
-                  type="button"
-                  className={selected ? styles.chipSelected : styles.chip}
-                  aria-pressed={selected}
+                  interactive
+                  selected={selected}
                   onClick={() => applyEmotion(emotion.id, emotion.id)}
                 >
                   {emotion.label}
-                </button>
+                </Chip>
               )
             })}
           </div>
@@ -251,14 +251,9 @@ export function TypeEmotionsStudio() {
             <div className={styles.altMatches} role="group" aria-label="Other close matches">
               <span className={styles.altMatchesLabel}>Also close</span>
               {match.alternatives.map((alt) => (
-                <button
-                  key={alt.id}
-                  type="button"
-                  className={styles.chip}
-                  onClick={() => applyEmotion(alt.id, alt.id)}
-                >
+                <Chip key={alt.id} interactive onClick={() => applyEmotion(alt.id, alt.id)}>
                   {alt.label}
-                </button>
+                </Chip>
               ))}
             </div>
           ) : null}

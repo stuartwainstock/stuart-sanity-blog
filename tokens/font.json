@@ -5,6 +5,11 @@
       "$type": "fontFamily",
       "$value": "'Work Sans', sans-serif",
       "$description": "Primary UI font (matches Google Fonts / layout)"
+    },
+    "mono": {
+      "$type": "fontFamily",
+      "$value": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
+      "$description": "Monospace for code, tables, and meta labels"
     }
   }
 }

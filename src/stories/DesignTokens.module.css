@@ -44,7 +44,7 @@
 
 .mono {
   font-size: 0.75rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--font-mono);
   color: #374151;
   background: #f3f4f6;
   padding: 0.125rem 0.375rem;
@@ -94,7 +94,7 @@
 
 .tdMono {
   padding: 0.75rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 0.75rem;
 }
 
@@ -159,14 +159,14 @@
 }
 
 .paletteToken {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 0.75rem;
   font-weight: 500;
   color: #111827;
 }
 
 .paletteHex {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 10px;
   color: #374151;
 }
@@ -227,7 +227,7 @@
 }
 
 .docHexValue {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 0.75rem;
   color: #374151;
 }
@@ -386,7 +386,7 @@
   border-top: none;
   background: #fff;
   padding: 0.25rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 10px;
   color: #374151;
 }
@@ -406,7 +406,7 @@
 .spacingKey {
   width: 6rem;
   flex-shrink: 0;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 0.75rem;
   color: #374151;
 }
@@ -427,7 +427,7 @@
 .spacingPx {
   width: 5rem;
   flex-shrink: 0;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 0.75rem;
   color: #374151;
 }

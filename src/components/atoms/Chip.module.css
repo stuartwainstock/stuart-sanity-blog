@@ -1,12 +1,61 @@
 .chip {
-  display: inline-block;
-  background: #f3f4f6;
-  color: #1f2937;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  max-width: 100%;
+  background: var(--color-custom-100);
+  color: var(--color-documented-prose-heading);
+  border: 1px solid var(--color-custom-300);
   padding: 0.25rem 0.5rem;
   border-radius: 0.375rem;
+  font-family: var(--font-work-sans);
   font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.25;
 }
 
 .capitalize {
   text-transform: capitalize;
+}
+
+.interactive {
+  appearance: none;
+  margin: 0;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.interactive:hover:not(:disabled) {
+  border-color: var(--color-custom-500);
+  background: var(--color-custom-50);
+}
+
+.interactive:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow:
+    0 0 0 2px var(--color-button-focus-inner),
+    0 0 0 4px var(--color-button-neutral-secondary-focus-ring);
+}
+
+.interactive:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.selected {
+  background: var(--color-custom-900);
+  color: var(--color-card-bg);
+  border-color: var(--color-custom-900);
+}
+
+.interactive.selected:hover:not(:disabled) {
+  background: var(--color-custom-800);
+  border-color: var(--color-custom-800);
+  color: var(--color-card-bg);
 }
