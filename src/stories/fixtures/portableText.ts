@@ -18,8 +18,9 @@ export const portableTextBasic: PortableTextBlock[] = [
   },
   {
     _type: 'block',
-    style: 'h2',
-    _key: 'h2',
+    // Top body section in Studio = h1; remaps to semantic h2 under HubPageHeader / page heroes.
+    style: 'h1',
+    _key: 'h1',
     children: [{_type: 'span', _key: 's2', text: 'Section heading', marks: []}],
     markDefs: [],
   },
