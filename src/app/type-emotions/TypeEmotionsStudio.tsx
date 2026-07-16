@@ -5,97 +5,137 @@ import Button from '@/components/atoms/Button'
 import Chip from '@/components/atoms/Chip'
 import {
   EMOTION_CATALOG,
-  SCALE_SAMPLE,
-  type EmotionFontRef,
+  SPECIMEN_SIZE_DEFAULT,
+  SPECIMEN_SIZE_MAX,
+  SPECIMEN_SIZE_MIN,
+  type EmotionEntry,
   type EmotionId,
-  type EmotionSurface,
 } from '@/lib/typeEmotions/catalog'
 import {
   INTENSITY_DEFAULT,
   INTENSITY_MAX,
   INTENSITY_MIN,
-  applyIntensity,
+  buildVariationSettings,
   intensityLabel,
-  type ResolvedIntensityAxes,
+  resolvePresentation,
 } from '@/lib/typeEmotions/intensity'
 import {
   paletteToCssVars,
   resolvePaletteRoles,
   SPECIMEN_PALETTES,
+  type SpecimenPalette,
 } from '@/lib/typeEmotions/palettes'
-import {matchEmotion} from '@/lib/typeEmotions/matchEmotion'
+import {matchEmotion, type EmotionMatch} from '@/lib/typeEmotions/matchEmotion'
 import {
   autoLogKind,
   reportTypeEmotionSearchEvent,
 } from '@/lib/typeEmotions/reportSearchEvent'
-import {SPECIMEN_FONT_VARS} from '@/lib/typeEmotions/specimenFontVars'
+import {
+  clampAxisCoord,
+  defaultAxisCoord,
+  fontFamilyStack,
+  getVariableFont,
+  LAB_FONT_KEYS,
+  type AxisCoord,
+  type VariableFontKey,
+} from '@/lib/typeEmotions/variableFonts'
+import {AxisPanel} from './components/AxisPanel'
+import {EmotionChipRow} from './components/EmotionChipRow'
+import {FontSwitcher} from './components/FontSwitcher'
+import {PaletteSwatches} from './components/PaletteSwatches'
+import {SpecimenStage} from './components/SpecimenStage'
 import styles from './TypeEmotionsStudio.module.css'
 
-function fontStyle(ref: EmotionFontRef, axes: ResolvedIntensityAxes) {
+function seedFromEmotion(entry: EmotionEntry, intensity: number) {
+  const presentation = resolvePresentation(entry, intensity)
   return {
-    fontFamily: SPECIMEN_FONT_VARS[ref.familyKey],
-    fontWeight: ref.weight,
-    letterSpacing: axes.tracking,
-    lineHeight: axes.leading,
-    textTransform: axes.transform,
-  } as const
-}
-
-function matchNote(match: ReturnType<typeof matchEmotion>): string {
-  const {via, matchedOn, score, entry} = match
-  if (via === 'id') return `Matched emotion id “${entry.id}”`
-  if (via === 'exact' && matchedOn) {
-    return `Paired with ${entry.label} via “${matchedOn}” (lexicon)`
+    activeFontKey: entry.fontKey,
+    axisValues: presentation.axisValues,
+    italic: presentation.italic,
+    transform: presentation.transform,
+    tracking: presentation.tracking,
+    leading: presentation.leading,
+    specimenText: entry.specimenWord,
   }
-  if (via === 'scored' && matchedOn) {
-    const pct = typeof score === 'number' ? ` · ${Math.round(score * 100)}%` : ''
-    return `Closest pairing: ${entry.label} via “${matchedOn}”${pct}`
-  }
-  if (via === 'fallback') return 'No lexicon hit — showing Calm as a baseline (logged for review)'
-  return `Matched ${entry.label}`
 }
 
-const SURFACE_CLASS: Record<EmotionSurface, string> = {
-  light: styles.surfaceLight,
-  mist: styles.surfaceMist,
-  warm: styles.surfaceWarm,
-  dark: styles.surfaceDark,
-  ink: styles.surfaceInk,
+export type TypeEmotionsStudioProps = {
+  /** Optional Sanity-sourced catalog; falls back to static EMOTION_CATALOG. */
+  catalog?: EmotionEntry[]
+  palettes?: Record<string, SpecimenPalette>
 }
 
-function intensitySurfaceClass(intensity: number): string {
-  if (intensity >= 85) return styles.intensityMax
-  if (intensity >= 65) return styles.intensityHigh
-  return ''
-}
-
-export function TypeEmotionsStudio() {
+export function TypeEmotionsStudio({
+  catalog = EMOTION_CATALOG,
+  palettes = SPECIMEN_PALETTES as Record<string, SpecimenPalette>,
+}: TypeEmotionsStudioProps) {
   const inputId = useId()
   const intensityId = useId()
+  const sizeId = useId()
+  const textId = useId()
+
+  const initial = matchEmotion('calm', catalog)
+  const seeded = seedFromEmotion(initial.entry, INTENSITY_DEFAULT)
+
   const [query, setQuery] = useState('')
-  const [selectedId, setSelectedId] = useState<EmotionId>('calm')
-  const [match, setMatch] = useState(() => matchEmotion('calm'))
+  const [selectedId, setSelectedId] = useState<EmotionId>(initial.entry.id)
+  const [match, setMatch] = useState<EmotionMatch>(initial)
   const [intensity, setIntensity] = useState(INTENSITY_DEFAULT)
+  const [activeFontKey, setActiveFontKey] = useState<VariableFontKey>(seeded.activeFontKey)
+  const [axisValues, setAxisValues] = useState<AxisCoord>(seeded.axisValues)
+  const [italic, setItalic] = useState(seeded.italic)
+  const [transform, setTransform] = useState(seeded.transform)
+  const [tracking, setTracking] = useState(seeded.tracking)
+  const [leading, setLeading] = useState(seeded.leading)
+  const [specimenText, setSpecimenText] = useState(seeded.specimenText)
+  const [specimenSize, setSpecimenSize] = useState(SPECIMEN_SIZE_DEFAULT)
   const [lastSearchQuery, setLastSearchQuery] = useState('')
   const [feedbackSent, setFeedbackSent] = useState(false)
+  const [intensityDrivesAxes, setIntensityDrivesAxes] = useState(true)
 
   const entry = match.entry
-  const axes = applyIntensity(entry.axes, intensity)
-  const palette = entry.paletteId ? SPECIMEN_PALETTES[entry.paletteId] : undefined
+  const activeFont = getVariableFont(activeFontKey)
+  const palette = entry.paletteId ? palettes[entry.paletteId] : undefined
   const paletteRoles = palette ? resolvePaletteRoles(palette, intensity) : undefined
 
+  const switcherFonts: VariableFontKey[] = [
+    entry.fontKey,
+    ...entry.alternateFontKeys.filter((key) => key !== entry.fontKey),
+  ]
+  const labFonts = LAB_FONT_KEYS.filter((key) => !switcherFonts.includes(key))
+
   const specimenStyle = {
-    '--intensity-glyph-scale': String(axes.glyphScale),
-    '--intensity-scale-gap': `${axes.scaleGapRem}rem`,
+    '--specimen-size': `${specimenSize}rem`,
     ...(paletteRoles ? paletteToCssVars(paletteRoles) : {}),
   } as CSSProperties
 
+  const typeStyle = {
+    fontFamily: fontFamilyStack(activeFontKey),
+    fontStyle: italic ? 'italic' : 'normal',
+    fontVariationSettings: buildVariationSettings(axisValues),
+    letterSpacing: tracking,
+    lineHeight: leading,
+    textTransform: transform,
+  } as const
+
   function applyEmotion(nextQuery: string, chipId?: EmotionId) {
     const raw = (chipId ?? nextQuery).trim()
-    const resolved = matchEmotion(chipId ?? nextQuery)
+    const resolved = matchEmotion(chipId ?? nextQuery, catalog)
+    const next = seedFromEmotion(resolved.entry, INTENSITY_DEFAULT)
+
     setMatch(resolved)
     setSelectedId(resolved.entry.id)
+    setIntensity(INTENSITY_DEFAULT)
+    setActiveFontKey(next.activeFontKey)
+    setAxisValues(next.axisValues)
+    setItalic(next.italic)
+    setTransform(next.transform)
+    setTracking(next.tracking)
+    setLeading(next.leading)
+    setSpecimenText(next.specimenText)
+    setIntensityDrivesAxes(true)
     setFeedbackSent(false)
+
     if (chipId) {
       setQuery('')
       setLastSearchQuery('')
@@ -113,6 +153,41 @@ export function TypeEmotionsStudio() {
     applyEmotion(query)
   }
 
+  function onIntensityChange(next: number) {
+    setIntensity(next)
+    setIntensityDrivesAxes(true)
+    const presentation = resolvePresentation(entry, next)
+    if (activeFontKey === entry.fontKey) {
+      setAxisValues(presentation.axisValues)
+      setItalic(presentation.italic)
+      setTransform(presentation.transform)
+      setTracking(presentation.tracking)
+      setLeading(presentation.leading)
+    } else {
+      setTransform(presentation.transform)
+      setTracking(presentation.tracking)
+      setLeading(presentation.leading)
+    }
+  }
+
+  function onFontSwitch(key: VariableFontKey) {
+    setActiveFontKey(key)
+    setIntensityDrivesAxes(false)
+    if (key === entry.fontKey) {
+      const presentation = resolvePresentation(entry, intensity)
+      setAxisValues(presentation.axisValues)
+      setItalic(presentation.italic)
+    } else {
+      setAxisValues(defaultAxisCoord(key))
+      setItalic(false)
+    }
+  }
+
+  function onAxisChange(tag: string, value: number) {
+    setIntensityDrivesAxes(false)
+    setAxisValues((prev) => clampAxisCoord(activeFontKey, {...prev, [tag]: value}))
+  }
+
   function onFlagPairing() {
     const q = lastSearchQuery || query.trim() || entry.id
     setFeedbackSent(true)
@@ -122,6 +197,8 @@ export function TypeEmotionsStudio() {
       match,
     })
   }
+
+  const displayText = specimenText.trim() || entry.specimenWord
 
   return (
     <div className={styles.root}>
@@ -136,27 +213,20 @@ export function TypeEmotionsStudio() {
               : ''}
           </span>
           <span className={styles.meta}>
-            INTENSITY — {intensity} · {intensityLabel(intensity).toUpperCase()}
+            {activeFont.label.toUpperCase()}
+            {intensityDrivesAxes
+              ? ` · INTENSITY ${intensity} · ${intensityLabel(intensity).toUpperCase()}`
+              : ' · MANUAL AXES'}
             {palette ? ` · ${palette.name.toUpperCase()}` : ` · ${entry.surface.toUpperCase()}`}
           </span>
         </div>
 
         <div className={styles.controls}>
-          <div className={styles.chips} role="group" aria-label="Emotion presets">
-            {EMOTION_CATALOG.map((emotion) => {
-              const selected = emotion.id === selectedId
-              return (
-                <Chip
-                  key={emotion.id}
-                  interactive
-                  selected={selected}
-                  onClick={() => applyEmotion(emotion.id, emotion.id)}
-                >
-                  {emotion.label}
-                </Chip>
-              )
-            })}
-          </div>
+          <EmotionChipRow
+            catalog={catalog}
+            selectedId={selectedId}
+            onSelect={(id) => applyEmotion(id, id)}
+          />
 
           <form className={styles.form} onSubmit={onSubmit}>
             <label className={styles.srOnly} htmlFor={inputId}>
@@ -176,60 +246,74 @@ export function TypeEmotionsStudio() {
             </Button>
           </form>
 
-          <div className={styles.intensityRow}>
-            <label className={styles.intensityLabel} htmlFor={intensityId}>
-              Intensity
-            </label>
-            <span className={styles.intensityEdge} aria-hidden="true">
-              Soft
-            </span>
-            <input
-              id={intensityId}
-              className={styles.intensitySlider}
-              type="range"
-              min={INTENSITY_MIN}
-              max={INTENSITY_MAX}
-              step={1}
-              value={intensity}
-              onChange={(event) => setIntensity(Number(event.target.value))}
-              aria-valuemin={INTENSITY_MIN}
-              aria-valuemax={INTENSITY_MAX}
-              aria-valuenow={intensity}
-              aria-valuetext={`${intensity}, ${intensityLabel(intensity)}`}
-            />
-            <span className={styles.intensityEdge} aria-hidden="true">
-              Max
-            </span>
-            <span className={styles.intensityValue}>{intensity}</span>
-          </div>
+          <div className={styles.chromeGrid}>
+            <div className={styles.chromeMain}>
+              <AxisPanel
+                fontLabel={activeFont.label}
+                axes={activeFont.axes}
+                axisValues={axisValues}
+                onAxisChange={onAxisChange}
+                stageSliders={[
+                  {
+                    id: sizeId,
+                    label: 'Size',
+                    tag: 'rem',
+                    min: SPECIMEN_SIZE_MIN,
+                    max: SPECIMEN_SIZE_MAX,
+                    step: 0.1,
+                    value: specimenSize,
+                    displayValue: specimenSize.toFixed(1),
+                    valueText: `${specimenSize.toFixed(1)} rem`,
+                    onChange: setSpecimenSize,
+                  },
+                  {
+                    id: intensityId,
+                    label: 'Intensity',
+                    tag: 'macro',
+                    min: INTENSITY_MIN,
+                    max: INTENSITY_MAX,
+                    step: 1,
+                    value: intensity,
+                    displayValue: String(intensity),
+                    valueText: `${intensity}, ${intensityLabel(intensity)}`,
+                    onChange: onIntensityChange,
+                  },
+                ]}
+              />
 
-          {palette ? (
-            <div className={styles.paletteRow} aria-label={`${palette.name} swatches`}>
-              <span className={styles.paletteRowLabel}>Palette</span>
-              <div className={styles.swatches}>
-                {palette.swatches.map((hex) => (
-                  <span
-                    key={hex}
-                    className={styles.swatch}
-                    style={{backgroundColor: `#${hex}`}}
-                    title={`#${hex}`}
-                  />
-                ))}
+              <div className={styles.textRow}>
+                <label className={styles.panelLabel} htmlFor={textId}>
+                  Specimen text
+                </label>
+                <input
+                  id={textId}
+                  className={`${styles.input} ${styles.specimenTextInput}`}
+                  type="text"
+                  value={specimenText}
+                  onChange={(event) => setSpecimenText(event.target.value)}
+                  placeholder={entry.specimenWord}
+                  autoComplete="off"
+                  spellCheck={false}
+                />
               </div>
-              <a
-                href={palette.coolorsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.paletteLink}
-              >
-                {palette.name}
-              </a>
             </div>
-          ) : null}
 
-          <p className={styles.matchHint} aria-live="polite">
-            {matchNote(match)} · {entry.reason}
-          </p>
+            <aside className={styles.chromeSide} aria-label="Font and palette">
+              <FontSwitcher
+                fonts={switcherFonts}
+                labFonts={labFonts}
+                activeFontKey={activeFontKey}
+                supportsItalic={Boolean(activeFont.supportsItalic)}
+                italic={italic}
+                onFontSwitch={onFontSwitch}
+                onItalicChange={(next) => {
+                  setIntensityDrivesAxes(false)
+                  setItalic(next)
+                }}
+              />
+              {palette ? <PaletteSwatches palette={palette} /> : null}
+            </aside>
+          </div>
 
           <div className={styles.feedbackRow}>
             <Button
@@ -260,63 +344,21 @@ export function TypeEmotionsStudio() {
         </div>
       </header>
 
-      <div
-        className={[
-          styles.specimen,
-          !palette ? SURFACE_CLASS[entry.surface] : '',
-          !palette ? intensitySurfaceClass(intensity) : '',
-        ]
-          .filter(Boolean)
-          .join(' ')}
-        style={specimenStyle}
-        key={entry.id}
-      >
-        <div className={styles.grid}>
-          <section className={`${styles.cell} ${styles.heroCell}`} aria-label="Primary specimen">
-            <p className={styles.glyph} style={fontStyle(entry.primary, axes)}>
-              {entry.specimenWord}
-            </p>
-            <p className={styles.cellMeta}>
-              ● {entry.primary.label.toUpperCase()} · {entry.primary.weight} · PRIMARY · TR{' '}
-              {axes.tracking} · LH {axes.leading}
-            </p>
-          </section>
-
-          <section className={`${styles.cell} ${styles.scaleCell}`} aria-label="Typography scale">
-            <p className={styles.scaleLabel}>SCALE — {entry.primary.label.toUpperCase()}</p>
-            <div className={styles.scaleStack}>
-              <p className={styles.scaleDisplay} style={fontStyle(entry.primary, axes)}>
-                {SCALE_SAMPLE}
-              </p>
-              <p className={styles.scaleTitle} style={fontStyle(entry.primary, axes)}>
-                {SCALE_SAMPLE}
-              </p>
-              <p className={styles.scaleBody} style={fontStyle(entry.primary, axes)}>
-                {SCALE_SAMPLE}
-              </p>
-              <p className={styles.scaleCaption} style={fontStyle(entry.primary, axes)}>
-                {SCALE_SAMPLE}
-              </p>
-            </div>
-            <p className={styles.cellMeta}>● DISPLAY · TITLE · BODY · CAPTION</p>
-          </section>
-
-          {entry.alternates.map((alt, index) => (
-            <section
-              key={alt.familyKey}
-              className={`${styles.cell} ${styles.altCell}`}
-              aria-label={`Alternate ${index + 1}: ${alt.label}`}
-            >
-              <p className={styles.altWord} style={fontStyle(alt, axes)}>
-                {entry.specimenWord}
-              </p>
-              <p className={styles.cellMeta}>
-                ● {alt.label.toUpperCase()} · {alt.weight} · ALT {index + 1}
-              </p>
-            </section>
-          ))}
-        </div>
-      </div>
+      <SpecimenStage
+        surface={entry.surface}
+        intensity={intensity}
+        hasPalette={Boolean(palette)}
+        specimenStyle={specimenStyle}
+        typeStyle={typeStyle}
+        displayText={displayText}
+        fontLabel={activeFont.label}
+        italic={italic}
+        axisValues={axisValues}
+        axes={activeFont.axes}
+        emotionKey={entry.id}
+        fontKey={activeFontKey}
+        onAxisChange={onAxisChange}
+      />
     </div>
   )
 }

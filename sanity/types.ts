@@ -15,13 +15,113 @@
 export declare const internalGroqTypeReferenceTo: unique symbol
 
 // Source: schema.json
+export type VariableFontFace = {
+  _id: string
+  _type: 'variableFontFace'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  key?:
+    | 'fraunces'
+    | 'recursive'
+    | 'robotoFlex'
+    | 'bricolage'
+    | 'anybody'
+    | 'nabla'
+    | 'shantell'
+    | 'workbench'
+  label?: string
+  googleFontName?: string
+  cssVar?: string
+  fallback?: string
+  category?: 'serif' | 'sans' | 'display' | 'mono' | 'experimental'
+  italicSupport?: 'roman' | 'romanAndItalic'
+  axes?: Array<
+    {
+      _key: string
+    } & VariableFontAxis
+  >
+}
+
+export type VariableFontAxis = {
+  _type: 'variableFontAxis'
+  tag?: string
+  label?: string
+  min?: number
+  max?: number
+  step?: number
+  default?: number
+  group?: 'core' | 'parametric' | 'expression'
+}
+
+export type VariableFontFaceReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'variableFontFace'
+}
+
+export type SpecimenPaletteReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'specimenPalette'
+}
+
+export type TypeEmotion = {
+  _id: string
+  _type: 'typeEmotion'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  emotionId?: Slug
+  label?: string
+  synonyms?: Array<string>
+  specimenWord?: string
+  reason?: string
+  fontFace?: Array<
+    {
+      _key: string
+    } & VariableFontFaceReference
+  >
+  alternateFontFaces?: Array<
+    {
+      _key: string
+    } & VariableFontFaceReference
+  >
+  coordinate?: Array<
+    {
+      _key: string
+    } & AxisTagValue
+  >
+  intense?: Array<
+    {
+      _key: string
+    } & AxisTagValue
+  >
+  italic?: 'none' | 'italic'
+  transform?: 'none' | 'uppercase'
+  palette?: Array<
+    {
+      _key: string
+    } & SpecimenPaletteReference
+  >
+  surface?: 'light' | 'mist' | 'warm' | 'dark' | 'ink'
+}
+
+export type Slug = {
+  _type: 'slug'
+  current?: string
+  source?: string
+}
+
 export type ToolProjectPage = {
   _id: string
   _type: 'toolProjectPage'
   _createdAt: string
   _updatedAt: string
   _rev: string
-  projectKey?: 'runs' | 'flights' | 'birding-dashboard'
+  projectKey?: 'runs' | 'flights' | 'birding-dashboard' | 'type-emotions'
   pageTitle?: string
   heroIntroduction?: BlockContent
   runsStravaAdminDashboardUrl?: string
@@ -95,6 +195,33 @@ export type BlockContent = Array<
       _key: string
     }
 >
+
+export type SpecimenPaletteRoles = {
+  _type: 'specimenPaletteRoles'
+  bg?: string
+  fg?: string
+  muted?: string
+  line?: string
+  accent?: string
+  chipBg?: string
+  chipSelectedBg?: string
+  chipSelectedFg?: string
+}
+
+export type SpecimenPalette = {
+  _id: string
+  _type: 'specimenPalette'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  key?: 'candy-pop' | 'fiery-ocean' | 'magenta-dream' | 'neutral-elegance' | 'ocean-blue-serenity'
+  label?: string
+  sourceUrl?: string
+  swatches?: Array<string>
+  roles?: SpecimenPaletteRoles
+  intensityHigh?: SpecimenPaletteRoles
+  intensityMax?: SpecimenPaletteRoles
+}
 
 export type SiteSettings = {
   _id: string
@@ -250,12 +377,6 @@ export type Post = {
   featured?: boolean
   body?: BlockContent
   seo?: Seo
-}
-
-export type Slug = {
-  _type: 'slug'
-  current?: string
-  source?: string
 }
 
 export type Page = {
@@ -473,6 +594,12 @@ export type BirdSighting = {
   ebirdChecklistUri?: string
 }
 
+export type AxisTagValue = {
+  _type: 'axisTagValue'
+  tag?: string
+  value?: number
+}
+
 export type Author = {
   _id: string
   _type: 'author'
@@ -607,10 +734,18 @@ export type Geopoint = {
 }
 
 export type AllSanitySchemaTypes =
+  | VariableFontFace
+  | VariableFontAxis
+  | VariableFontFaceReference
+  | SpecimenPaletteReference
+  | TypeEmotion
+  | Slug
   | ToolProjectPage
   | Seo
   | SanityImageAssetReference
   | BlockContent
+  | SpecimenPaletteRoles
+  | SpecimenPalette
   | SiteSettings
   | ContentHub
   | LabHub
@@ -621,7 +756,6 @@ export type AllSanitySchemaTypes =
   | AuthorReference
   | CategoryReference
   | Post
-  | Slug
   | Page
   | Link
   | EbirdDashboard
@@ -633,6 +767,7 @@ export type AllSanitySchemaTypes =
   | SanityFileAssetReference
   | CaseStudy
   | BirdSighting
+  | AxisTagValue
   | Author
   | SanityImagePaletteSwatch
   | SanityImagePalette

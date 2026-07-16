@@ -129,3 +129,17 @@
 .footnote code {
   font-size: 0.75rem;
 }
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+  max-width: 22rem;
+}
+
+.actionError {
+  font-size: 0.75rem;
+  color: var(--color-custom-800);
+  width: 100%;
+}

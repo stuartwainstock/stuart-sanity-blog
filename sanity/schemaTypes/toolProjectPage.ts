@@ -24,6 +24,7 @@ export const toolProjectPage = defineType({
           {title: 'Runs (Strava) — /runs', value: 'runs'},
           {title: 'Flights (TripIt) — /flights', value: 'flights'},
           {title: 'Birding Dashboard — /birding-dashboard', value: 'birding-dashboard'},
+          {title: 'Type Emotions — /type-emotions', value: 'type-emotions'},
         ],
         layout: 'radio',
       },

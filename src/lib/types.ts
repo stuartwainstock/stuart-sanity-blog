@@ -260,7 +260,7 @@ export interface CaseStudyMeta {
 /** Singletons `toolProjectPage-runs`, `toolProjectPage-flights`, etc. */
 export interface ToolProjectPage {
   _id: string
-  projectKey?: 'runs' | 'flights' | 'birding-dashboard'
+  projectKey?: 'runs' | 'flights' | 'birding-dashboard' | 'type-emotions'
   pageTitle?: string
   heroIntroduction?: TypedObject[]
   mapSectionTitle?: string

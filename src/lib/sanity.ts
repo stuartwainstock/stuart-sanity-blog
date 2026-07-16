@@ -10,6 +10,10 @@ import {
   TOOL_PROJECT_PAGE_BIRDING_QUERY,
   TOOL_PROJECT_PAGE_FLIGHTS_QUERY,
   TOOL_PROJECT_PAGE_RUNS_QUERY,
+  TOOL_PROJECT_PAGE_TYPE_EMOTIONS_QUERY,
+  TYPE_EMOTION_FONT_FACES_QUERY,
+  TYPE_EMOTION_PALETTES_QUERY,
+  TYPE_EMOTIONS_QUERY,
 } from './queries'
 import type {
   CaseStudyListItem,
@@ -20,6 +24,14 @@ import type {
   SanityImage,
   ToolProjectPage,
 } from './types'
+import type {EmotionEntry} from './typeEmotions/catalog'
+import type {SpecimenPalette} from './typeEmotions/palettes'
+import type {VariableFontEntry} from './typeEmotions/variableFonts'
+import type {
+  SanitySpecimenPalette,
+  SanityTypeEmotion,
+  SanityVariableFontFace,
+} from './typeEmotions/fromSanity'
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET
@@ -108,6 +120,99 @@ export const fetchToolProjectPageFlights = cache(async (): Promise<ToolProjectPa
   } catch (e) {
     console.error('tool project page (flights) fetch failed:', e)
     return null
+  }
+})
+
+/** Type Emotions — /type-emotions page chrome. */
+export const fetchToolProjectPageTypeEmotions = cache(
+  async (): Promise<ToolProjectPage | null> => {
+    try {
+      return await sanityClient.fetch<ToolProjectPage | null>(
+        TOOL_PROJECT_PAGE_TYPE_EMOTIONS_QUERY,
+        {},
+        {
+          useCdn: false,
+          next: {revalidate: 60},
+        },
+      )
+    } catch (e) {
+      console.error('tool project page (type-emotions) fetch failed:', e)
+      return null
+    }
+  },
+)
+
+export type TypeEmotionsBundle = {
+  catalog: EmotionEntry[]
+  palettes: Record<string, SpecimenPalette>
+  fonts: VariableFontEntry[]
+  page: ToolProjectPage | null
+}
+
+/** Emotions + palettes + font metadata for /type-emotions. Falls back to static modules. */
+export const fetchTypeEmotionsBundle = cache(async (): Promise<TypeEmotionsBundle> => {
+  const {EMOTION_CATALOG} = await import('./typeEmotions/catalog')
+  const {SPECIMEN_PALETTES} = await import('./typeEmotions/palettes')
+  const {VARIABLE_FONTS, hydrateVariableFonts} = await import('./typeEmotions/variableFonts')
+  const {mapSanityEmotion, mapSanityFontFace, mapSanityPalette} = await import(
+    './typeEmotions/fromSanity'
+  )
+
+  const empty: TypeEmotionsBundle = {
+    catalog: EMOTION_CATALOG,
+    palettes: SPECIMEN_PALETTES as Record<string, SpecimenPalette>,
+    fonts: Object.values(VARIABLE_FONTS),
+    page: null,
+  }
+
+  try {
+    const [page, fontDocs, paletteDocs, emotionDocs] = await Promise.all([
+      sanityClient.fetch<ToolProjectPage | null>(
+        TOOL_PROJECT_PAGE_TYPE_EMOTIONS_QUERY,
+        {},
+        {useCdn: false, next: {revalidate: 60}},
+      ),
+      sanityClient.fetch<SanityVariableFontFace[]>(
+        TYPE_EMOTION_FONT_FACES_QUERY,
+        {},
+        {useCdn: false, next: {revalidate: 60}},
+      ),
+      sanityClient.fetch<SanitySpecimenPalette[]>(
+        TYPE_EMOTION_PALETTES_QUERY,
+        {},
+        {useCdn: false, next: {revalidate: 60}},
+      ),
+      sanityClient.fetch<SanityTypeEmotion[]>(
+        TYPE_EMOTIONS_QUERY,
+        {},
+        {useCdn: false, next: {revalidate: 60}},
+      ),
+    ])
+
+    const fonts = (fontDocs ?? [])
+      .map(mapSanityFontFace)
+      .filter((f): f is VariableFontEntry => Boolean(f))
+    if (fonts.length > 0) hydrateVariableFonts(fonts)
+
+    const palettes: Record<string, SpecimenPalette> = {}
+    for (const doc of paletteDocs ?? []) {
+      const mapped = mapSanityPalette(doc)
+      if (mapped) palettes[mapped.id] = mapped
+    }
+
+    const catalog = (emotionDocs ?? [])
+      .map(mapSanityEmotion)
+      .filter((e): e is EmotionEntry => Boolean(e))
+
+    return {
+      catalog: catalog.length > 0 ? catalog : empty.catalog,
+      palettes: Object.keys(palettes).length > 0 ? palettes : empty.palettes,
+      fonts: fonts.length > 0 ? fonts : empty.fonts,
+      page,
+    }
+  } catch (e) {
+    console.error('type emotions bundle fetch failed:', e)
+    return empty
   }
 })
 

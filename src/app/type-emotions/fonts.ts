@@ -1,208 +1,90 @@
 import {
-  Anton,
-  Archivo_Black,
-  Barlow_Condensed,
-  Bebas_Neue,
-  Comfortaa,
-  Cormorant_Garamond,
-  EB_Garamond,
+  Anybody,
+  Bricolage_Grotesque,
   Fraunces,
-  Fredoka,
-  Great_Vibes,
-  IBM_Plex_Sans,
-  Inter,
-  JetBrains_Mono,
-  Libre_Baskerville,
-  Lora,
-  Merriweather,
-  Nunito,
-  Oswald,
-  Playfair_Display,
-  Space_Grotesk,
-  Special_Elite,
-  Syne,
+  Nabla,
+  Recursive,
+  Roboto_Flex,
+  Shantell_Sans,
+  Workbench,
 } from 'next/font/google'
+
 /**
  * Server-only: import from `page.tsx`, never from a `'use client'` module.
- * Client UI resolves faces via CSS vars in `src/lib/typeEmotions/specimenFontVars.ts`.
+ * Client UI resolves faces via CSS vars in `src/lib/typeEmotions/variableFonts.ts`.
+ *
+ * Variable axes require omitting explicit `weight` (or `weight: 'variable'`).
+ * Non-wght axes are listed in `axes`; values are set at runtime via
+ * `font-variation-settings`.
  */
-
-const cormorantGaramond = Cormorant_Garamond({
-  subsets: ['latin'],
-  weight: ['400', '600', '700'],
-  display: 'swap',
-  variable: '--font-specimen-cormorant',
-})
-
-const libreBaskerville = Libre_Baskerville({
-  subsets: ['latin'],
-  weight: ['400', '700'],
-  display: 'swap',
-  variable: '--font-specimen-libre-baskerville',
-})
-
-const lora = Lora({
-  subsets: ['latin'],
-  weight: ['400', '600', '700'],
-  display: 'swap',
-  variable: '--font-specimen-lora',
-})
-
-const oswald = Oswald({
-  subsets: ['latin'],
-  weight: ['400', '600', '700'],
-  display: 'swap',
-  variable: '--font-specimen-oswald',
-})
-
-const bebasNeue = Bebas_Neue({
-  subsets: ['latin'],
-  weight: '400',
-  display: 'swap',
-  variable: '--font-specimen-bebas',
-})
-
-const anton = Anton({
-  subsets: ['latin'],
-  weight: '400',
-  display: 'swap',
-  variable: '--font-specimen-anton',
-})
-
-const fredoka = Fredoka({
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
-  display: 'swap',
-  variable: '--font-specimen-fredoka',
-})
-
-const nunito = Nunito({
-  subsets: ['latin'],
-  weight: ['400', '700'],
-  display: 'swap',
-  variable: '--font-specimen-nunito',
-})
-
-const comfortaa = Comfortaa({
-  subsets: ['latin'],
-  weight: ['400', '500', '700'],
-  display: 'swap',
-  variable: '--font-specimen-comfortaa',
-})
-
-const playfairDisplay = Playfair_Display({
-  subsets: ['latin'],
-  weight: ['400', '700'],
-  display: 'swap',
-  variable: '--font-specimen-playfair',
-})
 
 const fraunces = Fraunces({
   subsets: ['latin'],
-  weight: ['400', '600', '700'],
+  axes: ['opsz', 'SOFT', 'WONK'],
+  style: ['normal', 'italic'],
   display: 'swap',
   variable: '--font-specimen-fraunces',
 })
 
-const merriweather = Merriweather({
+const recursive = Recursive({
   subsets: ['latin'],
-  weight: ['400', '700'],
+  axes: ['slnt', 'CASL', 'CRSV', 'MONO'],
   display: 'swap',
-  variable: '--font-specimen-merriweather',
+  variable: '--font-specimen-recursive',
 })
 
-const ibmPlexSans = IBM_Plex_Sans({
+const robotoFlex = Roboto_Flex({
   subsets: ['latin'],
-  weight: ['400', '500', '600'],
+  axes: ['wdth', 'opsz', 'GRAD', 'slnt', 'XOPQ', 'YOPQ', 'XTRA', 'YTUC', 'YTLC', 'YTAS', 'YTDE', 'YTFI'],
   display: 'swap',
-  variable: '--font-specimen-ibm-plex',
+  variable: '--font-specimen-roboto-flex',
 })
 
-const inter = Inter({
+const bricolage = Bricolage_Grotesque({
   subsets: ['latin'],
-  weight: ['400', '500', '700'],
+  axes: ['wdth', 'opsz'],
   display: 'swap',
-  variable: '--font-specimen-inter',
+  variable: '--font-specimen-bricolage',
 })
 
-const spaceGrotesk = Space_Grotesk({
+const anybody = Anybody({
   subsets: ['latin'],
-  weight: ['400', '500', '700'],
+  axes: ['wdth'],
+  style: ['normal', 'italic'],
   display: 'swap',
-  variable: '--font-specimen-space-grotesk',
+  variable: '--font-specimen-anybody',
 })
 
-const specialElite = Special_Elite({
+const nabla = Nabla({
   subsets: ['latin'],
-  weight: '400',
+  axes: ['EDPT', 'EHLT'],
   display: 'swap',
-  variable: '--font-specimen-special-elite',
+  variable: '--font-specimen-nabla',
 })
 
-const ebGaramond = EB_Garamond({
+const shantell = Shantell_Sans({
   subsets: ['latin'],
-  weight: ['400', '600'],
+  axes: ['BNCE', 'INFM', 'SPAC'],
+  style: ['normal', 'italic'],
   display: 'swap',
-  variable: '--font-specimen-eb-garamond',
+  variable: '--font-specimen-shantell',
 })
 
-const archivoBlack = Archivo_Black({
+const workbench = Workbench({
   subsets: ['latin'],
-  weight: '400',
+  axes: ['BLED', 'SCAN'],
   display: 'swap',
-  variable: '--font-specimen-archivo-black',
-})
-
-const barlowCondensed = Barlow_Condensed({
-  subsets: ['latin'],
-  weight: ['400', '600', '700'],
-  display: 'swap',
-  variable: '--font-specimen-barlow-condensed',
-})
-
-const syne = Syne({
-  subsets: ['latin'],
-  weight: ['400', '700'],
-  display: 'swap',
-  variable: '--font-specimen-syne',
-})
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  weight: ['400', '500'],
-  display: 'swap',
-  variable: '--font-specimen-jetbrains',
-})
-
-const greatVibes = Great_Vibes({
-  subsets: ['latin'],
-  weight: '400',
-  display: 'swap',
-  variable: '--font-specimen-great-vibes',
+  variable: '--font-specimen-workbench',
 })
 
 /** Apply on a server-rendered wrapper so specimen CSS vars are available to the client studio. */
 export const specimenFontVariablesClassName = [
-  cormorantGaramond.variable,
-  libreBaskerville.variable,
-  lora.variable,
-  oswald.variable,
-  bebasNeue.variable,
-  anton.variable,
-  fredoka.variable,
-  nunito.variable,
-  comfortaa.variable,
-  playfairDisplay.variable,
   fraunces.variable,
-  merriweather.variable,
-  ibmPlexSans.variable,
-  inter.variable,
-  spaceGrotesk.variable,
-  specialElite.variable,
-  ebGaramond.variable,
-  archivoBlack.variable,
-  barlowCondensed.variable,
-  syne.variable,
-  jetbrainsMono.variable,
-  greatVibes.variable,
+  recursive.variable,
+  robotoFlex.variable,
+  bricolage.variable,
+  anybody.variable,
+  nabla.variable,
+  shantell.variable,
+  workbench.variable,
 ].join(' ')

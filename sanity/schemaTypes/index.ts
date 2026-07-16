@@ -15,3 +15,11 @@ export { resource } from './resource'
 export { seo } from './seo'
 export { siteSettings } from './siteSettings'
 export { toolProjectPage } from './toolProjectPage'
+export {
+  axisTagValue,
+  specimenPalette,
+  specimenPaletteRoles,
+  typeEmotion,
+  variableFontAxis,
+  variableFontFace,
+} from './typeEmotions'

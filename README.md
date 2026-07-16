@@ -10,7 +10,7 @@ My personal site — built with Next.js 16 (App Router) and Sanity v6. It's a bl
 
 - **Blog** — writing, organized by category and author
 - **[/lab](https://stuartwainstock.com/lab)** — hub for side experiments (cards come from Sanity `siteSettings`)
-- **[/type-emotions](https://stuartwainstock.com/type-emotions)** — pick or type an emotion → curated Google Fonts specimen + Coolors mood palette
+- **[/type-emotions](https://stuartwainstock.com/type-emotions)** — emotion → variable-font playground (live axes + Coolors mood palette)
 - **[/pixel-art](https://stuartwainstock.com/pixel-art)** — turn an image (including Unsplash search) into a pixel palette canvas
 - **[/runs](https://stuartwainstock.com/runs)** — Strava activities synced to Supabase, rendered as a MapLibre route map + table
 - **[/pileated-watch](https://stuartwainstock.com/pileated-watch)** — recent eBird sightings of one species (usually Pileated Woodpecker) in a configured area, with a map
@@ -86,7 +86,7 @@ Lab cards on **[/lab](https://stuartwainstock.com/lab)** are CMS-driven (`siteSe
 
 ### Type Emotions (`/type-emotions`)
 
-Maps a chip or free-text emotion to a curated Google Fonts specimen (primary scale + alternates), intensity dial, and Coolors mood roles scoped to the specimen panel. Fonts load only on this route via `next/font/google` in `src/app/type-emotions/fonts.ts` — they are never added to the root layout. The emotion catalog and synonym matcher live under `src/lib/typeEmotions/`.
+Maps a chip or free-text emotion to a **starting coordinate** in a variable Google Font. Live axis sliders (including Roboto Flex parametrics and experimental faces like Nabla / Shantell Sans / Workbench), italic toggles where supported, and editable specimen text turn the match into a playground; intensity is a macro over the emotion’s featured ↔ intense coordinates. Coolors mood roles stay scoped to the specimen panel. **Emotion catalog, font axis metadata, and palettes live in Sanity** (`typeEmotion`, `variableFontFace`, `specimenPalette`); font *files* still load only on this route via `next/font/google` in `src/app/type-emotions/fonts.ts`. Match/intensity helpers stay under `src/lib/typeEmotions/`. Review unmatched searches at **`/admin/type-emotions`** (Add synonym patches Sanity).
 
 Weak matches and “Not quite right?” feedback POST to `/api/type-emotions/search-events` and land in Supabase `type_emotion_search_events` (see `scripts/supabase-type-emotion-search-events.sql`). Review the queue at **`/admin/type-emotions`** after signing in at `/admin/login` (same `ADMIN_PASSWORD` as Strava admin). Needs `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` for logging; the page still works without them.
 
@@ -257,7 +257,7 @@ npm run studio:deploy                   # required for production Studio editors
 │   │   ├── admin/                   # Password-gated tools (Strava connect, Type Emotions review)
 │   │   ├── api/                     # Route handlers (Strava, eBird, type-emotions, quick-add, …)
 │   │   ├── lab/                     # Lab hub
-│   │   ├── type-emotions/           # Emotion → font specimen lab
+│   │   ├── type-emotions/           # Emotion → variable-font axis playground
 │   │   ├── pixel-art/               # Pixelation lab
 │   │   ├── birding-dashboard/
 │   │   ├── flights/

@@ -138,8 +138,74 @@ function normalize(value: string): string {
     .replace(/\s+/g, ' ')
 }
 
-function findById(id: string): EmotionEntry | undefined {
-  return EMOTION_CATALOG.find((entry) => entry.id === id)
+function findById(id: string, catalog: EmotionEntry[]): EmotionEntry | undefined {
+  return catalog.find((entry) => entry.id === id)
+}
+
+/**
+ * Resolve a chip id or free-text emotion phrase to a curated catalog entry.
+ * Uses stopword stripping + stem/prefix scoring so everyday phrasing still maps.
+ */
+export function matchEmotion(
+  query: string,
+  catalog: EmotionEntry[] = EMOTION_CATALOG,
+): EmotionMatch {
+  const raw = query.trim()
+  if (!raw) {
+    return {entry: findById(DEFAULT_EMOTION_ID, catalog)!, via: 'fallback', score: 0}
+  }
+
+  const normalized = normalize(raw)
+  const asId = normalized.replace(/\s+/g, '-') as EmotionId
+  const byId = findById(asId, catalog)
+  if (byId) {
+    return {entry: byId, via: 'id', matchedOn: byId.id, score: 1}
+  }
+
+  // Exact label / synonym equality on the whole query
+  for (const entry of catalog) {
+    const exactTerms = [entry.id, entry.label.toLowerCase(), ...entry.synonyms.map((s) => s.toLowerCase())]
+    if (exactTerms.includes(normalized)) {
+      return {entry, via: 'exact', matchedOn: normalized, score: 1}
+    }
+  }
+
+  const tokens = tokenize(normalized)
+  if (tokens.length === 0) {
+    return {entry: findById(DEFAULT_EMOTION_ID, catalog)!, via: 'fallback', score: 0}
+  }
+
+  const scored: ScoredCandidate[] = []
+  for (const entry of catalog) {
+    const candidate = scoreEntry(entry, normalized, tokens)
+    if (candidate) scored.push(candidate)
+  }
+
+  if (scored.length === 0) {
+    return {entry: findById(DEFAULT_EMOTION_ID, catalog)!, via: 'fallback', score: 0}
+  }
+
+  scored.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score
+    if (b.matchedLen !== a.matchedLen) return b.matchedLen - a.matchedLen
+    // Prefer a non-default when scores tie so “soft” collisions lose to more specific cues.
+    if (a.entry.id === DEFAULT_EMOTION_ID) return 1
+    if (b.entry.id === DEFAULT_EMOTION_ID) return -1
+    return a.entry.label.localeCompare(b.entry.label)
+  })
+
+  const best = scored[0]!
+  const alternatives = scored.slice(1, 4).map((c) => c.entry)
+  // Soft normalize: one strong token ≈ 0.85; cap at 1
+  const confidence = Math.min(1, best.score / 0.85)
+
+  return {
+    entry: best.entry,
+    via: 'scored',
+    matchedOn: best.matchedOn,
+    score: Number(confidence.toFixed(2)),
+    alternatives: alternatives.length > 0 ? alternatives : undefined,
+  }
 }
 
 function stems(token: string): string[] {
@@ -238,67 +304,4 @@ function scoreEntry(entry: EmotionEntry, normalized: string, tokens: string[]): 
 
   if (score <= 0) return null
   return {entry, score, matchedOn, matchedLen}
-}
-
-/**
- * Resolve a chip id or free-text emotion phrase to a curated catalog entry.
- * Uses stopword stripping + stem/prefix scoring so everyday phrasing still maps.
- */
-export function matchEmotion(query: string): EmotionMatch {
-  const raw = query.trim()
-  if (!raw) {
-    return {entry: findById(DEFAULT_EMOTION_ID)!, via: 'fallback', score: 0}
-  }
-
-  const normalized = normalize(raw)
-  const asId = normalized.replace(/\s+/g, '-') as EmotionId
-  const byId = findById(asId)
-  if (byId) {
-    return {entry: byId, via: 'id', matchedOn: byId.id, score: 1}
-  }
-
-  // Exact label / synonym equality on the whole query
-  for (const entry of EMOTION_CATALOG) {
-    const exactTerms = [entry.id, entry.label.toLowerCase(), ...entry.synonyms.map((s) => s.toLowerCase())]
-    if (exactTerms.includes(normalized)) {
-      return {entry, via: 'exact', matchedOn: normalized, score: 1}
-    }
-  }
-
-  const tokens = tokenize(normalized)
-  if (tokens.length === 0) {
-    return {entry: findById(DEFAULT_EMOTION_ID)!, via: 'fallback', score: 0}
-  }
-
-  const scored: ScoredCandidate[] = []
-  for (const entry of EMOTION_CATALOG) {
-    const candidate = scoreEntry(entry, normalized, tokens)
-    if (candidate) scored.push(candidate)
-  }
-
-  if (scored.length === 0) {
-    return {entry: findById(DEFAULT_EMOTION_ID)!, via: 'fallback', score: 0}
-  }
-
-  scored.sort((a, b) => {
-    if (b.score !== a.score) return b.score - a.score
-    if (b.matchedLen !== a.matchedLen) return b.matchedLen - a.matchedLen
-    // Prefer a non-default when scores tie so “soft” collisions lose to more specific cues.
-    if (a.entry.id === DEFAULT_EMOTION_ID) return 1
-    if (b.entry.id === DEFAULT_EMOTION_ID) return -1
-    return a.entry.label.localeCompare(b.entry.label)
-  })
-
-  const best = scored[0]!
-  const alternatives = scored.slice(1, 4).map((c) => c.entry)
-  // Soft normalize: one strong token ≈ 0.85; cap at 1
-  const confidence = Math.min(1, best.score / 0.85)
-
-  return {
-    entry: best.entry,
-    via: 'scored',
-    matchedOn: best.matchedOn,
-    score: Number(confidence.toFixed(2)),
-    alternatives: alternatives.length > 0 ? alternatives : undefined,
-  }
 }

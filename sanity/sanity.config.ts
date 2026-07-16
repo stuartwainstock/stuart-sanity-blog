@@ -4,6 +4,7 @@ import {visionTool} from '@sanity/vision'
 import {unsplashImageAsset} from 'sanity-plugin-asset-source-unsplash'
 import {
   author,
+  axisTagValue,
   birdSighting,
   blockContent,
   caseStudy,
@@ -22,7 +23,12 @@ import {
   resource,
   seo,
   siteSettings,
+  specimenPalette,
+  specimenPaletteRoles,
   toolProjectPage,
+  typeEmotion,
+  variableFontAxis,
+  variableFontFace,
 } from './schemaTypes'
 
 // Studio runs as static assets in production, so env vars are baked at build time.
@@ -100,6 +106,47 @@ export default defineConfig({
                 S.document()
                   .schemaType('toolProjectPage')
                   .documentId('toolProjectPage-flights')
+              ),
+            S.divider(),
+            S.listItem()
+              .title('Type Emotions')
+              .child(
+                S.list()
+                  .title('Type Emotions')
+                  .items([
+                    S.listItem()
+                      .title('Type Emotions — /type-emotions')
+                      .id('toolProjectPage-type-emotions')
+                      .child(
+                        S.document()
+                          .schemaType('toolProjectPage')
+                          .documentId('toolProjectPage-type-emotions')
+                      ),
+                    S.listItem()
+                      .title('Emotions')
+                      .schemaType('typeEmotion')
+                      .child(
+                        S.documentTypeList('typeEmotion')
+                          .title('Emotions')
+                          .defaultOrdering([{field: 'label', direction: 'asc'}])
+                      ),
+                    S.listItem()
+                      .title('Variable fonts')
+                      .schemaType('variableFontFace')
+                      .child(
+                        S.documentTypeList('variableFontFace')
+                          .title('Variable fonts')
+                          .defaultOrdering([{field: 'label', direction: 'asc'}])
+                      ),
+                    S.listItem()
+                      .title('Specimen palettes')
+                      .schemaType('specimenPalette')
+                      .child(
+                        S.documentTypeList('specimenPalette')
+                          .title('Specimen palettes')
+                          .defaultOrdering([{field: 'label', direction: 'asc'}])
+                      ),
+                  ])
               ),
             S.divider(),
             S.listItem()
@@ -196,6 +243,7 @@ export default defineConfig({
   schema: {
     types: [
       author,
+      axisTagValue,
       birdSighting,
       blockContent,
       caseStudy,
@@ -214,7 +262,12 @@ export default defineConfig({
       resource,
       seo,
       siteSettings,
+      specimenPalette,
+      specimenPaletteRoles,
       toolProjectPage,
+      typeEmotion,
+      variableFontAxis,
+      variableFontFace,
     ],
   },
 })

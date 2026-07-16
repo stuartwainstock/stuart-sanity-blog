@@ -4,6 +4,7 @@ import {redirect} from 'next/navigation'
 import {hasValidAdminSession, isStravaAdminAuthConfigured} from '@/lib/admin/session'
 import {createServerSupabase} from '@/lib/supabase/server'
 import {pageBodyTypography, pageContent, pageShellBg} from '@/lib/pageTypography'
+import {ReviewActions} from './ReviewActions'
 import styles from './page.module.css'
 
 export const metadata: Metadata = {
@@ -22,6 +23,8 @@ type SearchEventRow = {
   matched_via: string | null
   matched_on: string | null
   score: number | null
+  reviewed_at: string | null
+  resolution: 'applied' | 'dismissed' | 'needs_content' | null
 }
 
 const KIND_LABEL: Record<SearchEventRow['kind'], string> = {
@@ -44,8 +47,9 @@ export default async function AdminTypeEmotionsPage() {
     const {data, error} = await supabase
       .from('type_emotion_search_events')
       .select(
-        'id, created_at, query, kind, matched_emotion_id, matched_via, matched_on, score',
+        'id, created_at, query, kind, matched_emotion_id, matched_via, matched_on, score, reviewed_at, resolution',
       )
+      .is('reviewed_at', null)
       .order('created_at', {ascending: false})
       .limit(100)
 
@@ -70,13 +74,12 @@ export default async function AdminTypeEmotionsPage() {
         <p className={styles.kicker}>
           <Link href="/admin/strava">Admin</Link> / Type Emotions
         </p>
-        <h1 className={styles.title}>Type Emotions — search review</h1>
+        <h1 className={styles.title}>Type Emotions — review queue</h1>
         <div className={pageBodyTypography}>
           <p>
             Unmatched, weak, and flagged searches from{' '}
-            <Link href="/type-emotions">/type-emotions</Link>. Use these to grow synonyms,
-            rematch emotions, or attach palettes in{' '}
-            <code>src/lib/typeEmotions/catalog.ts</code>.
+            <Link href="/type-emotions">/type-emotions</Link>. Approve a synonym to patch the
+            Sanity <code>typeEmotion</code> document, or dismiss / flag for content work.
           </p>
           {!isStravaAdminAuthConfigured() ? (
             <p className={styles.warn}>Admin auth env is not fully configured.</p>
@@ -97,7 +100,7 @@ export default async function AdminTypeEmotionsPage() {
             <dd>{counts.feedback}</dd>
           </div>
           <div>
-            <dt>Showing</dt>
+            <dt>Open</dt>
             <dd>{rows.length}</dd>
           </div>
         </dl>
@@ -105,11 +108,18 @@ export default async function AdminTypeEmotionsPage() {
         {loadError ? (
           <p className={styles.warn} role="alert">
             Could not load events: {loadError}
+            {loadError.includes('reviewed_at') ? (
+              <>
+                {' '}
+                Run <code>scripts/supabase-type-emotion-search-events-review.sql</code> in
+                Supabase.
+              </>
+            ) : null}
           </p>
         ) : rows.length === 0 ? (
           <p className={styles.empty}>
-            No events yet. Search something unknown on the lab page, or mark a result as “Not
-            quite right?”.
+            Queue clear. Search something unknown on the lab page, or mark a result as “Not quite
+            right?”.
           </p>
         ) : (
           <div className={styles.tableWrap}>
@@ -120,7 +130,7 @@ export default async function AdminTypeEmotionsPage() {
                   <th scope="col">Kind</th>
                   <th scope="col">Query</th>
                   <th scope="col">Landed on</th>
-                  <th scope="col">Signal</th>
+                  <th scope="col">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -141,10 +151,16 @@ export default async function AdminTypeEmotionsPage() {
                     <td className={styles.mono}>
                       {row.matched_emotion_id ?? '—'}
                       {row.matched_via ? ` · ${row.matched_via}` : ''}
+                      {typeof row.score === 'number'
+                        ? ` · ${Math.round(Number(row.score) * 100)}%`
+                        : ''}
                     </td>
-                    <td className={styles.mono}>
-                      {row.matched_on ? `“${row.matched_on}”` : '—'}
-                      {typeof row.score === 'number' ? ` · ${Math.round(Number(row.score) * 100)}%` : ''}
+                    <td>
+                      <ReviewActions
+                        eventId={row.id}
+                        query={row.query}
+                        matchedEmotionId={row.matched_emotion_id}
+                      />
                     </td>
                   </tr>
                 ))}
@@ -154,9 +170,8 @@ export default async function AdminTypeEmotionsPage() {
         )}
 
         <p className={styles.footnote}>
-          Table: <code>public.type_emotion_search_events</code> · also visible in the Supabase
-          dashboard. Script:{' '}
-          <code>scripts/supabase-type-emotion-search-events.sql</code>
+          Table: <code>public.type_emotion_search_events</code> · Sanity is the durable lexicon ·
+          scripts in <code>scripts/supabase-type-emotion-search-events*.sql</code>
         </p>
       </div>
     </div>

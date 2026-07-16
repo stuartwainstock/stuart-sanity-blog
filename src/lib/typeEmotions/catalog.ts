@@ -1,27 +1,5 @@
-/** Keys must match `SPECIMEN_FONTS` in `src/app/type-emotions/fonts.ts`. */
-export type SpecimenFamilyKey =
-  | 'cormorantGaramond'
-  | 'libreBaskerville'
-  | 'lora'
-  | 'oswald'
-  | 'bebasNeue'
-  | 'anton'
-  | 'fredoka'
-  | 'nunito'
-  | 'comfortaa'
-  | 'playfairDisplay'
-  | 'fraunces'
-  | 'merriweather'
-  | 'ibmPlexSans'
-  | 'inter'
-  | 'spaceGrotesk'
-  | 'specialElite'
-  | 'ebGaramond'
-  | 'archivoBlack'
-  | 'barlowCondensed'
-  | 'syne'
-  | 'jetbrainsMono'
-  | 'greatVibes'
+import type {SpecimenPaletteId} from './palettes'
+import type {AxisCoord, VariableFontKey} from './variableFonts'
 
 export type EmotionId =
   | 'calm'
@@ -35,34 +13,27 @@ export type EmotionId =
   | 'anxious'
   | 'romantic'
 
-export type EmotionAxes = {
-  tracking: string
-  leading: number
-  transform: 'none' | 'uppercase'
-}
-
-export type EmotionFontRef = {
-  familyKey: SpecimenFamilyKey
-  /** Display label (Google Font family name). */
-  label: string
-  weight: number
-}
-
-import type {SpecimenPaletteId} from './palettes'
-
 export type EmotionSurface = 'light' | 'mist' | 'warm' | 'dark' | 'ink'
 
 export type EmotionEntry = {
   id: EmotionId
   label: string
   synonyms: string[]
-  primary: EmotionFontRef
-  alternates: EmotionFontRef[]
-  axes: EmotionAxes
+  /** Primary variable font for this emotion. */
+  fontKey: VariableFontKey
+  /** Featured look at intensity 50. */
+  coordinate: AxisCoord
+  /** Look at intensity 100 (subdued is mirrored toward defaults at 0). */
+  intense: AxisCoord
+  italic?: boolean
+  transform?: 'none' | 'uppercase'
+  /** Switchable alternate variable fonts. */
+  alternateFontKeys: VariableFontKey[]
   /** Fallback chrome when no Coolors palette is set. */
   surface: EmotionSurface
   /** Optional Coolors-backed specimen palette (overrides surface vars). */
   paletteId?: SpecimenPaletteId
+  /** Default editable specimen text. */
   specimenWord: string
   reason: string
 }
@@ -112,16 +83,15 @@ export const EMOTION_CATALOG: EmotionEntry[] = [
       'collected',
       'timeless',
     ],
-    primary: {familyKey: 'cormorantGaramond', label: 'Cormorant Garamond', weight: 400},
-    alternates: [
-      {familyKey: 'libreBaskerville', label: 'Libre Baskerville', weight: 400},
-      {familyKey: 'lora', label: 'Lora', weight: 400},
-    ],
-    axes: {tracking: '0.02em', leading: 1.55, transform: 'none'},
+    fontKey: 'fraunces',
+    coordinate: {wght: 340, opsz: 40, SOFT: 60, WONK: 0},
+    intense: {wght: 520, opsz: 72, SOFT: 85, WONK: 0},
+    transform: 'none',
+    alternateFontKeys: ['bricolage', 'robotoFlex', 'shantell'],
     surface: 'light',
     paletteId: 'neutral-elegance',
     specimenWord: 'Calm',
-    reason: 'Open serifs and soft contrast read quiet without going precious.',
+    reason: 'Soft Fraunces with open optical size reads quiet without going precious.',
   },
   {
     id: 'urgent',
@@ -176,16 +146,15 @@ export const EMOTION_CATALOG: EmotionEntry[] = [
       'hot',
       'volcanic',
     ],
-    primary: {familyKey: 'oswald', label: 'Oswald', weight: 600},
-    alternates: [
-      {familyKey: 'bebasNeue', label: 'Bebas Neue', weight: 400},
-      {familyKey: 'anton', label: 'Anton', weight: 400},
-    ],
-    axes: {tracking: '0.06em', leading: 1.15, transform: 'uppercase'},
+    fontKey: 'bricolage',
+    coordinate: {wght: 700, wdth: 78, opsz: 48},
+    intense: {wght: 800, wdth: 75, opsz: 72},
+    transform: 'uppercase',
+    alternateFontKeys: ['anybody', 'robotoFlex', 'nabla'],
     surface: 'dark',
     paletteId: 'fiery-ocean',
     specimenWord: 'NOW',
-    reason: 'Condensed caps with tight leading push speed and insistence.',
+    reason: 'Condensed Bricolage with heavy weight pushes speed and insistence.',
   },
   {
     id: 'playful',
@@ -221,16 +190,15 @@ export const EMOTION_CATALOG: EmotionEntry[] = [
       'colorful',
       'zesty',
     ],
-    primary: {familyKey: 'fredoka', label: 'Fredoka', weight: 500},
-    alternates: [
-      {familyKey: 'nunito', label: 'Nunito', weight: 700},
-      {familyKey: 'comfortaa', label: 'Comfortaa', weight: 500},
-    ],
-    axes: {tracking: '0.01em', leading: 1.35, transform: 'none'},
+    fontKey: 'recursive',
+    coordinate: {wght: 640, slnt: -6, CASL: 1, CRSV: 1, MONO: 0},
+    intense: {wght: 850, slnt: -12, CASL: 1, CRSV: 1, MONO: 0},
+    transform: 'none',
+    alternateFontKeys: ['shantell', 'anybody', 'nabla'],
     surface: 'mist',
     paletteId: 'candy-pop',
     specimenWord: 'Play',
-    reason: 'Rounded terminals and medium weight feel friendly, not childish.',
+    reason: 'Casual Recursive with cursive lean feels friendly and bouncing.',
   },
   {
     id: 'solemn',
@@ -264,16 +232,15 @@ export const EMOTION_CATALOG: EmotionEntry[] = [
       'twilight',
       'ceremonial drama',
     ],
-    primary: {familyKey: 'playfairDisplay', label: 'Playfair Display', weight: 700},
-    alternates: [
-      {familyKey: 'cormorantGaramond', label: 'Cormorant Garamond', weight: 600},
-      {familyKey: 'ebGaramond', label: 'EB Garamond', weight: 600},
-    ],
-    axes: {tracking: '0.01em', leading: 1.4, transform: 'none'},
+    fontKey: 'fraunces',
+    coordinate: {wght: 700, opsz: 96, SOFT: 20, WONK: 0},
+    intense: {wght: 850, opsz: 144, SOFT: 5, WONK: 0},
+    transform: 'none',
+    alternateFontKeys: ['bricolage', 'robotoFlex', 'workbench'],
     surface: 'mist',
     paletteId: 'magenta-dream',
     specimenWord: 'Solemn',
-    reason: 'High-contrast display serifs carry ceremony and weight.',
+    reason: 'High-contrast Fraunces display optical size carries ceremony and weight.',
   },
   {
     id: 'warm',
@@ -305,16 +272,15 @@ export const EMOTION_CATALOG: EmotionEntry[] = [
       'taupe',
       'soft blush',
     ],
-    primary: {familyKey: 'fraunces', label: 'Fraunces', weight: 600},
-    alternates: [
-      {familyKey: 'merriweather', label: 'Merriweather', weight: 400},
-      {familyKey: 'libreBaskerville', label: 'Libre Baskerville', weight: 400},
-    ],
-    axes: {tracking: '0em', leading: 1.5, transform: 'none'},
+    fontKey: 'fraunces',
+    coordinate: {wght: 560, opsz: 48, SOFT: 80, WONK: 0},
+    intense: {wght: 700, opsz: 72, SOFT: 100, WONK: 1},
+    transform: 'none',
+    alternateFontKeys: ['recursive', 'shantell', 'bricolage'],
     surface: 'warm',
     paletteId: 'neutral-elegance',
     specimenWord: 'Warm',
-    reason: 'Optical warmth in the serifs reads human and inviting.',
+    reason: 'Soft, ink-wet Fraunces reads human and inviting.',
   },
   {
     id: 'clinical',
@@ -352,16 +318,15 @@ export const EMOTION_CATALOG: EmotionEntry[] = [
       'ocean',
       'aquatic',
     ],
-    primary: {familyKey: 'ibmPlexSans', label: 'IBM Plex Sans', weight: 500},
-    alternates: [
-      {familyKey: 'inter', label: 'Inter', weight: 500},
-      {familyKey: 'spaceGrotesk', label: 'Space Grotesk', weight: 500},
-    ],
-    axes: {tracking: '0em', leading: 1.45, transform: 'none'},
+    fontKey: 'robotoFlex',
+    coordinate: {wght: 460, wdth: 100, opsz: 18, GRAD: 0, slnt: 0},
+    intense: {wght: 580, wdth: 95, opsz: 28, GRAD: 40, slnt: 0},
+    transform: 'none',
+    alternateFontKeys: ['bricolage', 'recursive', 'workbench'],
     surface: 'mist',
     paletteId: 'ocean-blue-serenity',
     specimenWord: 'Clear',
-    reason: 'Neutral neo-grotesques prioritize clarity over personality.',
+    reason: 'Neutral Roboto Flex at text optical size prioritizes clarity over personality.',
   },
   {
     id: 'nostalgic',
@@ -394,16 +359,15 @@ export const EMOTION_CATALOG: EmotionEntry[] = [
       'manuscript',
       'soft vintage',
     ],
-    primary: {familyKey: 'specialElite', label: 'Special Elite', weight: 400},
-    alternates: [
-      {familyKey: 'ebGaramond', label: 'EB Garamond', weight: 400},
-      {familyKey: 'libreBaskerville', label: 'Libre Baskerville', weight: 400},
-    ],
-    axes: {tracking: '0.03em', leading: 1.45, transform: 'none'},
+    fontKey: 'recursive',
+    coordinate: {wght: 420, slnt: 0, CASL: 0.35, CRSV: 0, MONO: 0.85},
+    intense: {wght: 550, slnt: -3, CASL: 0.6, CRSV: 0, MONO: 1},
+    transform: 'none',
+    alternateFontKeys: ['workbench', 'fraunces', 'shantell'],
     surface: 'warm',
     paletteId: 'neutral-elegance',
     specimenWord: 'Then',
-    reason: 'Typewriter texture and classical serifs evoke memory.',
+    reason: 'Near-mono Recursive with casual lean evokes typewriter memory.',
   },
   {
     id: 'bold',
@@ -442,16 +406,15 @@ export const EMOTION_CATALOG: EmotionEntry[] = [
       'might',
       'mighty',
     ],
-    primary: {familyKey: 'archivoBlack', label: 'Archivo Black', weight: 400},
-    alternates: [
-      {familyKey: 'barlowCondensed', label: 'Barlow Condensed', weight: 700},
-      {familyKey: 'anton', label: 'Anton', weight: 400},
-    ],
-    axes: {tracking: '0.02em', leading: 1.1, transform: 'uppercase'},
+    fontKey: 'anybody',
+    coordinate: {wght: 800, wdth: 120},
+    intense: {wght: 900, wdth: 145},
+    transform: 'uppercase',
+    alternateFontKeys: ['nabla', 'bricolage', 'robotoFlex'],
     surface: 'ink',
     paletteId: 'fiery-ocean',
     specimenWord: 'BOLD',
-    reason: 'Heavy condensed forms fill the frame and refuse apology.',
+    reason: 'Expanded Anybody fills the frame and refuses apology.',
   },
   {
     id: 'anxious',
@@ -491,16 +454,15 @@ export const EMOTION_CATALOG: EmotionEntry[] = [
       'intrigue',
       'intriguing',
     ],
-    primary: {familyKey: 'syne', label: 'Syne', weight: 700},
-    alternates: [
-      {familyKey: 'jetbrainsMono', label: 'JetBrains Mono', weight: 500},
-      {familyKey: 'spaceGrotesk', label: 'Space Grotesk', weight: 700},
-    ],
-    axes: {tracking: '-0.02em', leading: 1.2, transform: 'none'},
+    fontKey: 'recursive',
+    coordinate: {wght: 720, slnt: -10, CASL: 0.2, CRSV: 0.5, MONO: 0.4},
+    intense: {wght: 900, slnt: -15, CASL: 0.5, CRSV: 1, MONO: 0.7},
+    transform: 'none',
+    alternateFontKeys: ['workbench', 'robotoFlex', 'shantell'],
     surface: 'dark',
     paletteId: 'magenta-dream',
     specimenWord: 'Wait',
-    reason: 'Irregular proportions and mono edges feel slightly off-balance.',
+    reason: 'Slanted Recursive with mixed mono/cursive edges feels slightly off-balance.',
   },
   {
     id: 'romantic',
@@ -536,20 +498,22 @@ export const EMOTION_CATALOG: EmotionEntry[] = [
       'plush',
       'opulent',
     ],
-    primary: {familyKey: 'greatVibes', label: 'Great Vibes', weight: 400},
-    alternates: [
-      {familyKey: 'playfairDisplay', label: 'Playfair Display', weight: 400},
-      {familyKey: 'cormorantGaramond', label: 'Cormorant Garamond', weight: 400},
-    ],
-    axes: {tracking: '0.01em', leading: 1.5, transform: 'none'},
+    fontKey: 'fraunces',
+    coordinate: {wght: 300, opsz: 144, SOFT: 100, WONK: 1},
+    intense: {wght: 450, opsz: 144, SOFT: 100, WONK: 1},
+    italic: true,
+    transform: 'none',
+    alternateFontKeys: ['shantell', 'recursive', 'nabla'],
     surface: 'warm',
     paletteId: 'magenta-dream',
     specimenWord: 'Dear',
-    reason: 'Script flourish plus elegant serifs lean intimate and lyrical.',
+    reason: 'Wonky soft Fraunces italic leans intimate and lyrical.',
   },
 ]
 
 export const DEFAULT_EMOTION_ID: EmotionId = 'calm'
 
-export const SCALE_SAMPLE =
-  'Typography sets the emotional temperature of a page.'
+/** Specimen size slider bounds (rem). */
+export const SPECIMEN_SIZE_DEFAULT = 4.5
+export const SPECIMEN_SIZE_MIN = 1.5
+export const SPECIMEN_SIZE_MAX = 8

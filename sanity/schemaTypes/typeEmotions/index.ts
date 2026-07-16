@@ -1,0 +1,6 @@
+export {axisTagValue} from './axisTagValue'
+export {specimenPalette} from './specimenPalette'
+export {specimenPaletteRoles} from './specimenPaletteRoles'
+export {typeEmotion} from './typeEmotion'
+export {variableFontAxis} from './variableFontAxis'
+export {variableFontFace} from './variableFontFace'

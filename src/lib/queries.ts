@@ -514,6 +514,87 @@ export const TOOL_PROJECT_PAGE_BIRDING_QUERY = groq`
   }
 `
 
+/** Type Emotions — /type-emotions page chrome (document ID fixed in Studio structure). */
+export const TOOL_PROJECT_PAGE_TYPE_EMOTIONS_QUERY = groq`
+  *[_type == "toolProjectPage" && _id == "toolProjectPage-type-emotions"][0]{
+    _id,
+    projectKey,
+    pageTitle,
+    heroIntroduction,
+    seo {
+      metaTitle,
+      metaDescription,
+      openGraphImage {
+        ${creditedImageValueProjection}
+      },
+      keywords,
+      noIndex
+    },
+  }
+`
+
+/** Variable font faces for Type Emotions (axis metadata; loading stays in fonts.ts). */
+export const TYPE_EMOTION_FONT_FACES_QUERY = groq`
+  *[_type == "variableFontFace"] | order(label asc){
+    _id,
+    key,
+    label,
+    cssVar,
+    fallback,
+    category,
+    italicSupport,
+    axes[]{
+      tag,
+      label,
+      min,
+      max,
+      step,
+      "default": default,
+      group
+    }
+  }
+`
+
+/** Coolors specimen palettes for Type Emotions. */
+export const TYPE_EMOTION_PALETTES_QUERY = groq`
+  *[_type == "specimenPalette"] | order(label asc){
+    _id,
+    key,
+    label,
+    sourceUrl,
+    swatches,
+    roles,
+    intensityHigh,
+    intensityMax
+  }
+`
+
+/** Emotion catalog for Type Emotions playground. */
+export const TYPE_EMOTIONS_QUERY = groq`
+  *[_type == "typeEmotion"] | order(label asc){
+    _id,
+    "emotionId": emotionId.current,
+    label,
+    synonyms,
+    "fontKey": fontFace[0]->key,
+    "alternateFontKeys": alternateFontFaces[]->key,
+    coordinate[]{
+      tag,
+      value
+    },
+    intense[]{
+      tag,
+      value
+    },
+    italic,
+    transform,
+    "paletteKey": palette[0]->key,
+    surface,
+    specimenWord,
+    reason
+  }
+`
+
 export const EBIRD_BIRDING_QUERY = groq`
   *[_type == "ebirdBirding" && _id == "ebirdBirding"][0]{
     _id,
