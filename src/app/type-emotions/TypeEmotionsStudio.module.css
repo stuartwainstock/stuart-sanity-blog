@@ -440,11 +440,15 @@
 .glyphDraggable {
   cursor: grab;
   touch-action: none;
-  user-select: none;
 }
 
 .glyphDraggable:active {
   cursor: grabbing;
+}
+
+.glyph[contenteditable='true']:focus-visible {
+  outline: 1px solid var(--specimen-accent);
+  outline-offset: 0.25rem;
 }
 
 .glyphElevated {
@@ -517,5 +521,349 @@
 
   .axisLabel {
     grid-column: 1 / -1;
+  }
+}
+
+/* ——— Settings: viewport popover / bottom sheet (not nested in specimen) ——— */
+
+.specimenShell {
+  position: relative;
+}
+
+.settingsToggle {
+  position: fixed;
+  z-index: 55;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  padding: 0;
+  border: 1px solid var(--color-custom-400);
+  /* Solid neutral — not translucent over specimen palette. */
+  background: var(--color-card-bg);
+  color: var(--color-documented-body);
+  cursor: pointer;
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--color-documented-body) 8%, transparent),
+    0 6px 16px color-mix(in srgb, var(--color-documented-body) 12%, transparent);
+}
+
+.settingsToggleMobile {
+  border-color: var(--color-custom-400);
+}
+
+.settingsToggleGlyph {
+  font-family: var(--font-specimen-fraunces, var(--font-work-sans));
+  font-size: 1.05rem;
+  font-weight: 560;
+  letter-spacing: -0.02em;
+  font-variation-settings: 'wght' 560, 'opsz' 36, 'SOFT' 40, 'WONK' 0;
+  transition: font-variation-settings 220ms ease;
+}
+
+.settingsToggle:hover .settingsToggleGlyph,
+.settingsToggle:focus-visible .settingsToggleGlyph {
+  font-variation-settings: 'wght' 720, 'opsz' 48, 'SOFT' 20, 'WONK' 1;
+}
+
+.settingsToggle:focus-visible {
+  outline: 1px solid var(--color-custom-900);
+  outline-offset: 2px;
+}
+
+.settingsToggleOpen {
+  border-color: var(--color-custom-900);
+}
+
+.settingsTogglePeek {
+  animation: settingsPeek 520ms cubic-bezier(0.34, 1.45, 0.64, 1) 1;
+}
+
+@keyframes settingsPeek {
+  0% {
+    transform: translateX(0);
+  }
+  40% {
+    transform: translateX(-0.45rem);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.settingsToggleMobile.settingsTogglePeek {
+  animation-name: settingsPeekMobile;
+}
+
+@keyframes settingsPeekMobile {
+  0% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-0.45rem);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.settingsBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  border: none;
+  padding: 0;
+  margin: 0;
+  /* Desktop: invisible hit target for click-outside — keeps the card feeling
+     attached to Aa rather than a full-page modal over the live rail. */
+  background: transparent;
+  cursor: default;
+}
+
+@media (max-width: 899px) {
+  .settingsBackdrop {
+    background: color-mix(in srgb, var(--color-documented-body) 22%, transparent);
+    cursor: pointer;
+  }
+}
+
+.settingsCard {
+  /* Portaled to document.body — must own its chrome tokens. Do not rely on
+     .root --chrome-* (undefined here → transparent bg) or specimen palette vars. */
+  --chrome-bg: var(--color-card-bg);
+  --chrome-fg: var(--color-documented-body);
+  --chrome-muted: var(--color-custom-700);
+  --chrome-line: var(--color-custom-300);
+  --chrome-accent: var(--color-custom-900);
+  --chrome-input-bg: var(--color-card-bg);
+
+  position: fixed;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.85rem 0.9rem 1rem;
+  background: var(--color-card-bg);
+  color: var(--color-documented-body);
+  border: 1px solid var(--color-custom-400);
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.92);
+  transition:
+    transform 300ms cubic-bezier(0.34, 1.4, 0.64, 1),
+    opacity 220ms ease;
+}
+
+.settingsCardPopover {
+  overflow: auto;
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--color-documented-body) 6%, transparent),
+    0 12px 28px color-mix(in srgb, var(--color-documented-body) 16%, transparent),
+    0 28px 56px color-mix(in srgb, var(--color-documented-body) 12%, transparent);
+}
+
+.settingsCardSheet {
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  border-top: 1px solid var(--color-custom-400);
+  box-shadow:
+    0 -1px 0 color-mix(in srgb, var(--color-documented-body) 8%, transparent),
+    0 -14px 36px color-mix(in srgb, var(--color-documented-body) 16%, transparent);
+  transform: translateY(110%) scale(0.98);
+  transform-origin: 50% 100%;
+}
+
+.settingsCardOpen {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1) translateY(0);
+}
+
+.settingsDrawerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.settingsDrawerTitle {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--chrome-accent);
+}
+
+.settingsClose {
+  background: transparent;
+  border: 1px solid var(--chrome-line);
+  color: var(--chrome-accent);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.5rem;
+  cursor: pointer;
+}
+
+.settingsClose:hover,
+.settingsClose:focus-visible {
+  border-color: var(--chrome-accent);
+  outline: none;
+}
+
+.settingsSections {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  overflow: auto;
+  min-height: 0;
+}
+
+.settingsTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  border: 1px solid var(--chrome-line);
+  padding: 0.2rem;
+}
+
+.settingsTab {
+  flex: 1 1 0;
+  min-width: 3.5rem;
+  background: transparent;
+  border: none;
+  color: var(--chrome-muted);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  padding: 0.35rem 0.25rem;
+  text-transform: uppercase;
+}
+
+.settingsTab:hover,
+.settingsTab:focus-visible {
+  color: var(--chrome-accent);
+  outline: none;
+}
+
+.settingsTabActive {
+  background: var(--color-custom-100);
+  color: var(--chrome-accent);
+}
+
+.settingsTabPanel {
+  overflow: auto;
+  min-height: 0;
+}
+
+.settingsTabPanel .axisPanel {
+  max-width: none;
+}
+
+.settingsTabPanel .axisRow {
+  grid-template-columns: minmax(4.75rem, 6.75rem) 1fr 2.4rem;
+  gap: 0.5rem;
+}
+
+.settingsTabPanel .axisValue {
+  font-size: 0.6rem;
+}
+
+.settingsSection {
+  border-top: 1px solid var(--chrome-line);
+  padding-top: 0.45rem;
+}
+
+.settingsSection:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.settingsSectionToggle {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  background: transparent;
+  border: none;
+  padding: 0.2rem 0;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--chrome-accent);
+  text-align: left;
+}
+
+.settingsSectionCurrent {
+  color: var(--chrome-muted);
+  font-weight: 400;
+  text-align: right;
+}
+
+.settingsSectionBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.45rem 0 0.2rem;
+}
+
+.palettePickRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.65rem;
+}
+
+.palettePick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.65rem;
+  flex: 1 1 auto;
+  min-width: 0;
+  background: transparent;
+  border: 1px solid var(--chrome-line);
+  padding: 0.45rem 0.5rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.palettePick:focus-visible {
+  outline: 1px solid var(--chrome-accent);
+  outline-offset: 2px;
+}
+
+.palettePickSelected {
+  border-color: var(--chrome-accent);
+}
+
+.palettePickLabel {
+  font-family: var(--font-work-sans);
+  font-size: 0.8rem;
+  color: var(--chrome-fg);
+  flex: 1 1 auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .settingsTogglePeek {
+    animation: none;
+  }
+
+  .settingsToggleGlyph {
+    transition: none;
+  }
+
+  .settingsCard {
+    transition: none;
   }
 }

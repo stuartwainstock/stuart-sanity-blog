@@ -24,7 +24,7 @@ function groupAxes(axes: readonly AxisDef[]) {
   return buckets
 }
 
-type StageSlider = {
+export type StageSlider = {
   id: string
   label: string
   tag: string

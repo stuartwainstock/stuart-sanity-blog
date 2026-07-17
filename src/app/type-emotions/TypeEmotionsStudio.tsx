@@ -1,6 +1,6 @@
 'use client'
 
-import {useId, useState, type CSSProperties, type FormEvent} from 'react'
+import {useId, useRef, useState, type CSSProperties, type FormEvent} from 'react'
 import Button from '@/components/atoms/Button'
 import Chip from '@/components/atoms/Chip'
 import {
@@ -35,14 +35,15 @@ import {
   defaultAxisCoord,
   fontFamilyStack,
   getVariableFont,
+  hydrateVariableFonts,
   LAB_FONT_KEYS,
   type AxisCoord,
+  type VariableFontEntry,
   type VariableFontKey,
 } from '@/lib/typeEmotions/variableFonts'
-import {AxisPanel} from './components/AxisPanel'
+import {AxisPanel, type StageSlider} from './components/AxisPanel'
 import {EmotionChipRow} from './components/EmotionChipRow'
-import {FontSwitcher} from './components/FontSwitcher'
-import {PaletteSwatches} from './components/PaletteSwatches'
+import {SettingsDrawer} from './components/SettingsDrawer'
 import {SpecimenStage} from './components/SpecimenStage'
 import styles from './TypeEmotionsStudio.module.css'
 
@@ -60,19 +61,25 @@ function seedFromEmotion(entry: EmotionEntry, intensity: number) {
 }
 
 export type TypeEmotionsStudioProps = {
-  /** Optional Sanity-sourced catalog; falls back to static EMOTION_CATALOG. */
   catalog?: EmotionEntry[]
   palettes?: Record<string, SpecimenPalette>
+  fonts?: VariableFontEntry[]
 }
 
 export function TypeEmotionsStudio({
   catalog = EMOTION_CATALOG,
   palettes = SPECIMEN_PALETTES as Record<string, SpecimenPalette>,
+  fonts,
 }: TypeEmotionsStudioProps) {
+  // Hydrate registry from Sanity-fetched faces (idempotent). Runs on server + client.
+  if (fonts && fonts.length > 0) {
+    hydrateVariableFonts(fonts)
+  }
+
   const inputId = useId()
   const intensityId = useId()
   const sizeId = useId()
-  const textId = useId()
+  const specimenShellRef = useRef<HTMLDivElement>(null)
 
   const initial = matchEmotion('calm', catalog)
   const seeded = seedFromEmotion(initial.entry, INTENSITY_DEFAULT)
@@ -92,11 +99,18 @@ export function TypeEmotionsStudio({
   const [lastSearchQuery, setLastSearchQuery] = useState('')
   const [feedbackSent, setFeedbackSent] = useState(false)
   const [intensityDrivesAxes, setIntensityDrivesAxes] = useState(true)
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const [paletteOverrideId, setPaletteOverrideId] = useState<string | null>(null)
 
   const entry = match.entry
   const activeFont = getVariableFont(activeFontKey)
-  const palette = entry.paletteId ? palettes[entry.paletteId] : undefined
+  const emotionPalette = entry.paletteId ? palettes[entry.paletteId] : undefined
+  const palette =
+    (paletteOverrideId ? palettes[paletteOverrideId] : undefined) ?? emotionPalette
   const paletteRoles = palette ? resolvePaletteRoles(palette, intensity) : undefined
+  const paletteList = Object.values(palettes)
+  const permanentAxes = activeFont.axes.filter((axis) => axis.tag === 'opsz')
+  const drawerAxes = activeFont.axes.filter((axis) => axis.tag !== 'opsz')
 
   const switcherFonts: VariableFontKey[] = [
     entry.fontKey,
@@ -118,6 +132,32 @@ export function TypeEmotionsStudio({
     textTransform: transform,
   } as const
 
+  const sizeSlider: StageSlider = {
+    id: sizeId,
+    label: 'Size',
+    tag: 'rem',
+    min: SPECIMEN_SIZE_MIN,
+    max: SPECIMEN_SIZE_MAX,
+    step: 0.1,
+    value: specimenSize,
+    displayValue: specimenSize.toFixed(1),
+    valueText: `${specimenSize.toFixed(1)} rem`,
+    onChange: setSpecimenSize,
+  }
+
+  const intensitySlider: StageSlider = {
+    id: intensityId,
+    label: 'Intensity',
+    tag: 'macro',
+    min: INTENSITY_MIN,
+    max: INTENSITY_MAX,
+    step: 1,
+    value: intensity,
+    displayValue: String(intensity),
+    valueText: `${intensity}, ${intensityLabel(intensity)}`,
+    onChange: onIntensityChange,
+  }
+
   function applyEmotion(nextQuery: string, chipId?: EmotionId) {
     const raw = (chipId ?? nextQuery).trim()
     const resolved = matchEmotion(chipId ?? nextQuery, catalog)
@@ -135,6 +175,7 @@ export function TypeEmotionsStudio({
     setSpecimenText(next.specimenText)
     setIntensityDrivesAxes(true)
     setFeedbackSent(false)
+    setPaletteOverrideId(null)
 
     if (chipId) {
       setQuery('')
@@ -246,74 +287,13 @@ export function TypeEmotionsStudio({
             </Button>
           </form>
 
-          <div className={styles.chromeGrid}>
-            <div className={styles.chromeMain}>
-              <AxisPanel
-                fontLabel={activeFont.label}
-                axes={activeFont.axes}
-                axisValues={axisValues}
-                onAxisChange={onAxisChange}
-                stageSliders={[
-                  {
-                    id: sizeId,
-                    label: 'Size',
-                    tag: 'rem',
-                    min: SPECIMEN_SIZE_MIN,
-                    max: SPECIMEN_SIZE_MAX,
-                    step: 0.1,
-                    value: specimenSize,
-                    displayValue: specimenSize.toFixed(1),
-                    valueText: `${specimenSize.toFixed(1)} rem`,
-                    onChange: setSpecimenSize,
-                  },
-                  {
-                    id: intensityId,
-                    label: 'Intensity',
-                    tag: 'macro',
-                    min: INTENSITY_MIN,
-                    max: INTENSITY_MAX,
-                    step: 1,
-                    value: intensity,
-                    displayValue: String(intensity),
-                    valueText: `${intensity}, ${intensityLabel(intensity)}`,
-                    onChange: onIntensityChange,
-                  },
-                ]}
-              />
-
-              <div className={styles.textRow}>
-                <label className={styles.panelLabel} htmlFor={textId}>
-                  Specimen text
-                </label>
-                <input
-                  id={textId}
-                  className={`${styles.input} ${styles.specimenTextInput}`}
-                  type="text"
-                  value={specimenText}
-                  onChange={(event) => setSpecimenText(event.target.value)}
-                  placeholder={entry.specimenWord}
-                  autoComplete="off"
-                  spellCheck={false}
-                />
-              </div>
-            </div>
-
-            <aside className={styles.chromeSide} aria-label="Font and palette">
-              <FontSwitcher
-                fonts={switcherFonts}
-                labFonts={labFonts}
-                activeFontKey={activeFontKey}
-                supportsItalic={Boolean(activeFont.supportsItalic)}
-                italic={italic}
-                onFontSwitch={onFontSwitch}
-                onItalicChange={(next) => {
-                  setIntensityDrivesAxes(false)
-                  setItalic(next)
-                }}
-              />
-              {palette ? <PaletteSwatches palette={palette} /> : null}
-            </aside>
-          </div>
+          <AxisPanel
+            fontLabel={activeFont.label}
+            axes={permanentAxes}
+            axisValues={axisValues}
+            onAxisChange={onAxisChange}
+            stageSliders={[intensitySlider]}
+          />
 
           <div className={styles.feedbackRow}>
             <Button
@@ -344,20 +324,47 @@ export function TypeEmotionsStudio({
         </div>
       </header>
 
-      <SpecimenStage
-        surface={entry.surface}
-        intensity={intensity}
-        hasPalette={Boolean(palette)}
-        specimenStyle={specimenStyle}
-        typeStyle={typeStyle}
-        displayText={displayText}
-        fontLabel={activeFont.label}
-        italic={italic}
+      <div ref={specimenShellRef} className={styles.specimenShell}>
+        <SpecimenStage
+          surface={entry.surface}
+          intensity={intensity}
+          hasPalette={Boolean(palette)}
+          specimenStyle={specimenStyle}
+          typeStyle={typeStyle}
+          displayText={displayText}
+          fontLabel={activeFont.label}
+          italic={italic}
+          axisValues={axisValues}
+          axes={activeFont.axes}
+          emotionKey={entry.id}
+          fontKey={activeFontKey}
+          onAxisChange={onAxisChange}
+          onTextChange={setSpecimenText}
+        />
+      </div>
+
+      <SettingsDrawer
+        anchorRef={specimenShellRef}
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
+        fonts={switcherFonts}
+        labFonts={labFonts}
+        activeFontKey={activeFontKey}
+        axes={drawerAxes}
         axisValues={axisValues}
-        axes={activeFont.axes}
-        emotionKey={entry.id}
-        fontKey={activeFontKey}
         onAxisChange={onAxisChange}
+        sizeSlider={sizeSlider}
+        supportsItalic={Boolean(activeFont.supportsItalic)}
+        italic={italic}
+        onFontSwitch={onFontSwitch}
+        onItalicChange={(next) => {
+          setIntensityDrivesAxes(false)
+          setItalic(next)
+        }}
+        activePalette={emotionPalette}
+        palettes={paletteList}
+        paletteOverrideId={paletteOverrideId}
+        onPaletteOverride={setPaletteOverrideId}
       />
     </div>
   )

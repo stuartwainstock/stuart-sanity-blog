@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function TypeEmotionsPage() {
-  const {catalog, palettes, page} = await fetchTypeEmotionsBundle()
+  const {catalog, palettes, fonts, page} = await fetchTypeEmotionsBundle()
   const title = page?.pageTitle || 'Type Emotions'
 
   return (
@@ -77,7 +77,7 @@ export default async function TypeEmotionsPage() {
         className={`${pageContent} ${specimenFontVariablesClassName}`}
         aria-labelledby="type-emotions-title"
       >
-        <TypeEmotionsStudio catalog={catalog} palettes={palettes} />
+        <TypeEmotionsStudio catalog={catalog} palettes={palettes} fonts={fonts} />
       </div>
     </div>
   )
