@@ -28,6 +28,9 @@ public/maplibre-gl-csp-worker.js
 .DS_Store
 *.pem
 
+# Local planning / agent scratch (not product docs)
+/docs/
+
 # Never commit local git copies or SSH material (accidental workspace clutter)
 .gitdata/
 .ssh/
