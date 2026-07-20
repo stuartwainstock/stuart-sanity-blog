@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getSanityWriteClient } from '@/lib/sanity.server'
+import {NextRequest, NextResponse} from 'next/server'
+import {getSanityWriteClient} from '@/lib/sanity.server'
 import ogs from 'open-graph-scraper'
-import { promises as dns } from 'node:dns'
+import {fetchHtmlFollowingSafeRedirects, isHttpUrl, isSafeExternalUrl} from '@/lib/ssrf'
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET
@@ -16,59 +16,7 @@ const corsHeaders = {
 }
 
 export async function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: corsHeaders })
-}
-
-function isValidUrl(value: string): boolean {
-  try {
-    const url = new URL(value)
-    return url.protocol === 'http:' || url.protocol === 'https:'
-  } catch {
-    return false
-  }
-}
-
-/**
- * SSRF guard — resolves the hostname and rejects any URL that points to
- * loopback, private, link-local, or cloud-metadata IP ranges.
- * Called immediately before open-graph-scraper makes an outbound fetch.
- */
-const PRIVATE_IP_PATTERNS = [
-  /^127\./,                       // loopback IPv4
-  /^10\./,                        // RFC 1918
-  /^172\.(1[6-9]|2\d|3[01])\./,  // RFC 1918
-  /^192\.168\./,                  // RFC 1918
-  /^169\.254\./,                  // link-local + AWS/GCP metadata endpoint
-  /^0\./,                         // "this" network
-  /^::1$/,                        // IPv6 loopback
-  /^fc/i,                         // IPv6 ULA
-  /^fe80/i,                       // IPv6 link-local
-  /^fd/i,                         // IPv6 ULA
-]
-
-async function isSafeExternalUrl(value: string): Promise<boolean> {
-  let hostname: string
-  try {
-    hostname = new URL(value).hostname
-  } catch {
-    return false
-  }
-
-  // Reject raw IP hostnames that match private ranges directly
-  if (PRIVATE_IP_PATTERNS.some((r) => r.test(hostname))) return false
-
-  // Resolve hostname and verify all returned addresses are public
-  try {
-    const v4 = await dns.lookup(hostname, { family: 4 }).catch(() => null)
-    const v6 = await dns.lookup(hostname, { family: 6 }).catch(() => null)
-    for (const addr of [v4?.address, v6?.address].filter(Boolean) as string[]) {
-      if (PRIVATE_IP_PATTERNS.some((r) => r.test(addr))) return false
-    }
-  } catch {
-    return false // Cannot resolve → do not fetch
-  }
-
-  return true
+  return new NextResponse(null, {status: 204, headers: corsHeaders})
 }
 
 function normalizeUrl(value: string): string {
@@ -86,30 +34,23 @@ function getSourceDomain(value: string): string {
   return new URL(value).hostname.replace(/^www\./, '')
 }
 
-/** Human-readable message when ogs returns `error: true` (result.error may not always be a string at runtime). */
-function formatOgsFailure(ogsResponse: unknown): string {
-  if (!ogsResponse || typeof ogsResponse !== 'object') {
-    return 'Open Graph fetch failed'
-  }
-  const top = ogsResponse as Record<string, unknown>
-  const inner = top.result
-  if (inner && typeof inner === 'object') {
-    const r = inner as Record<string, unknown>
-    if (typeof r.error === 'string' && r.error.length > 0) {
-      const code =
-        r.errorDetails && typeof r.errorDetails === 'object'
-          ? (r.errorDetails as { code?: string }).code
-          : undefined
-      return code ? `${r.error} (${code})` : r.error
-    }
-  }
-  if (typeof top.error === 'string' && top.error.length > 0) {
-    return top.error
-  }
-  try {
-    return JSON.stringify(ogsResponse)
-  } catch {
-    return 'Open Graph fetch failed'
+/** Log full detail server-side; never return raw network/status strings to the client. */
+function metadataWarningForReason(
+  reason: 'unsafe_url' | 'redirect_limit' | 'http_error' | 'too_large' | 'network_error' | 'timeout',
+): string {
+  switch (reason) {
+    case 'unsafe_url':
+      return 'URL is not allowed for metadata fetch.'
+    case 'redirect_limit':
+      return 'Too many redirects while fetching metadata.'
+    case 'too_large':
+      return 'Remote page exceeded size limit for metadata fetch.'
+    case 'timeout':
+      return 'Timed out while fetching metadata.'
+    case 'http_error':
+    case 'network_error':
+    default:
+      return 'Could not fetch Open Graph metadata.'
   }
 }
 
@@ -141,10 +82,10 @@ function getErrorDetail(err: unknown): string {
 
 async function createResourceFromUrl(url: string) {
   if (!hasSanityConfig) {
-    return { status: 500, body: { error: 'Server is missing Sanity write configuration.' } }
+    return {status: 500, body: {error: 'Server is missing Sanity write configuration.'}}
   }
-  if (!url || !isValidUrl(url)) {
-    return { status: 400, body: { error: 'Please provide a valid URL.' } }
+  if (!url || !isHttpUrl(url)) {
+    return {status: 400, body: {error: 'Please provide a valid URL.'}}
   }
 
   try {
@@ -165,7 +106,7 @@ async function createResourceFromUrl(url: string) {
         url,
         sourceDomain
       }`,
-      { normalizedUrl }
+      {normalizedUrl},
     )
 
     if (existing) {
@@ -189,51 +130,61 @@ async function createResourceFromUrl(url: string) {
     let image = ''
     let metadataWarning: string | undefined
 
-    // SSRF guard: block requests to private/link-local/metadata IP ranges.
+    // SSRF guard: validate the initial URL, then fetch with manual redirect re-checks.
     const safe = await isSafeExternalUrl(normalizedUrl)
     if (!safe) {
-      return { status: 400, body: { error: 'URL resolves to a disallowed network range.' } }
+      return {status: 400, body: {error: 'URL resolves to a disallowed network range.'}}
     }
 
-    // ogs can throw, or return { error: true, result: { error: "...", ... } } — never block create.
     try {
-      const ogsResponse = await ogs({ url: normalizedUrl, timeout: 10000 })
-      const { result, error } = ogsResponse as {
-        result?: {
-          success?: boolean
-          error?: string
-          ogTitle?: string
-          twitterTitle?: string
-          dcTitle?: string
-          ogDescription?: string
-          twitterDescription?: string
-          dcDescription?: string
-          ogImage?: { url?: string }[]
-          twitterImage?: { url?: string }[]
-        }
-        error?: boolean | string
-      }
+      const fetched = await fetchHtmlFollowingSafeRedirects(normalizedUrl, {
+        timeoutMs: 10_000,
+        maxHops: 5,
+        maxBodyBytes: 1_500_000,
+      })
 
-      if (error) {
-        metadataWarning = formatOgsFailure(ogsResponse)
-      } else if (result) {
-        title =
-          result.ogTitle ||
-          result.twitterTitle ||
-          result.dcTitle ||
-          url
-        summary =
-          result.ogDescription ||
-          result.twitterDescription ||
-          result.dcDescription ||
-          ''
-        image =
-          result.ogImage?.[0]?.url ||
-          result.twitterImage?.[0]?.url ||
-          ''
+      if (!fetched.ok) {
+        metadataWarning = metadataWarningForReason(fetched.reason)
+        console.warn('[add-link] metadata fetch blocked/failed', {
+          reason: fetched.reason,
+          url: normalizedUrl,
+        })
+      } else {
+        // Pass HTML so open-graph-scraper does not perform its own redirect-following fetch.
+        // timeout is in seconds for OGS (not used for network when html is set).
+        const ogsResponse = await ogs({html: fetched.html, timeout: 10})
+        const {result, error} = ogsResponse as {
+          result?: {
+            success?: boolean
+            error?: string
+            ogTitle?: string
+            twitterTitle?: string
+            dcTitle?: string
+            ogDescription?: string
+            twitterDescription?: string
+            dcDescription?: string
+            ogImage?: {url?: string}[]
+            twitterImage?: {url?: string}[]
+          }
+          error?: boolean | string
+        }
+
+        if (error) {
+          metadataWarning = 'Could not parse Open Graph metadata.'
+          console.warn('[add-link] ogs parse failed', {url: normalizedUrl, error})
+        } else if (result) {
+          title = result.ogTitle || result.twitterTitle || result.dcTitle || url
+          summary =
+            result.ogDescription || result.twitterDescription || result.dcDescription || ''
+          image = result.ogImage?.[0]?.url || result.twitterImage?.[0]?.url || ''
+        }
       }
     } catch (ogsErr) {
-      metadataWarning = getErrorDetail(ogsErr)
+      metadataWarning = 'Could not fetch Open Graph metadata.'
+      console.warn('[add-link] metadata exception', {
+        url: normalizedUrl,
+        detail: getErrorDetail(ogsErr),
+      })
     }
 
     // Sanity `url` fields reject empty strings — omit `image` when missing.
@@ -244,7 +195,7 @@ async function createResourceFromUrl(url: string) {
       sourceDomain,
       normalizedUrl,
       summary,
-      ...(image ? { image } : {}),
+      ...(image ? {image} : {}),
       mediaType: 'article',
       status: 'inbox',
       tags: [],
@@ -260,18 +211,15 @@ async function createResourceFromUrl(url: string) {
         title: created.title,
         url: created.url,
         sourceDomain: created.sourceDomain,
-        ...(metadataWarning ? { metadataWarning } : {}),
+        ...(metadataWarning ? {metadataWarning} : {}),
       },
     }
   } catch (err) {
     console.error('Failed to add link:', err)
-    const message = getErrorDetail(err)
     return {
       status: 500,
       body: {
         error: 'Unexpected server error while adding link.',
-        // Helps debug Vercel logs + client without exposing stack in production detail field
-        detail: message,
       },
     }
   }
@@ -280,29 +228,29 @@ async function createResourceFromUrl(url: string) {
 export async function POST(request: NextRequest) {
   const incomingApiKey = request.headers.get('x-api-key')
   if (!addLinkApiKey || incomingApiKey !== addLinkApiKey) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
+    return NextResponse.json({error: 'Unauthorized'}, {status: 401, headers: corsHeaders})
   }
 
-  let body: { url?: string } = {}
+  let body: {url?: string} = {}
   try {
     body = await request.json()
   } catch {
-    return NextResponse.json({ error: 'Invalid JSON body.' }, { status: 400, headers: corsHeaders })
+    return NextResponse.json({error: 'Invalid JSON body.'}, {status: 400, headers: corsHeaders})
   }
 
   const result = await createResourceFromUrl(body.url?.trim() || '')
-  return NextResponse.json(result.body, { status: result.status, headers: corsHeaders })
+  return NextResponse.json(result.body, {status: result.status, headers: corsHeaders})
 }
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url)
+  const {searchParams} = new URL(request.url)
   const incomingApiKey = searchParams.get('key')
   const url = searchParams.get('url')?.trim() || ''
 
   if (!addLinkApiKey || incomingApiKey !== addLinkApiKey) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return NextResponse.json({error: 'Unauthorized'}, {status: 401})
   }
 
   const result = await createResourceFromUrl(url)
-  return NextResponse.json(result.body, { status: result.status })
+  return NextResponse.json(result.body, {status: result.status})
 }

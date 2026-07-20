@@ -1,66 +1,125 @@
 'use client'
 
-import React, {useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import {CheckmarkCircleIcon, LockIcon} from '@sanity/icons'
 import {Badge, Button, Card, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
 import type {ObjectInputProps} from 'sanity'
-import {PatchEvent, set, unset} from 'sanity'
+import {PatchEvent, set, unset, useFormValue} from 'sanity'
 
-/**
- * Custom input for the `caseStudyAccess` object. Editors type a share password once;
- * only a random salt + SHA-256(salt:password) hash is stored. The plaintext is never
- * persisted, so the password stays safe even though the dataset is publicly readable.
- *
- * The hashing formula here MUST match `hashPassword` in src/lib/caseStudy/password.ts.
- */
 type AccessValue = {
   _type?: string
+  configured?: string
+  /** Legacy public fields — cleared on next save. */
   salt?: string
   hash?: string
 }
 
-function toHex(buffer: ArrayBuffer): string {
-  return Array.from(new Uint8Array(buffer))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('')
+function studioApiBase(): string {
+  const fromEnv =
+    (typeof process !== 'undefined' &&
+      process.env?.SANITY_STUDIO_CASE_STUDY_API_BASE?.trim()) ||
+    ''
+  if (fromEnv) return fromEnv.replace(/\/$/, '')
+  if (typeof window !== 'undefined' && window.location.pathname.startsWith('/studio')) {
+    return ''
+  }
+  return ''
 }
 
-function randomSaltHex(bytes = 16): string {
-  const arr = new Uint8Array(bytes)
-  crypto.getRandomValues(arr)
-  return Array.from(arr)
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('')
+function studioSecret(): string {
+  return (
+    (typeof process !== 'undefined' &&
+      process.env?.SANITY_STUDIO_CASE_STUDY_ADMIN_SECRET?.trim()) ||
+    ''
+  )
 }
 
-async function sha256Hex(input: string): Promise<string> {
-  const data = new TextEncoder().encode(input)
-  const digest = await crypto.subtle.digest('SHA-256', data)
-  return toHex(digest)
+function authHeaders(): HeadersInit {
+  const headers: Record<string, string> = {'Content-Type': 'application/json'}
+  const secret = studioSecret()
+  if (secret) headers['x-case-study-admin-secret'] = secret
+  return headers
 }
 
+/**
+ * Sets the share password via the site admin API. Credentials are stored in
+ * private Supabase — this Sanity field only mirrors a non-secret `configured` flag.
+ */
 export function AccessPasswordInput(props: ObjectInputProps) {
   const {value, onChange} = props
   const current = (value ?? {}) as AccessValue
-  const hasPassword = Boolean(current.hash && current.salt)
+  const slugValue = useFormValue(['slug']) as {current?: string} | undefined
+  const slug = slugValue?.current?.trim() || ''
   const toast = useToast()
 
   const [draft, setDraft] = useState('')
   const [busy, setBusy] = useState(false)
+  const [hasPassword, setHasPassword] = useState(current.configured === 'yes')
+
+  const refresh = useCallback(async () => {
+    if (!slug) return
+    try {
+      const res = await fetch(`${studioApiBase()}/api/admin/case-studies/${encodeURIComponent(slug)}/access`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: authHeaders(),
+      })
+      if (!res.ok) return
+      const data = (await res.json()) as {hasPassword?: boolean}
+      setHasPassword(Boolean(data.hasPassword))
+      if (data.hasPassword) {
+        onChange(
+          PatchEvent.from([
+            set('yes', ['configured']),
+            unset(['salt']),
+            unset(['hash']),
+          ]),
+        )
+      }
+    } catch {
+      /* ignore — editor may be offline / not signed in */
+    }
+  }, [slug, onChange])
+
+  useEffect(() => {
+    void refresh()
+  }, [refresh])
 
   async function savePassword() {
     const password = draft.trim()
+    if (!slug) {
+      toast.push({status: 'warning', title: 'Set and save a slug first.'})
+      return
+    }
     if (password.length < 4) {
       toast.push({status: 'warning', title: 'Use at least 4 characters.'})
       return
     }
     setBusy(true)
     try {
-      const salt = randomSaltHex()
-      const hash = await sha256Hex(`${salt}:${password}`)
-      onChange(PatchEvent.from([set(salt, ['salt']), set(hash, ['hash'])]))
+      const res = await fetch(
+        `${studioApiBase()}/api/admin/case-studies/${encodeURIComponent(slug)}/access`,
+        {
+          method: 'POST',
+          credentials: 'include',
+          headers: authHeaders(),
+          body: JSON.stringify({password}),
+        },
+      )
+      const data = (await res.json().catch(() => null)) as {ok?: boolean; message?: string} | null
+      if (!res.ok || !data?.ok) {
+        toast.push({
+          status: 'error',
+          title: data?.message || 'Could not set the password. Sign in at /admin/login or configure the Studio secret.',
+        })
+        return
+      }
+      onChange(
+        PatchEvent.from([set('yes', ['configured']), unset(['salt']), unset(['hash'])]),
+      )
+      setHasPassword(true)
       setDraft('')
-      toast.push({status: 'success', title: 'Password set.'})
+      toast.push({status: 'success', title: 'Password set (stored privately).'})
     } catch {
       toast.push({status: 'error', title: 'Could not set the password.'})
     } finally {
@@ -68,10 +127,35 @@ export function AccessPasswordInput(props: ObjectInputProps) {
     }
   }
 
-  function clearPassword() {
-    onChange(PatchEvent.from([unset(['salt']), unset(['hash'])]))
-    setDraft('')
-    toast.push({status: 'success', title: 'Password cleared.'})
+  async function clearPassword() {
+    if (!slug) return
+    setBusy(true)
+    try {
+      const res = await fetch(
+        `${studioApiBase()}/api/admin/case-studies/${encodeURIComponent(slug)}/access`,
+        {
+          method: 'DELETE',
+          credentials: 'include',
+          headers: authHeaders(),
+        },
+      )
+      const data = (await res.json().catch(() => null)) as {ok?: boolean; message?: string} | null
+      if (!res.ok || !data?.ok) {
+        toast.push({
+          status: 'error',
+          title: data?.message || 'Could not clear the password.',
+        })
+        return
+      }
+      onChange(PatchEvent.from([unset(['configured']), unset(['salt']), unset(['hash'])]))
+      setHasPassword(false)
+      setDraft('')
+      toast.push({status: 'success', title: 'Password cleared.'})
+    } catch {
+      toast.push({status: 'error', title: 'Could not clear the password.'})
+    } finally {
+      setBusy(false)
+    }
   }
 
   return (
@@ -89,9 +173,15 @@ export function AccessPasswordInput(props: ObjectInputProps) {
 
         <Text size={1} muted>
           {hasPassword
-            ? 'Stored as a one-way hash — it cannot be displayed again. Enter a new value below to replace it.'
-            : 'Visitors must enter this password to view the PDF. It is stored as a one-way hash, so keep a copy somewhere safe to share it.'}
+            ? 'Stored privately (not in this public dataset). Enter a new value below to replace it.'
+            : 'Visitors must enter this password to view the PDF. It is hashed and stored in private Supabase — keep a copy somewhere safe to share it.'}
         </Text>
+
+        {!slug ? (
+          <Text size={1} muted>
+            Save a slug on this document before setting a password.
+          </Text>
+        ) : null}
 
         <Stack space={3}>
           <TextInput
@@ -106,7 +196,7 @@ export function AccessPasswordInput(props: ObjectInputProps) {
               text={hasPassword ? 'Replace password' : 'Set password'}
               tone="primary"
               onClick={savePassword}
-              disabled={busy || draft.trim().length === 0}
+              disabled={busy || !slug || draft.trim().length === 0}
               loading={busy}
             />
             {hasPassword ? (
@@ -115,7 +205,7 @@ export function AccessPasswordInput(props: ObjectInputProps) {
                 tone="critical"
                 mode="ghost"
                 onClick={clearPassword}
-                disabled={busy}
+                disabled={busy || !slug}
               />
             ) : null}
           </Flex>

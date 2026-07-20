@@ -1,5 +1,7 @@
 'use server'
 
+import {redirect} from 'next/navigation'
+import {hasValidAdminSession} from '@/lib/admin/session'
 import {resolveEbirdDashboard} from '@/lib/ebird/resolveConfig'
 import {
   fetchAllSpeciesObservations,
@@ -10,6 +12,10 @@ import {sanityClient} from '@/lib/sanity'
 import {getSanityWriteClient} from '@/lib/sanity.server'
 import {EBIRD_DASHBOARD_QUERY} from '@/lib/queries'
 import type {EbirdDashboard} from '@/lib/types'
+
+/** Soft cooldown so a valid admin session cannot hammer eBird / write quotas. */
+const SYNC_COOLDOWN_MS = 60_000
+let lastSuccessfulSyncAt = 0
 
 type UnsplashSuggestion = {
   suggestedCoverProvider: 'unsplash'
@@ -243,6 +249,9 @@ export interface SyncSightingsResult {
  * documents. Designed to be called from a <form action={syncSightingsAction}>
  * on the /birding-dashboard page.
  *
+ * Requires a valid admin session (same gate as Strava sync). Anonymous callers
+ * are redirected to sign-in — do not rely on hiding the UI alone.
+ *
  * Flow:
  *  1. Fetch the `ebirdDashboard` sync-scope singleton from Sanity.
  *  2. Resolve it into a typed config (hotspots / region, days back, max rows).
@@ -253,6 +262,21 @@ export interface SyncSightingsResult {
  *       overwritten on existing docs -- editors enrich those in Sanity Studio.
  */
 export async function syncSightingsAction(): Promise<SyncSightingsResult> {
+  if (!(await hasValidAdminSession())) {
+    redirect('/admin/login?next=/birding-dashboard')
+  }
+
+  const now = Date.now()
+  if (lastSuccessfulSyncAt > 0 && now - lastSuccessfulSyncAt < SYNC_COOLDOWN_MS) {
+    const waitSec = Math.ceil((SYNC_COOLDOWN_MS - (now - lastSuccessfulSyncAt)) / 1000)
+    return {
+      ok: false,
+      created: 0,
+      skipped: 0,
+      message: `Sync is cooling down — try again in ${waitSec}s.`,
+    }
+  }
+
   try {
     // 1. Load dashboard sync scope config from Sanity
     const rawConfig = await sanityClient.fetch<EbirdDashboard | null>(
@@ -424,6 +448,7 @@ export async function syncSightingsAction(): Promise<SyncSightingsResult> {
       }
     }
 
+    lastSuccessfulSyncAt = Date.now()
     return {ok: true, created, skipped}
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error'

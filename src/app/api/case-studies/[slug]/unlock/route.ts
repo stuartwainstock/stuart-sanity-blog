@@ -1,6 +1,5 @@
 import {type NextRequest, NextResponse} from 'next/server'
-import {sanityClient} from '@/lib/sanity'
-import {CASE_STUDY_ACCESS_QUERY} from '@/lib/queries'
+import {getCaseStudyAccess} from '@/lib/caseStudy/privateStore'
 import {verifyPassword} from '@/lib/caseStudy/password'
 import {
   accessCookieName,
@@ -14,8 +13,8 @@ export const dynamic = 'force-dynamic'
 
 /**
  * POST: verify a case study's share password server-side and, on success, set a
- * signed httpOnly cookie scoped to that slug. The plaintext is compared (timing-safe)
- * against the salted hash stored in Sanity; it is never returned to the client.
+ * signed httpOnly cookie scoped to that slug. Salt/hash live in private Supabase
+ * storage — never in the public Sanity dataset.
  */
 export async function POST(request: NextRequest, {params}: {params: Promise<{slug: string}>}) {
   const {slug} = await params
@@ -48,15 +47,8 @@ export async function POST(request: NextRequest, {params}: {params: Promise<{slu
     return NextResponse.json({ok: false, message: 'Enter the password.'}, {status: 400})
   }
 
-  const access = await sanityClient
-    .fetch<{salt?: string; hash?: string} | null>(
-      CASE_STUDY_ACCESS_QUERY,
-      {slug},
-      {useCdn: false},
-    )
-    .catch(() => null)
-
-  if (!access?.salt || !access?.hash) {
+  const access = await getCaseStudyAccess(slug)
+  if (!access?.salt || !access?.hash || !access.pdf_object_key) {
     return NextResponse.json(
       {ok: false, message: 'This case study is not available.'},
       {status: 404},

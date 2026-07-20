@@ -506,17 +506,15 @@ export type Category = {
   color?: 'blue' | 'green' | 'red' | 'yellow' | 'purple' | 'pink' | 'gray'
 }
 
-export type CaseStudyAccess = {
-  _type: 'caseStudyAccess'
-  salt?: string
-  hash?: string
+export type CaseStudyPdfProtection = {
+  _type: 'caseStudyPdfProtection'
+  configured?: 'yes' | 'no'
+  originalFilename?: string
 }
 
-export type SanityFileAssetReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'sanity.fileAsset'
+export type CaseStudyAccess = {
+  _type: 'caseStudyAccess'
+  configured?: 'yes' | 'no'
 }
 
 export type CaseStudy = {
@@ -541,12 +539,8 @@ export type CaseStudy = {
     alt?: string
     _type: 'image'
   }
-  pdfFile?: {
-    asset?: SanityFileAssetReference
-    media?: unknown
-    _type: 'file'
-  }
   access?: CaseStudyAccess
+  pdfProtection?: CaseStudyPdfProtection
   seo?: Seo
 }
 
@@ -763,8 +757,8 @@ export type AllSanitySchemaTypes =
   | Homepage
   | HubLink
   | Category
+  | CaseStudyPdfProtection
   | CaseStudyAccess
-  | SanityFileAssetReference
   | CaseStudy
   | BirdSighting
   | AxisTagValue

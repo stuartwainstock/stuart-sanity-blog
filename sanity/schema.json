@@ -3135,6 +3135,46 @@
     }
   },
   {
+    "name": "caseStudyPdfProtection",
+    "type": "type",
+    "value": {
+      "type": "object",
+      "attributes": {
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "caseStudyPdfProtection"
+          }
+        },
+        "configured": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "union",
+            "of": [
+              {
+                "type": "string",
+                "value": "yes"
+              },
+              {
+                "type": "string",
+                "value": "no"
+              }
+            ]
+          },
+          "optional": true
+        },
+        "originalFilename": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string"
+          },
+          "optional": true
+        }
+      }
+    }
+  },
+  {
     "name": "caseStudyAccess",
     "type": "type",
     "value": {
@@ -3147,51 +3187,24 @@
             "value": "caseStudyAccess"
           }
         },
-        "salt": {
+        "configured": {
           "type": "objectAttribute",
           "value": {
-            "type": "string"
-          },
-          "optional": true
-        },
-        "hash": {
-          "type": "objectAttribute",
-          "value": {
-            "type": "string"
+            "type": "union",
+            "of": [
+              {
+                "type": "string",
+                "value": "yes"
+              },
+              {
+                "type": "string",
+                "value": "no"
+              }
+            ]
           },
           "optional": true
         }
       }
-    }
-  },
-  {
-    "type": "type",
-    "name": "sanity.fileAsset.reference",
-    "value": {
-      "type": "object",
-      "attributes": {
-        "_ref": {
-          "type": "objectAttribute",
-          "value": {
-            "type": "string"
-          }
-        },
-        "_type": {
-          "type": "objectAttribute",
-          "value": {
-            "type": "string",
-            "value": "reference"
-          }
-        },
-        "_weak": {
-          "type": "objectAttribute",
-          "value": {
-            "type": "boolean"
-          },
-          "optional": true
-        }
-      },
-      "dereferencesTo": "sanity.fileAsset"
     }
   },
   {
@@ -3341,42 +3354,19 @@
         },
         "optional": true
       },
-      "pdfFile": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "object",
-          "attributes": {
-            "asset": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "inline",
-                "name": "sanity.fileAsset.reference"
-              },
-              "optional": true
-            },
-            "media": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "unknown"
-              },
-              "optional": true
-            },
-            "_type": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "string",
-                "value": "file"
-              }
-            }
-          }
-        },
-        "optional": true
-      },
       "access": {
         "type": "objectAttribute",
         "value": {
           "type": "inline",
           "name": "caseStudyAccess"
+        },
+        "optional": true
+      },
+      "pdfProtection": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "inline",
+          "name": "caseStudyPdfProtection"
         },
         "optional": true
       },

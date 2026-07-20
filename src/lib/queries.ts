@@ -736,8 +736,9 @@ export const PUBLISHED_RESOURCES_QUERY = groq`
 `
 
 // ── Case studies (password-protected PDFs) ─────────────────────────────────────
-// Secrets (access.salt/hash) and the PDF URL are fetched only in server route
-// handlers — never in queries used by client-facing renders.
+// Public listing/meta queries must never project PDF bytes or password material.
+// Credentials + PDF objects live in private Supabase; the Next unlock/file routes
+// read them server-side after the unlock cookie is verified.
 
 /** Listing cards → /case-studies. No secrets, no PDF. */
 export const CASE_STUDIES_QUERY = groq`
@@ -800,18 +801,17 @@ export const CASE_STUDY_META_QUERY = groq`
   }
 `
 
-/** Unlock route ONLY — salted hash for server-side password verification. */
+/** @deprecated Password material moved to private Supabase — do not use. */
 export const CASE_STUDY_ACCESS_QUERY = groq`
   *[
     _type == "caseStudy"
     && slug.current == $slug
   ][0]{
-    "salt": access.salt,
-    "hash": access.hash
+    "configured": access.configured
   }
 `
 
-/** File proxy route ONLY — resolves the PDF asset for server-side streaming. */
+/** @deprecated PDF bytes moved to private Supabase — do not use CDN URLs. */
 export const CASE_STUDY_FILE_QUERY = groq`
   *[
     _type == "caseStudy"
@@ -819,13 +819,8 @@ export const CASE_STUDY_FILE_QUERY = groq`
   ][0]{
     title,
     "slug": slug.current,
-    pdfFile {
-      asset->{
-        url,
-        mimeType,
-        originalFilename
-      }
-    }
+    "pdfConfigured": pdfProtection.configured,
+    "originalFilename": pdfProtection.originalFilename
   }
 `
 

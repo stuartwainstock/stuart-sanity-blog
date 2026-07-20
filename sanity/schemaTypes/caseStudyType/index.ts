@@ -1,11 +1,11 @@
 import {defineField, defineType} from 'sanity'
 import {LockIcon} from '@sanity/icons'
 import {AccessPasswordInput} from './accessPasswordInput'
+import {PdfProtectionInput} from './pdfProtectionInput'
 
 /**
- * Stores the share-password protection for a case study as a random salt and a
- * one-way SHA-256(salt:password) hash. Edited through {@link AccessPasswordInput};
- * verified server-side in src/lib/caseStudy/password.ts (formula must match).
+ * Non-secret Studio flag only. Salt/hash live in private Supabase
+ * (`case_study_access`), set via /api/admin/case-studies/[slug]/access.
  */
 export const caseStudyAccess = defineType({
   name: 'caseStudyAccess',
@@ -13,8 +13,50 @@ export const caseStudyAccess = defineType({
   type: 'object',
   components: {input: AccessPasswordInput},
   fields: [
-    defineField({name: 'salt', title: 'Salt', type: 'string', readOnly: true}),
-    defineField({name: 'hash', title: 'Hash', type: 'string', readOnly: true}),
+    defineField({
+      name: 'configured',
+      type: 'string',
+      readOnly: true,
+      options: {
+        list: [
+          {title: 'Yes', value: 'yes'},
+          {title: 'No', value: 'no'},
+        ],
+        layout: 'radio',
+      },
+      description: 'Set by the password control — credentials are stored privately, not in this dataset.',
+    }),
+  ],
+})
+
+/**
+ * Non-secret Studio flag for a PDF stored in private Supabase Storage.
+ * Bytes are never uploaded to Sanity CDN.
+ */
+export const caseStudyPdfProtection = defineType({
+  name: 'caseStudyPdfProtection',
+  title: 'Protected PDF',
+  type: 'object',
+  components: {input: PdfProtectionInput},
+  fields: [
+    defineField({
+      name: 'configured',
+      type: 'string',
+      readOnly: true,
+      options: {
+        list: [
+          {title: 'Yes', value: 'yes'},
+          {title: 'No', value: 'no'},
+        ],
+        layout: 'radio',
+      },
+    }),
+    defineField({
+      name: 'originalFilename',
+      type: 'string',
+      readOnly: true,
+      description: 'Filename recorded when the PDF was uploaded to private storage.',
+    }),
   ],
 })
 
@@ -106,26 +148,30 @@ export const caseStudy = defineType({
       description: 'Shown on the listing card and the gate page hero.',
     }),
     defineField({
-      name: 'pdfFile',
-      title: 'PDF',
-      type: 'file',
-      group: 'content',
-      options: {accept: 'application/pdf'},
-      validation: (Rule) => Rule.required().error('Upload the case study PDF.'),
-      description:
-        'The protected PDF. Served only through an authenticated viewer after the password is entered.',
-    }),
-    defineField({
       name: 'access',
       title: 'Access password',
       type: 'caseStudyAccess',
       group: 'access',
       validation: (Rule) =>
         Rule.required().custom((value) => {
-          const access = value as {salt?: string; hash?: string} | undefined
-          if (access?.salt && access?.hash) return true
-          return 'Set a password so the case study is protected.'
+          const access = value as {configured?: string} | undefined
+          if (access?.configured === 'yes') return true
+          return 'Set a password (stored privately) so the case study is protected.'
         }),
+    }),
+    defineField({
+      name: 'pdfProtection',
+      title: 'Protected PDF',
+      type: 'caseStudyPdfProtection',
+      group: 'access',
+      validation: (Rule) =>
+        Rule.required().custom((value) => {
+          const pdf = value as {configured?: string} | undefined
+          if (pdf?.configured === 'yes') return true
+          return 'Upload the case study PDF to private storage.'
+        }),
+      description:
+        'PDF bytes are stored in private Supabase Storage and served only after unlock — not on Sanity CDN.',
     }),
     defineField({
       name: 'seo',
@@ -140,10 +186,12 @@ export const caseStudy = defineType({
       title: 'title',
       client: 'client',
       media: 'coverImage',
-      hash: 'access.hash',
+      accessConfigured: 'access.configured',
+      pdfConfigured: 'pdfProtection.configured',
     },
-    prepare({title, client, media, hash}) {
-      const protectedPart = hash ? 'Protected' : 'No password'
+    prepare({title, client, media, accessConfigured, pdfConfigured}) {
+      const protectedPart =
+        accessConfigured === 'yes' && pdfConfigured === 'yes' ? 'Protected' : 'Incomplete protection'
       const clientPart = client ? `${client} • ` : ''
       return {
         title: title || 'Untitled case study',

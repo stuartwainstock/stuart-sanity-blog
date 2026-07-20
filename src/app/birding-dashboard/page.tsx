@@ -1,6 +1,7 @@
 import type {Metadata} from 'next'
 import {redirect} from 'next/navigation'
 import Link from 'next/link'
+import {hasValidAdminSession} from '@/lib/admin/session'
 import {sanityClient, fetchToolProjectPageBirding, getImageUrl} from '@/lib/sanity'
 import {BIRD_SIGHTINGS_COUNT_QUERY, BIRD_SIGHTINGS_PAGE_QUERY} from '@/lib/queries'
 import {syncSightingsAction} from '@/lib/ebird/syncSightings'
@@ -92,6 +93,7 @@ type BirdSightingSanityRow = BirdSighting & {
 export default async function BirdingDashboardPage({searchParams}: BirdingDashboardPageProps) {
   const params = await searchParams
   const pageCopy = await fetchToolProjectPageBirding()
+  const isAdmin = await hasValidAdminSession()
 
   const requestedPage = Math.max(1, Number(params.page ?? 1) || 1)
 
@@ -224,38 +226,47 @@ export default async function BirdingDashboardPage({searchParams}: BirdingDashbo
       {/* ── Main content ── */}
       <main id="birding-dashboard-main" className={pageContent} aria-labelledby="birding-dashboard-title">
 
-        {/* ── Sync toolbar ── */}
+        {/* ── Sync toolbar (admin-only control; action also enforces session) ── */}
         <div className={styles.syncBar} role="region" aria-label="eBird sync controls">
-          <form action={syncAndRedirect}>
-            <button type="submit" className={styles.syncButton}>
-              <svg
-                aria-hidden="true"
-                focusable="false"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-              </svg>
-              Sync from eBird
-            </button>
-          </form>
+          {isAdmin ? (
+            <form action={syncAndRedirect}>
+              <button type="submit" className={styles.syncButton}>
+                <svg
+                  aria-hidden="true"
+                  focusable="false"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                Sync from eBird
+              </button>
+            </form>
+          ) : (
+            <p className={styles.syncMeta}>
+              <Link href="/admin/login?next=/birding-dashboard" className={pageDataSourceLink}>
+                Sign in
+              </Link>{' '}
+              to sync from eBird.
+            </p>
+          )}
 
           <p className={styles.syncMeta}>
             {totalSightings} sighting{totalSightings !== 1 ? 's' : ''} in Sanity
           </p>
 
-          {synced && (
+          {isAdmin && synced && (
             <p className={styles.syncSuccess} role="status" aria-live="polite">
               ✓ Sync complete — {created} new, {skipped} already existed.
             </p>
           )}
-          {syncError && (
+          {isAdmin && syncError && (
             <p className={styles.syncError} role="alert">
               ✗ {syncError}
             </p>

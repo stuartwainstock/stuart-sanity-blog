@@ -4,10 +4,9 @@ import {createHash, timingSafeEqual} from 'crypto'
 /**
  * Server-side password hashing for case studies.
  *
- * The formula MUST match the Studio input
- * (sanity/schemaTypes/caseStudyType/accessPasswordInput.tsx): the stored value is
- * SHA-256(`${salt}:${password}`) as lowercase hex, with a random per-document salt.
- * Only the salt + hash are persisted, so the public dataset never exposes the plaintext.
+ * Formula: SHA-256(`${salt}:${password}`) as lowercase hex, with a random
+ * per-document salt. Plaintext is hashed in admin APIs / Studio-adjacent
+ * server routes and stored only in private Supabase (`case_study_access`).
  */
 export function hashPassword(salt: string, plaintext: string): string {
   return createHash('sha256').update(`${salt}:${plaintext}`).digest('hex')
