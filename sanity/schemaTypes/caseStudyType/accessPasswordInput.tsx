@@ -14,12 +14,20 @@ type AccessValue = {
   hash?: string
 }
 
+type ViteImportMeta = ImportMeta & {env?: Record<string, string | undefined>}
+
 function studioApiBase(): string {
-  const fromEnv =
+  const fromProcess =
     (typeof process !== 'undefined' &&
-      process.env?.SANITY_STUDIO_CASE_STUDY_API_BASE?.trim()) ||
+      process.env.SANITY_STUDIO_CASE_STUDY_API_BASE?.trim()) ||
     ''
-  if (fromEnv) return fromEnv.replace(/\/$/, '')
+  const fromMeta = ((import.meta as ViteImportMeta).env?.SANITY_STUDIO_CASE_STUDY_API_BASE || '').trim()
+  const fromEnv = (fromProcess || fromMeta).replace(/\/$/, '')
+  if (fromEnv) return fromEnv
+  // Hosted Studio has no same-origin /api — fall back to the production site.
+  if (typeof window !== 'undefined' && window.location?.hostname?.endsWith('.sanity.studio')) {
+    return 'https://www.stuartwainstock.com'
+  }
   if (typeof window !== 'undefined' && window.location.pathname.startsWith('/studio')) {
     return ''
   }
@@ -27,11 +35,13 @@ function studioApiBase(): string {
 }
 
 function studioSecret(): string {
-  return (
+  const fromProcess =
     (typeof process !== 'undefined' &&
-      process.env?.SANITY_STUDIO_CASE_STUDY_ADMIN_SECRET?.trim()) ||
+      process.env.SANITY_STUDIO_CASE_STUDY_ADMIN_SECRET?.trim()) ||
     ''
-  )
+  if (fromProcess) return fromProcess
+  const meta = (import.meta as ViteImportMeta).env
+  return meta?.SANITY_STUDIO_CASE_STUDY_ADMIN_SECRET?.trim() ?? ''
 }
 
 function authHeaders(): HeadersInit {
@@ -108,9 +118,10 @@ export function AccessPasswordInput(props: ObjectInputProps) {
       )
       const data = (await res.json().catch(() => null)) as {ok?: boolean; message?: string} | null
       if (!res.ok || !data?.ok) {
+        const detail = data?.message || `HTTP ${res.status}`
         toast.push({
           status: 'error',
-          title: data?.message || 'Could not set the password. Sign in at /admin/login or configure the Studio secret.',
+          title: `${detail}. For hosted Studio, set SANITY_STUDIO_CASE_STUDY_* in sanity/.env.production and redeploy; on Vercel set CASE_STUDY_ADMIN_SECRET to the same value.`,
         })
         return
       }

@@ -12,21 +12,30 @@ type PdfValue = {
   originalFilename?: string
 }
 
+type ViteImportMeta = ImportMeta & {env?: Record<string, string | undefined>}
+
 function studioApiBase(): string {
-  const fromEnv =
+  const fromProcess =
     (typeof process !== 'undefined' &&
-      process.env?.SANITY_STUDIO_CASE_STUDY_API_BASE?.trim()) ||
+      process.env.SANITY_STUDIO_CASE_STUDY_API_BASE?.trim()) ||
     ''
-  if (fromEnv) return fromEnv.replace(/\/$/, '')
+  const fromMeta = ((import.meta as ViteImportMeta).env?.SANITY_STUDIO_CASE_STUDY_API_BASE || '').trim()
+  const fromEnv = (fromProcess || fromMeta).replace(/\/$/, '')
+  if (fromEnv) return fromEnv
+  if (typeof window !== 'undefined' && window.location?.hostname?.endsWith('.sanity.studio')) {
+    return 'https://www.stuartwainstock.com'
+  }
   return ''
 }
 
 function studioSecret(): string {
-  return (
+  const fromProcess =
     (typeof process !== 'undefined' &&
-      process.env?.SANITY_STUDIO_CASE_STUDY_ADMIN_SECRET?.trim()) ||
+      process.env.SANITY_STUDIO_CASE_STUDY_ADMIN_SECRET?.trim()) ||
     ''
-  )
+  if (fromProcess) return fromProcess
+  const meta = (import.meta as ViteImportMeta).env
+  return meta?.SANITY_STUDIO_CASE_STUDY_ADMIN_SECRET?.trim() ?? ''
 }
 
 /**
@@ -99,11 +108,10 @@ export function PdfProtectionInput(props: ObjectInputProps) {
         originalFilename?: string
       } | null
       if (!res.ok || !data?.ok) {
+        const detail = data?.message || `HTTP ${res.status}`
         toast.push({
           status: 'error',
-          title:
-            data?.message ||
-            'Upload failed. Set the access password first, and sign in at /admin/login (or configure the Studio secret).',
+          title: `${detail}. Set the access password first; for hosted Studio ensure SANITY_STUDIO_CASE_STUDY_* + Vercel CASE_STUDY_ADMIN_SECRET match, then redeploy Studio.`,
         })
         return
       }
