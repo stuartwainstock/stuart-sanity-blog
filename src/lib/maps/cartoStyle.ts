@@ -3,6 +3,8 @@
  *
  * Uses OpenFreeMap (no API key). CARTO’s anonymous raster tiles now return an
  * “API KEY REQUIRED” watermark — see https://carto.com/basemaps/apikey/
+ *
+ * maplibre-gl stays on 5.x until react-map-gl supports v6 (camera/transform API).
  */
 export const SITE_MAP_STYLE = 'https://tiles.openfreemap.org/styles/liberty'
 

@@ -12,9 +12,9 @@ const eslintConfig = [...coreWebVitals, ...typescript, {
     'build/**',
     'storybook-static/**',
     'next-env.d.ts',
-    // Copied MapLibre worker + shared sibling (postinstall)
-    'public/maplibre/**',
+    // Copied MapLibre CSP worker (postinstall)
     'public/maplibre-gl-csp-worker.js',
+    'public/maplibre/**',
     // Sanity Studio build artifacts / generated files
     'sanity/dist/**',
     'sanity/schema.json',
