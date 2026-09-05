@@ -20,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const title = seo?.metaTitle || pageCopy?.pageTitle?.trim() || 'Flights'
   const description =
     seo?.metaDescription ||
-    'Personal flight history from TripIt rendered as great-circle paths. Basemap © CARTO / OpenStreetMap.'
+    'Personal flight history from TripIt rendered as great-circle paths. Basemap © OpenFreeMap / OpenStreetMap.'
 
   return {
     title,
@@ -74,12 +74,12 @@ export default async function FlightsPage() {
               </a>
               . Basemap ©{' '}
               <a
-                href="https://carto.com/"
+                href="https://openfreemap.org/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className={pageDataSourceLink}
               >
-                CARTO
+                OpenFreeMap
               </a>
               , ©{' '}
               <a

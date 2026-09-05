@@ -28,7 +28,7 @@ My personal site — built with Next.js 16 (App Router) and Sanity v6. It's a bl
 
 **Supabase** — Postgres for Strava activity storage and lab telemetry (Type Emotions miss/feedback events). The render path for `/runs` only reads Supabase; no live Strava or Nominatim calls happen on page load.
 
-**MapLibre GL** — Carto Positron basemap, no Mapbox token required.
+**MapLibre GL** — OpenFreeMap liberty basemap, no Mapbox/CARTO token required.
 
 ---
 
