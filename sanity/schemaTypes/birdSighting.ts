@@ -1,5 +1,5 @@
 import {defineField, defineType} from 'sanity'
-import {EyeOpenIcon} from '@sanity/icons'
+import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {BirdSightingUnsplashSuggestionPanel} from '../components/BirdSightingUnsplashSuggestionPanel'
 import {BirdSightingAudioSuggestionPanel} from '../components/BirdSightingAudioSuggestionPanel'
 

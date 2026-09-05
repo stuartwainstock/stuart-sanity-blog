@@ -1,4 +1,7 @@
-import {ColorWheelIcon, ComposeIcon, DocumentTextIcon, EarthGlobeIcon} from '@sanity/icons'
+import {ColorWheelIcon} from '@sanity/icons/ColorWheel'
+import {ComposeIcon} from '@sanity/icons/Compose'
+import {DocumentTextIcon} from '@sanity/icons/DocumentText'
+import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import {AxisCoordinateInput} from './axisCoordinateInput'
 

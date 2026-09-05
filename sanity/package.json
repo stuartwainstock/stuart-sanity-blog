@@ -20,12 +20,12 @@
     "sanity"
   ],
   "dependencies": {
-    "@sanity/vision": "^6.5.0",
-    "react": "19.2.7",
-    "react-dom": "19.2.7",
-    "sanity": "^6.5.0",
-    "sanity-plugin-asset-source-unsplash": "^7.0.10",
-    "styled-components": "6.4.3"
+    "@sanity/vision": "^6.12.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "sanity": "^6.12.0",
+    "sanity-plugin-asset-source-unsplash": "^7.0.25",
+    "styled-components": "6.5.3"
   },
   "devDependencies": {
     "@sanity/eslint-config-studio": "^5.0.2",

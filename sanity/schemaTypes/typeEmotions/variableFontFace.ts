@@ -1,4 +1,6 @@
-import {BlockElementIcon, ControlsIcon, DocumentTextIcon} from '@sanity/icons'
+import {BlockElementIcon} from '@sanity/icons/BlockElement'
+import {ControlsIcon} from '@sanity/icons/Controls'
+import {DocumentTextIcon} from '@sanity/icons/DocumentText'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export const variableFontFace = defineType({

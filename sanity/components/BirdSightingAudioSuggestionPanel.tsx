@@ -1,8 +1,9 @@
 'use client'
 
 import React, {useMemo, useState} from 'react'
-import {LaunchIcon} from '@sanity/icons'
-import {Button, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
+import {LaunchIcon} from '@sanity/icons/Launch'
+import {Button, Card, Flex, Stack, Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import type {StringInputProps} from 'sanity'
 import {PatchEvent, set, useFormValue} from 'sanity'
 
@@ -99,7 +100,7 @@ function AudioAttribution({
     .join(' · ')
 
   return (
-    <Stack space={2}>
+    <Stack gap={2}>
       {(recordist || sourceUrl) && (
         <Text size={1} muted>
           {'Recording'}
@@ -227,7 +228,7 @@ export function BirdSightingAudioSuggestionPanel(props: StringInputProps) {
   if (hasCallAudio) {
     return (
       <Card padding={4} radius={2} shadow={1} tone="positive">
-        <Stack space={3}>
+        <Stack gap={3}>
           <Text size={1} weight="semibold">
             ✓ Recording added to call audio
           </Text>
@@ -254,7 +255,7 @@ export function BirdSightingAudioSuggestionPanel(props: StringInputProps) {
   if (isPending) {
     return (
       <Card padding={4} radius={2} shadow={1} tone="default">
-        <Stack space={4}>
+        <Stack gap={4}>
           {/* Native audio player — small footprint, no external deps */}
           <audio
             controls
@@ -314,7 +315,7 @@ export function BirdSightingAudioSuggestionPanel(props: StringInputProps) {
   if (isDismissed) {
     return (
       <Card padding={4} radius={2} shadow={1} tone="caution">
-        <Stack space={3}>
+        <Stack gap={3}>
           <Text size={1} weight="semibold">Skipped</Text>
           <Text size={1} muted>
             Xeno-canto suggestions are turned off for this sighting. Click below to try again.
@@ -337,8 +338,8 @@ export function BirdSightingAudioSuggestionPanel(props: StringInputProps) {
   // ── State: empty / initial ─────────────────────────────────────────────────
   return (
     <Card padding={4} radius={2} shadow={1} tone="default">
-      <Stack space={4}>
-        <Stack space={2}>
+      <Stack gap={4}>
+        <Stack gap={2}>
           <Text size={1} weight="semibold">No audio yet</Text>
           <Text size={1} muted>
             Find a Xeno-canto recording matched to{' '}

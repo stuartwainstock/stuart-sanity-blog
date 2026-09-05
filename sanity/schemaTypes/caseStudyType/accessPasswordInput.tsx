@@ -1,8 +1,10 @@
 'use client'
 
 import React, {useCallback, useEffect, useState} from 'react'
-import {CheckmarkCircleIcon, LockIcon} from '@sanity/icons'
-import {Badge, Button, Card, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
+import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
+import {LockIcon} from '@sanity/icons/Lock'
+import {Badge, Button, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import type {ObjectInputProps} from 'sanity'
 import {PatchEvent, set, unset, useFormValue} from 'sanity'
 
@@ -171,7 +173,7 @@ export function AccessPasswordInput(props: ObjectInputProps) {
 
   return (
     <Card padding={4} radius={2} shadow={1} tone={hasPassword ? 'positive' : 'caution'}>
-      <Stack space={4}>
+      <Stack gap={4}>
         <Flex align="center" gap={2}>
           <Text size={2}>{hasPassword ? <CheckmarkCircleIcon /> : <LockIcon />}</Text>
           <Text size={1} weight="semibold">
@@ -194,7 +196,7 @@ export function AccessPasswordInput(props: ObjectInputProps) {
           </Text>
         ) : null}
 
-        <Stack space={3}>
+        <Stack gap={3}>
           <TextInput
             type="password"
             placeholder={hasPassword ? 'Enter a new password to replace' : 'Set a password'}

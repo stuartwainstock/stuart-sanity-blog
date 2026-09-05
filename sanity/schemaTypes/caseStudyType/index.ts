@@ -1,5 +1,5 @@
 import {defineField, defineType} from 'sanity'
-import {LockIcon} from '@sanity/icons'
+import {LockIcon} from '@sanity/icons/Lock'
 import {AccessPasswordInput} from './accessPasswordInput'
 import {PdfProtectionInput} from './pdfProtectionInput'
 

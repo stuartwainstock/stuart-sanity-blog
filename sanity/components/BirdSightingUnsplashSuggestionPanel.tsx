@@ -1,8 +1,9 @@
 'use client'
 
 import React, {useMemo, useState} from 'react'
-import {LaunchIcon} from '@sanity/icons'
-import {Button, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
+import {LaunchIcon} from '@sanity/icons/Launch'
+import {Button, Card, Flex, Stack, Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import type {StringInputProps} from 'sanity'
 import {PatchEvent, set, useFormValue} from 'sanity'
 
@@ -202,7 +203,7 @@ export function BirdSightingUnsplashSuggestionPanel(props: StringInputProps) {
   if (hasCardImage) {
     return (
       <Card padding={4} radius={2} shadow={1} tone="positive">
-        <Stack space={3}>
+        <Stack gap={3}>
           <Text size={1} weight="semibold">
             ✓ Photo added to card image
           </Text>
@@ -227,7 +228,7 @@ export function BirdSightingUnsplashSuggestionPanel(props: StringInputProps) {
           style={{display: 'block', width: '100%', maxHeight: 300, objectFit: 'cover'}}
         />
 
-        <Stack space={4} padding={4}>
+        <Stack gap={4} padding={4}>
           <Attribution
             photographerName={eff.photographerName}
             photographerPage={eff.photographerPage}
@@ -276,7 +277,7 @@ export function BirdSightingUnsplashSuggestionPanel(props: StringInputProps) {
   if (isDismissed) {
     return (
       <Card padding={4} radius={2} shadow={1} tone="caution">
-        <Stack space={3}>
+        <Stack gap={3}>
           <Text size={1} weight="semibold">Skipped</Text>
           <Text size={1} muted>
             Unsplash suggestions are turned off for this sighting. Click below to try again.
@@ -299,8 +300,8 @@ export function BirdSightingUnsplashSuggestionPanel(props: StringInputProps) {
   // ── State: empty / initial ─────────────────────────────────────────────────
   return (
     <Card padding={4} radius={2} shadow={1} tone="default">
-      <Stack space={4}>
-        <Stack space={2}>
+      <Stack gap={4}>
+        <Stack gap={2}>
           <Text size={1} weight="semibold">No image yet</Text>
           <Text size={1} muted>
             Get an Unsplash photo matched to{' '}

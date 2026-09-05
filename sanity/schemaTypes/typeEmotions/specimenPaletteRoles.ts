@@ -1,4 +1,4 @@
-import {ColorWheelIcon} from '@sanity/icons'
+import {ColorWheelIcon} from '@sanity/icons/ColorWheel'
 import {defineField, defineType} from 'sanity'
 
 const HEX_PATTERN = /^#?[0-9A-Fa-f]{3,8}$/

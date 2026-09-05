@@ -1,8 +1,10 @@
 'use client'
 
 import React, {useCallback, useEffect, useRef, useState} from 'react'
-import {CheckmarkCircleIcon, DocumentPdfIcon} from '@sanity/icons'
-import {Badge, Button, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
+import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
+import {DocumentPdfIcon} from '@sanity/icons/DocumentPdf'
+import {Badge, Button, Card, Flex, Stack, Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import type {ObjectInputProps} from 'sanity'
 import {PatchEvent, set, useFormValue} from 'sanity'
 
@@ -135,7 +137,7 @@ export function PdfProtectionInput(props: ObjectInputProps) {
 
   return (
     <Card padding={4} radius={2} shadow={1} tone={hasPdf ? 'positive' : 'caution'}>
-      <Stack space={4}>
+      <Stack gap={4}>
         <Flex align="center" gap={2}>
           <Text size={2}>
             {hasPdf ? <CheckmarkCircleIcon /> : <DocumentPdfIcon />}

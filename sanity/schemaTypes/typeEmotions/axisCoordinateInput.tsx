@@ -1,7 +1,8 @@
 'use client'
 
 import React, {useCallback, useEffect, useState} from 'react'
-import {AddIcon, TrashIcon} from '@sanity/icons'
+import {AddIcon} from '@sanity/icons/Add'
+import {TrashIcon} from '@sanity/icons/Trash'
 import {Button, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {
   PatchEvent,
@@ -125,7 +126,7 @@ export function AxisCoordinateInput(props: ArrayOfObjectsInputProps) {
   }, [faceAxes, writeRows])
 
   return (
-    <Stack space={3}>
+    <Stack gap={3}>
       {rows.length === 0 && faceAxes.length > 0 && !readOnly ? (
         <Card padding={3} radius={2} tone="primary" border>
           <Flex align="center" justify="space-between" gap={3}>
@@ -144,7 +145,7 @@ export function AxisCoordinateInput(props: ArrayOfObjectsInputProps) {
         </Card>
       ) : null}
 
-      <Stack space={2}>
+      <Stack gap={2}>
         {rows.map((row, index) => (
           <Flex key={row._key || index} gap={2} align="center">
             <Card flex={1} padding={0}>
