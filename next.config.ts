@@ -2,9 +2,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /**
-   * react-map-gl wrappers only — do not transpile `maplibre-gl` itself; its dist embeds a
-   * worker bundle string that re-transpilation can break (blank basemap, markers still OK).
-   * Use `src/lib/maplibreClient.ts` + `@babel/runtime` polyfill for `_wrap_native_super`.
+   * react-map-gl wrappers only — do not transpile `maplibre-gl` itself.
+   * Worker files are copied to public/maplibre on postinstall and wired via
+   * `setWorkerUrl` in `src/lib/maplibreClient.ts` (required for Turbopack).
+   * `@babel/runtime` polyfill covers `_wrap_native_super` for SWC.
    */
   transpilePackages: ['react-map-gl', '@vis.gl/react-maplibre'],
   experimental: {
