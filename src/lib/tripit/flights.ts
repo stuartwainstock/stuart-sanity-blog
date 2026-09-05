@@ -1,16 +1,13 @@
 import 'server-only'
 
-import {existsSync} from 'node:fs'
 import {readFile} from 'node:fs/promises'
 import path from 'node:path'
 import {cache} from 'react'
 import {resolveAirportCoordsForIataCodes} from '@/lib/travel/airportCoordsNode'
 import type {AirportCoords, FlightLeg} from '@/lib/travel/types'
+import tripItHistoricalJson from '@/data/tripit/list-air-historical.json'
 import {tripitGetJson} from './client'
 import type {TripItAirObject, TripItListAirResponse} from './types'
-
-/** Slim list-air JSON (dates + IATA only). Committed copy avoids needing TRIPIT_FLIGHTS_JSON in production. */
-const DEFAULT_TRIPIT_FLIGHTS_JSON = 'src/data/tripit/list-air-historical.json'
 
 function arr<T>(v: T | T[] | undefined): T[] {
   if (!v) return []
@@ -57,15 +54,16 @@ async function legsToFlightMap(legs: FlightLeg[]): Promise<{
 
 async function loadTripItJsonFromPath(relativeOrAbsolute: string): Promise<TripItListAirResponse> {
   const p = String(relativeOrAbsolute).trim()
-  // Avoid tracing the whole repo in Turbopack builds when callers provide relative paths.
-  const resolved = path.isAbsolute(p) ? p : path.join(/*turbopackIgnore: true*/ process.cwd(), p)
+  const resolved = path.isAbsolute(p) ? p : path.join(process.cwd(), p)
   const raw = await readFile(resolved, 'utf8')
   return JSON.parse(raw) as TripItListAirResponse
 }
 
 /**
  * TripIt list-air JSON (same shape as `GET .../format/json` from the API).
- * Set `TRIPIT_FLIGHTS_JSON` to a path (repo-relative or absolute) to use this instead of OAuth.
+ * Set `TRIPIT_FLIGHTS_JSON` to a path (repo-relative or absolute) to override the
+ * committed export. Prefer the static import in production — `existsSync` + cwd
+ * is unreliable under Turbopack/Vercel (file never lands in the serverless bundle).
  */
 export async function tripItListAirResponseToFlightMap(
   data: TripItListAirResponse,
@@ -80,30 +78,21 @@ export const fetchTripItFlights = cache(async (): Promise<{
   airports: AirportCoords
 }> => {
   const envPath = process.env.TRIPIT_FLIGHTS_JSON?.trim()
-  const filePath =
-    envPath ||
-    (existsSync(
-      path.join(
-        /*turbopackIgnore: true*/ process.cwd(),
-        'src',
-        'data',
-        'tripit',
-        'list-air-historical.json',
-      ),
-    )
-      ? DEFAULT_TRIPIT_FLIGHTS_JSON
-      : '')
-
-  if (filePath) {
-    const data = await loadTripItJsonFromPath(filePath)
+  if (envPath) {
+    const data = await loadTripItJsonFromPath(envPath)
     return tripItListAirResponseToFlightMap(data)
   }
 
-  // All air objects where the authenticated user is a traveler, including past flights.
+  // Prefer the committed export (bundled via static import).
+  const bundled = tripItHistoricalJson as TripItListAirResponse
+  if (Array.isArray(bundled.AirObject) || bundled.AirObject) {
+    return tripItListAirResponseToFlightMap(bundled)
+  }
+
+  // Dev-only fallback: live TripIt OAuth when no export is available.
   const data = await tripitGetJson<TripItListAirResponse>(
     '/v1/list/object/type/air/traveler/true/past/true/format/json',
   )
 
   return tripItListAirResponseToFlightMap(data)
 })
-
