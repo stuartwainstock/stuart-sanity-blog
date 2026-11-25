@@ -1,10 +1,11 @@
 /**
- * Copy MapLibre worker + shared sibling into public/maplibre/ for setWorkerUrl.
+ * Copy MapLibre worker (+ shared sibling if present) into public/maplibre/ for setWorkerUrl.
  *
- * MapLibre v6 dropped the CSP worker bundle. The ESM worker imports
- * `./maplibre-gl-shared.mjs` by relative path, so both files must sit in the
- * same public directory. Turbopack does not emit that sibling when resolving
- * `new URL(..., import.meta.url)`, so we host them from /public instead.
+ * MapLibre v6 dropped the CSP worker bundle. Early 6.x workers imported
+ * `./maplibre-gl-shared.mjs` by relative path; 6.19+ ships a self-contained
+ * worker and an empty shared stub. Copy both when present so either layout works.
+ * Turbopack does not emit workers via `new URL(..., import.meta.url)` reliably,
+ * so we host them from /public instead.
  *
  * Runs on postinstall (after npm install / CI).
  */
